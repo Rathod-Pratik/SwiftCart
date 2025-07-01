@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SwiftCart | Login</title>
+    <title>SwiftCart | SignUp</title>
 </head>
 <body>
     <?php include '../../Componenets/Header.php'; ?>
