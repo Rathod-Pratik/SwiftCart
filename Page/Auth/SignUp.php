@@ -1,3 +1,73 @@
+<?php
+require '../../Database/Function.php'; 
+require '../../Database/db.php';  
+
+$tableName = 'users';
+
+$createSQL = "
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100),
+        email VARCHAR(150) UNIQUE,
+        password VARCHAR(20) UNIQUE,
+        address VARCHAR(50),
+        userType VARCHAR(10) CHECK (userType IN ('customer', 'vender', 'admin')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+";
+
+echo checkAndCreateTable($pdo, $tableName, $createSQL);
+
+// Function to insert a new user
+function insertUser($pdo, $name, $email, $password, $address, $userType) {
+
+    // 1. Check if user with this email already exists
+    $checkSql = "SELECT * FROM users WHERE email = :email";
+    $checkStmt = $pdo->prepare($checkSql);
+    $checkStmt->execute([':email' => $email]);
+
+    if ($checkStmt->fetch()) {
+        return "❌ User already exists with this email.";
+    }
+
+    // 2. Hash the password before storing
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+    // 3. Insert new user
+    $sql = "INSERT INTO users (name, email, password, address, userType) 
+            VALUES (:name, :email, :password, :address, :userType)";
+    $stmt = $pdo->prepare($sql);
+
+    $result = $stmt->execute([
+        ':name' => $name,
+        ':email' => $email,
+        ':password' => $hashedPassword,
+        ':address' => $address,
+        ':userType' => $userType
+    ]);
+
+    if ($result) {
+        return "✅ User inserted successfully.";
+    } else {
+        return "❌ Failed to insert user.";
+    }
+}
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = $_POST['Name'];
+    $email = $_POST['Email'];
+    $password = $_POST['Password'];
+    $address = $_POST['Address'];
+    $userType = 'customer'; 
+
+    $HashPassword=password_hash($password)
+
+    insertUser($pdo, $name, $email, $HashPassword, $address, $userType);
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +88,7 @@
         <div class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex items-center">
             <div class="w-full flex flex-col items-center">
                 <h1 class="text-2xl xl:text-3xl font-extrabold">
-                    Login Now
+                    SignUp Now
                 </h1>
                 <div class="w-full flex-1 mt-8 flex justify-center items-center">
                     <div class="w-full max-w-xs">

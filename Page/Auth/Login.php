@@ -1,3 +1,23 @@
+<?php
+require '../../Database/Function.php';        // Database connection
+require '../../Database/db.php';  // Utility functions
+
+$tableName = 'users';
+
+$createSQL = "
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100),
+        email VARCHAR(150) UNIQUE,
+        password VARCHAR(20) UNIQUE,
+        address VARCHAR(50),
+        userType VARCHAR(10) CHECK (userType IN ('customer', 'vender', 'admin')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+";
+
+echo checkAndCreateTable($pdo, $tableName, $createSQL);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
