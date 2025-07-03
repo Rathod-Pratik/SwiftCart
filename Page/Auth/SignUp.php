@@ -9,7 +9,7 @@ $createSQL = "
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),
         email VARCHAR(150) UNIQUE,
-        password VARCHAR(20) UNIQUE,
+       password VARCHAR(255) UNIQUE,
         address VARCHAR(50),
         userType VARCHAR(10) CHECK (userType IN ('customer', 'vender', 'admin')),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -18,38 +18,52 @@ $createSQL = "
 
 echo checkAndCreateTable($pdo, $tableName, $createSQL);
 
-// Function to insert a new user
-function insertUser($pdo, $name, $email, $password, $address, $userType) {
+function insertUser($pdo, $name, $email, $password, $userType='customer') {
 
-    // 1. Check if user with this email already exists
     $checkSql = "SELECT * FROM users WHERE email = :email";
     $checkStmt = $pdo->prepare($checkSql);
     $checkStmt->execute([':email' => $email]);
 
     if ($checkStmt->fetch()) {
-        return "❌ User already exists with this email.";
+        $_SESSION['message'] = "User already exists with this email.";
+        $_SESSION['msg_type'] = "danger";
+        return;
     }
 
-    // 2. Hash the password before storing
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    $hashedPassword = password_hash($password,PASSWORD_DEFAULT);
 
-    // 3. Insert new user
-    $sql = "INSERT INTO users (name, email, password, address, userType) 
-            VALUES (:name, :email, :password, :address, :userType)";
+    $sql = "INSERT INTO users (name, email, password, userType) 
+            VALUES (:name, :email, :password, :userType)";
     $stmt = $pdo->prepare($sql);
 
     $result = $stmt->execute([
         ':name' => $name,
         ':email' => $email,
         ':password' => $hashedPassword,
-        ':address' => $address,
         ':userType' => $userType
     ]);
 
     if ($result) {
-        return "✅ User inserted successfully.";
+
+   $userData = [
+    'email' => $email,
+    'role' => 'customer',
+    'password'=> $password
+];
+
+setcookie("authToken", json_encode($userData), [
+    'expires' => time() + 86400,
+    'path' => '/',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
+        $_SESSION['message'] = "Account created successfully.";
+        $_SESSION['msg_type'] = "success";
     } else {
-        return "❌ Failed to insert user.";
+        $_SESSION['message'] = "Server Down.";
+        $_SESSION['msg_type'] = "danger";
     }
 }
 
@@ -58,12 +72,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['Name'];
     $email = $_POST['Email'];
     $password = $_POST['Password'];
-    $address = $_POST['Address'];
     $userType = 'customer'; 
 
-    $HashPassword=password_hash($password)
-
-    insertUser($pdo, $name, $email, $HashPassword, $address, $userType);
+    if (strlen($name) < 5) {
+        $_SESSION['message'] = "Name must be at least 5 characters long.";
+        $_SESSION['msg_type'] = "danger";
+    }
+    // Validate password length
+    elseif (strlen($password) < 8) {
+        $_SESSION['message'] = "Password must be at least 8 characters long.";
+        $_SESSION['msg_type'] = "danger";
+    }
+    else{   
+        insertUser($pdo, $name, $email, $password, $userType);
+    }
 }
 
 ?>
@@ -91,22 +113,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     SignUp Now
                 </h1>
                 <div class="w-full flex-1 mt-8 flex justify-center items-center">
-                    <div class="w-full max-w-xs">
+                    <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="w-full max-w-xs">
                         <input
+                        required
                             name='Name'
                             class="w-full mb-5 px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                             type="text" placeholder="Name" />
                         <input
+                        required
                          name='Email'
                             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                             type="email" placeholder="Email" />
                         <input
+                        required
                          name='Password'
                             class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                             type="password" placeholder="Password" />
-                        <button
-                            class="bg-[#d09523] hover:bg-[#f4b942] cursor-pointer mt-5  font-semibold  text-gray-100 w-full py-4 rounded-lg  transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
-      
+
+                            <input type="submit" value="Sign Up"  class="bg-[#d09523] hover:bg-[#f4b942] cursor-pointer mt-5  font-semibold  text-gray-100 w-full py-4 rounded-lg  transition-all duration-300 ease-in-out flex items-center justify-center focus:shadow-outline focus:outline-none">
+
+                        <button>
                             <span class="ml-3 text-white">
                                 Sign Up
                             </span>
@@ -118,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </a>
                             now
                         </p>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

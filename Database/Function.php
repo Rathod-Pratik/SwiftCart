@@ -16,11 +16,9 @@ function checkAndCreateTable(PDO $pdo, string $tableName, string $createSQL, str
 
     $exists = $stmt->fetchColumn();
 
-    if ($exists) {
-        return "✅ Table `$tableName` already exists.";
-    } else {
-        $pdo->exec($createSQL);
-        return "✅ Table `$tableName` created successfully.";
-    }
+if (!$exists) {
+    $pdo->exec($createSQL);
+}
+return '';
 }
 ?>
