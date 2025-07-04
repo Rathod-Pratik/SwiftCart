@@ -11,6 +11,16 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+        .bgcolor{
+            background-color:#4fd1c5 ;
+        }
+        .textcolor{
+            color:#4fd1c5 ;
+        }
+
+        .inputcolor{
+            background-color: #f8fafd;
+        }
 
         .toast-msg {
             display: none;

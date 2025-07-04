@@ -1,5 +1,5 @@
 <?php
-echo ' <nav class="fixed top-0 z-50 w-full bg-[rgb(45_83_86)]">
+echo ' <nav class="fixed top-0 z-50 w-full bg-[#f8fafd]">
   <div class="px-3 py-3 lg:px-5 lg:pl-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center justify-start rtl:justify-end">
@@ -11,12 +11,12 @@ echo ' <nav class="fixed top-0 z-50 w-full bg-[rgb(45_83_86)]">
          </button>
         <a href="https://flowbite.com" class="flex ms-2 md:me-24">
           <img src="/SwiftCart/Image/favicon.png" class="h-8 me-3" alt="FlowBite Logo" />
-          <span class="self-center text-xl text-white font-semibold sm:text-2xl whitespace-nowrap ">Shopizo</span>
+          <span class="self-center text-xl text-black font-semibold sm:text-2xl whitespace-nowrap ">Shopizo</span>
         </a>
       </div>
       <div class="flex items-center">
       <div class="flex items-center ms-3 gap-3">
-      <p class="text-white">Welcome Rathod Pratik</p>
+      <p class="text-[#a0aec0]">Welcome Rathod Pratik</p>
             <div>
               <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 " aria-expanded="false" data-dropdown-toggle="dropdown-user">
                 <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
