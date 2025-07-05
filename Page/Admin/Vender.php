@@ -21,7 +21,7 @@
                     Search 
                 </button>
             </div>
-            <div>
+            <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500">
                     <thead class="text-xs text-[#a0aec0] uppercase bg-gray-50 ">
                         <tr>
@@ -32,36 +32,68 @@
                                 Name
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Account No
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                IFSC Code
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Name
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Mobile
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Email
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Address
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Mobile
+                                Company name
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Status
                             </th>
-                            <th scope="col" class="px-6 py-3">
-
-                            </th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
+                        <tr class="bg-white border-b hover:bg-gray-50">
                             <td class="px-6 py-4">1</td>
-                            <td class="px-6 py-4">Rathod Pratik</td>
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">RathodPratik1928@gmail.com</th>
-                            <td class="px-6 py-4">Harshiddhi city</td>
-                            <td class="px-6 py-4">9016561625</td>
-                            <td class="px-6 py-4">Active</td>
-                            <td class="px-6 py-4"><button class="text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200" title="Delete">
-                                    Block
-                                </button></td>
-
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Amit Sharma</td>
+                            <td class="px-6 py-4">1234567890</td>
+                            <td class="px-6 py-4">SBIN0001234</td>
+                            <td class="px-6 py-4">Amit Sharma</td>
+                            <td class="px-6 py-4">9876543210</td>
+                            <td class="px-6 py-4">amit@example.com</td>
+                            <td class="px-6 py-4">123 Main St, Delhi</td>
+                            <td class="px-6 py-4">Sharma Traders</td>
+                            <td class="px-6 py-4"><span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Active</span></td>
                         </tr>
-
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4">2</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Priya Patel</td>
+                            <td class="px-6 py-4">9876543211</td>
+                            <td class="px-6 py-4">HDFC0005678</td>
+                            <td class="px-6 py-4">Priya Patel</td>
+                            <td class="px-6 py-4">9123456789</td>
+                            <td class="px-6 py-4">priya@example.com</td>
+                            <td class="px-6 py-4">456 Park Ave, Mumbai</td>
+                            <td class="px-6 py-4">Patel Exports</td>
+                            <td class="px-6 py-4"><span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">Pending</span></td>
+                        </tr>
+                        <tr class="bg-white border-b hover:bg-gray-50">
+                            <td class="px-6 py-4">3</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Rahul Verma</td>
+                            <td class="px-6 py-4">1122334455</td>
+                            <td class="px-6 py-4">ICIC0009876</td>
+                            <td class="px-6 py-4">Rahul Verma</td>
+                            <td class="px-6 py-4">9988776655</td>
+                            <td class="px-6 py-4">rahul@example.com</td>
+                            <td class="px-6 py-4">789 Lake Rd, Bangalore</td>
+                            <td class="px-6 py-4">Verma Supplies</td>
+                            <td class="px-6 py-4"><span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">Inactive</span></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
