@@ -1,4 +1,6 @@
 <?php include '../../Componenets/Header.php'; ?>
+<?php include '../../Componenets/AdminAuth.php' ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,7 +14,7 @@
     <?php require '../../Componenets/AdminNavbar.php' ?>
     <?php require '../../Componenets/AdminSideBar.php' ?>
 
-    <div class="p-4 lg:ml-64 pt-20">
+    <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
             <div class="relative bg-gradient-to-br from-green-100 to-green-50 p-6 rounded-2xl shadow-lg text-center border border-green-200 hover:scale-105 transition-transform duration-200">
                 <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-green-200/60">
@@ -58,7 +60,7 @@
         <div>
             <div class="flex justify-evenly gap-3 mb-6">
                 <input
-                    class="border-[#4fd1c5] border-2 outline-none rounded-md px-4 py-2 w-[90%]"
+                    class="border-[#4fd1c5] bg-white border-2 outline-none rounded-md px-4 py-2 w-[90%]"
                     type="text"
                     placeholder="Search Orders" />
                 <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">

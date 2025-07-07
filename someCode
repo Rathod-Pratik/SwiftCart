@@ -1,0 +1,59 @@
+
+
+
+
+
+
+
+        <?php
+        // Fetch all categories
+        $categories = $pdo->query("SELECT * FROM category ORDER BY id
+      DESC")->fetchAll(PDO::FETCH_ASSOC);
+        ?>
+
+
+
+      <!-- <?php foreach ($_SESSION['categories'] as $cat): ?>
+                        <tr
+                            class="bg-white border-b border-gray-200 hover:bg-gray-50"
+                            id="<?= htmlspecialchars($cat['id']) ?>">
+                            <td class="px-6 py-4"><?= htmlspecialchars($cat['id']) ?></td>
+                            <th
+                                scope="row"
+                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                <?= htmlspecialchars($cat['name']) ?>
+                            </th>
+                            <td class="px-6 py-4">
+                                <?= htmlspecialchars($cat['description']) ?>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button
+                                    class="cursor-pointer"
+                                    onclick='openEditModal(<?= htmlspecialchars($cat['id']) ?>, <?= json_encode($cat['name']) ?>, <?= json_encode($cat['description']) ?>)'>
+                                    <img
+                                        src="/SwiftCart/Image/Edit.svg"
+                                        alt="Edit"
+                                        class="w-5 h-5 inline" />
+                                </button>
+                            </td>
+                            <td class="px-6 py-4">
+                                <button
+                                    type="button"
+                                    class="text-red-600 hover:text-red-800 cursor-pointer"
+                                    onclick='OpenDeleteModal(<?= htmlspecialchars($cat['id']) ?>, <?= json_encode($cat['name']) ?>)'>
+                                    <img
+                                        src="/SwiftCart/Image/Delete.svg"
+                                        alt="Delete"
+                                        class="w-5 h-5 inline" />
+                                </button>
+                                <!-- <button
+                                    class="cursor-pointer edit-button"
+                                    data-id="<?= htmlspecialchars($cat['id']) ?>"
+                                    data-name="<?= htmlspecialchars($cat['name']) ?>"
+                                    data-description="<?= htmlspecialchars($cat['description']) ?>">
+                                    <img src="/SwiftCart/Image/Edit.svg" alt="Edit" class="w-5 h-5 inline" />
+                                </button> 
+
+                            </td>
+                        </tr>
+                    <?php endforeach; ?> -->

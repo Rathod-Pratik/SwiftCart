@@ -1,4 +1,6 @@
 <?php include '../../Componenets/Header.php'; ?>
+<?php include '../../Componenets/AdminAuth.php' ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,11 +12,11 @@
     <?php require '../../Componenets/AdminNavbar.php' ?>
     <?php require '../../Componenets/AdminSideBar.php'?>
 
- <div class="p-4 lg:ml-64 pt-20">
+ <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div>
             <div class="flex justify-evenly gap-3 mb-6">
                 <input
-                    class="border-[#4fd1c5] border-2 outline-none rounded-md px-4 py-2 w-[90%]"
+                    class="border-[#4fd1c5] bg-white border-2 outline-none rounded-md px-4 py-2 w-[90%]"
                     type="text"
                     placeholder="Search Vender" />
                 <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
