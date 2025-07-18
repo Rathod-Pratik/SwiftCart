@@ -5,17 +5,20 @@ require '../../Database/db.php';  // Utility functions
 
 $tableName = 'users';
 
-$createSQL = "
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(100),
-        email VARCHAR(150) UNIQUE,
-        password VARCHAR(20) UNIQUE,
-        address VARCHAR(50),
-        userType VARCHAR(10) CHECK (userType IN ('customer', 'vender', 'admin')),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-";
+$createSQL = " CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(150) UNIQUE,
+    password VARCHAR(100) UNIQUE,
+    account_no VARCHAR(15),
+    ifsc_code VARCHAR(15),
+    company_name VARCHAR(30),
+    address VARCHAR(50),
+    mobile VARCHAR(10),
+    userType VARCHAR(10) CHECK (userType IN ('customer', 'vender', 'admin')),
+    status VARCHAR(7) DEFAULT 'active' CHECK (status IN ('active' , 'block')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);";
 
 checkAndCreateTable($pdo, $tableName, $createSQL);
 
@@ -45,6 +48,7 @@ function Login($pdo, $email, $password)
 
     // 3. Set secure cookie (excluding raw password)
     $userData = [
+        'id' => $user['id'],
         'email' => $user['email'],
         'userType' => $user['userType'],
         'password' => $user['password']
@@ -59,7 +63,7 @@ function Login($pdo, $email, $password)
             'httponly' => true,
             'samesite' => 'Strict'
         ]);
-        
+
         $_SESSION['message'] = "Login successful.";
         $_SESSION['msg_type'] = "success";
 

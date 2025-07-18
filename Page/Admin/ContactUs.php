@@ -1,4 +1,3 @@
-<?php include '../../Componenets/Header.php'; ?>
 <?php include '../../Componenets/AdminAuth.php' ?>
 
 <!DOCTYPE html>
@@ -7,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopizo | Admin</title>
+    <?php include '../../Componenets/Header.php'; ?>
 </head>
 <body>
     <?php require '../../Componenets/AdminNavbar.php' ?>

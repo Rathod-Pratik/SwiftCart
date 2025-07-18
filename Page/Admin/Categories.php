@@ -1,4 +1,3 @@
-<?php include '../../Componenets/Header.php'; ?>
 <?php include '../../Componenets/AdminAuth.php' ?>
 
 <?php
@@ -27,6 +26,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shopizo | Admin</title>
+    <?php include '../../Componenets/Header.php'; ?>
 </head>
 <script>
 
@@ -36,9 +36,10 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
     <?php require '../../Componenets/AdminNavbar.php' ?>
     <?php require '../../Componenets/AdminSideBar.php' ?>
 
-    <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
+    <div id="Categories" class="backdrop-blur-1 p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div class="flex justify-evenly gap-3 mb-6">
             <input
+                oninput="handleSearch(this.value)"
                 class="border-[#4fd1c5] bg-white border-2 outline-none rounded-md px-4 py-2 w-[90%]"
                 type="text"
                 placeholder="Search Category" />
@@ -112,12 +113,15 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                         id="categoryName"
                         class="mb-5 text-lg font-normal text-gray-500"></h3>
                     <button
+                        id="deleteBtn"
                         data-modal-hide="popup-modal"
                         onclick="DeleteCategory()"
                         type="button"
-                        class="text-white cursor-pointer bg-red-600 hover:bg-red-800 outline-none  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
-                        Yes, I'm sure
+                        class="text-white cursor-pointer bg-red-600 hover:bg-red-800 outline-none gap-2 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                        <div id="modalSpinner" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                        <span id="btnText">Yes, I'm sure</span>
                     </button>
+
                     <button
                         onclick="CloseDeleteModal()"
                         data-modal-hide="popup-modal"
@@ -174,20 +178,19 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                                 for="name"
                                 class="block mb-2 text-sm font-medium textcolor">Name</label>
                             <input
-                            required=""
+                                required=""
                                 type="text"
                                 name="name"
                                 id="modal_name"
                                 class="inputcolor border border-[#4fd1c5] text-gray-900 text-sm rounded-lg focus:border-[#4fd1c5] block w-full p-2.5"
-                                placeholder="Category name"
-                                 />
+                                placeholder="Category name" />
                         </div>
                         <div class="col-span-2">
                             <label
                                 for="description"
                                 class="block mb-2 text-sm font-medium textcolor">Description</label>
                             <textarea
-                             required=""
+                                required=""
                                 name="description"
                                 id="modal_description"
                                 rows="4"
@@ -197,19 +200,17 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     </div>
                     <button
                         type="submit"
-                        class="text-white cursor-pointer inline-flex items-center bg-[#4fd1c5] hover:border hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
-                        <svg
-                            class="me-1 -ms-1 w-5 h-5"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                fill-rule="evenodd"
-                                d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
+                        onclick="handleModalSubmit()"
+                        id="modalSubmitBtn"
+                        class="text-white cursor-pointer inline-flex items-center gap-2 bg-[#4fd1c5] hover:border hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
+
+                        <!-- Spinner inherits text color -->
+                        <div id="spinner" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                         <span id="modalBtnText">Create</span>
                     </button>
+
+
+
                 </form>
             </div>
         </div>
@@ -217,6 +218,19 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
     <script>
         let deleteCategoryId = null;
+        let allCategories = [];
+
+        function handleSearch(searchText) {
+            const query = searchText.toLowerCase().trim();
+
+            const filtered = allCategories.filter(cat =>
+                cat.name.toLowerCase().includes(query)
+                //  ||
+                // cat.description.toLowerCase().includes(query)
+            );
+
+            updateTableUI(filtered);
+        }
 
         function openModal() {
             document.getElementById("categoryForm").reset();
@@ -259,7 +273,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         }
 
         function fetchCategories() {
-            fetch('category_ajax.php', {
+            fetch('/SwiftCart/AJAX/category_ajax.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -269,6 +283,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
+                        allCategories = data.categories;
                         updateTableUI(data.categories);
                     }
                 });
@@ -277,7 +292,17 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         function updateTableUI(categories) {
             const tbody = document.getElementById('category-table-body');
             tbody.innerHTML = '';
-
+            
+            if (categories.length < 1) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+              <td colspan="5" class="text-center py-4 text-gray-500">
+                No categories found.
+               </td>
+              `;
+                tbody.appendChild(row);
+                return;
+            }
             categories.forEach(cat => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -304,7 +329,9 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
         function DeleteCategory() {
             if (!deleteCategoryId) return;
-            fetch("category_ajax.php", {
+            document.getElementById('modalSpinner').classList.remove('hidden')
+            document.getElementById('deleteBtn').disabled = true;
+            fetch("/SwiftCart/AJAX/category_ajax.php", {
                     method: "POST",
                     body: new URLSearchParams({
                         action: "delete",
@@ -319,6 +346,8 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                 }).then(() => {
                     requestAnimationFrame(() => {
                         setTimeout(() => {
+                            document.getElementById('modalSpinner').classList.add('hidden')
+                            document.getElementById('deleteBtn').disabled = false;
                             CloseDeleteModal()
                         }, 1000);
                     });
@@ -333,11 +362,20 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         // AJAX for create category
         document.getElementById("categoryForm").addEventListener("submit", function(e) {
             e.preventDefault();
+
+            const spinner = document.getElementById('spinner');
+            const text = document.getElementById('modalBtnText')
+            const button = document.getElementById('modalSubmitBtn');
+
             const actionValue = document.getElementById("formAction").value;
             if (actionValue == "create") {
+                spinner.classList.remove('hidden');
+                text.textContent = 'Creating...';
+                button.disabled = true;
+
                 const form = e.target;
                 const formData = new FormData(form);
-                fetch("category_ajax.php", {
+                fetch("/SwiftCart/AJAX/category_ajax.php", {
                         method: "POST",
                         body: formData,
                     })
@@ -349,14 +387,22 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     }).then(() => {
                         requestAnimationFrame(() => {
                             setTimeout(() => {
+                                spinner.classList.add('hidden');
+                                text.textContent = 'Create';
+                                button.disabled = false;
                                 closeModal();
                             }, 1000);
                         });
                     })
             } else if (actionValue == "update") {
+                spinner.classList.remove('hidden');
+                icon.classList.add('hidden');
+                text.textContent = 'Updating...';
+                button.disabled = true;
+
                 const form = e.target;
                 const formData = new FormData(form);
-                fetch("category_ajax.php", {
+                fetch("/SwiftCart/AJAX/category_ajax.php", {
                         method: "POST",
                         body: formData,
                     })
@@ -368,6 +414,9 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     }).then(() => {
                         requestAnimationFrame(() => {
                             setTimeout(() => {
+                                spinner.classList.add('hidden');
+                                text.textContent = 'Update';
+                                button.disabled = false;
                                 closeModal();
                             }, 1000);
                         });
