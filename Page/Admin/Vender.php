@@ -98,42 +98,6 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                         </tr>
                     </thead>
                     <tbody id="user-table-body">
-                        <!-- <tr class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">1</td>
-                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Amit Sharma</td>
-                            <td class="px-6 py-4">1234567890</td>
-                            <td class="px-6 py-4">SBIN0001234</td>
-                            <td class="px-6 py-4">Amit Sharma</td>
-                            <td class="px-6 py-4">9876543210</td>
-                            <td class="px-6 py-4">amit@example.com</td>
-                            <td class="px-6 py-4">123 Main St, Delhi</td>
-                            <td class="px-6 py-4">Sharma Traders</td>
-                            <td class="px-6 py-4"><span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Active</span></td>
-                        </tr>
-                        <tr class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">2</td>
-                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Priya Patel</td>
-                            <td class="px-6 py-4">9876543211</td>
-                            <td class="px-6 py-4">HDFC0005678</td>
-                            <td class="px-6 py-4">Priya Patel</td>
-                            <td class="px-6 py-4">9123456789</td>
-                            <td class="px-6 py-4">priya@example.com</td>
-                            <td class="px-6 py-4">456 Park Ave, Mumbai</td>
-                            <td class="px-6 py-4">Patel Exports</td>
-                            <td class="px-6 py-4"><span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-700">Pending</span></td>
-                        </tr>
-                        <tr class="bg-white border-b hover:bg-gray-50">
-                            <td class="px-6 py-4">3</td>
-                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Rahul Verma</td>
-                            <td class="px-6 py-4">1122334455</td>
-                            <td class="px-6 py-4">ICIC0009876</td>
-                            <td class="px-6 py-4">Rahul Verma</td>
-                            <td class="px-6 py-4">9988776655</td>
-                            <td class="px-6 py-4">rahul@example.com</td>
-                            <td class="px-6 py-4">789 Lake Rd, Bangalore</td>
-                            <td class="px-6 py-4">Verma Supplies</td>
-                            <td class="px-6 py-4"><span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700">Inactive</span></td>
-                        </tr> -->
                     </tbody>
                 </table>
             </div>
@@ -558,35 +522,14 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                         if (data.success) {
                             showToast("Vendor's account created successfully", "success");
                             FetchVender()
-                            emailjs.send("service_gn7qass", "template_twe6ing", {
-                                    title: "You're In! SwiftCart Vendor Account Activated",
-                                    to_email: data.email,
-                                    From_name: "SwiftCart",
-                                    vendor_name: data.name,
-                                    vendor_email: data.email,
-                                    vendor_password: data.password,
-                                    vendor_phone: data.mobile,
-                                    vendor_account: data.account_no,
-                                    vendor_IFSC: data.ifsc_code,
-                                    vendor_address: data.address,
-                                    vendor_company: data.company_name,
-                                    reply_to: "noreply@swiftcart.com"
-                                })
-                                .then(res => {
-                                    showToast("Email sent to the vendor successfully!", "success");
-                                })
-                                .catch(err => {
-                                    console.error("ERROR:", err);
-                                    showToast("Failed to send email", 'danger');
-                                });
                         } else {
                             showToast("Some error is occured", "danger")
                         }
                     }).then(() => {
-                                spinner.classList.add('hidden');
-                                text.textContent = 'Create';
-                                button.disabled = false;
-                                CloseModal();
+                        spinner.classList.add('hidden');
+                        text.textContent = 'Create';
+                        button.disabled = false;
+                        CloseModal();
                     })
             } else if (actionValue == 'update') {
                 const spinner = document.getElementById('spinner')
@@ -606,27 +549,15 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     .then((data) => {
                         if (data.success) {
                             showToast("Vender's Details updated successfully", 'success')
-                            emailjs.send("service_gn7qass", "template_i03d3mh", {
-                                    to_email: data.email,
-                                    From_name: "SwiftCart",
-                                    name: data.name,
-                                    reply_to: "noreply@swiftcart.com"
-                                })
-                                .then(res => {
-                                    showToast("Email sent to the vendor successfully!", "success");
-                                })
-                                .catch(err => {
-                                    showToast("Failed to send email", "danger");
-                                });
                         } else {
                             showToast("Some error is occured", "denger")
                         }
                     }).then(() => {
-                                spinner.classList.add('hidden');
-                                text.textContent = 'Create';
-                                button.disabled = false;
-                                CloseModal();
-                     
+                        spinner.classList.add('hidden');
+                        text.textContent = 'Create';
+                        button.disabled = false;
+                        CloseModal();
+
                     })
             }
         })
@@ -663,24 +594,12 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     console.error(err);
                 })
                 .finally(() => {
-                        spinner.classList.add('hidden');
-                        text.textContent = 'Message';
-                        button.disabled = false;
-                        CloseMessageModal();
+                    spinner.classList.add('hidden');
+                    text.textContent = 'Message';
+                    button.disabled = false;
+                    CloseMessageModal();
                 });
         });
-    </script>
-
-
-    <script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-    </script>
-    <script type="text/javascript">
-        (function() {
-            emailjs.init({
-                publicKey: "ajDJCmWAEkNodrj5s",
-            });
-        })();
     </script>
 </body>
 

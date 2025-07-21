@@ -64,6 +64,16 @@
         }, 3000);
     }
 </script>
+<script type="text/javascript"
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+    (function() {
+        emailjs.init({
+            publicKey: "ajDJCmWAEkNodrj5s",
+        });
+    })();
+</script>
 <?php if (isset($_SESSION['message'])): ?>
     <script>
         showToast(<?php echo json_encode($_SESSION['message']); ?>, <?php echo json_encode($_SESSION['msg_type']); ?>);
