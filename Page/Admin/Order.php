@@ -1,5 +1,5 @@
-<?php include '../../Componenets/Header.php'; ?>
-<?php include '../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ .'/../../Componenets/Header.php'; ?>
+<?php include __DIR__ .'/../../Componenets/AdminAuth.php' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,8 +11,8 @@
 </head>
 
 <body>
-    <?php require '../../Componenets/AdminNavbar.php' ?>
-    <?php require '../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ .'/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ .'/../../Componenets/AdminSideBar.php' ?>
 
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
@@ -103,9 +103,7 @@
                             <td class="px-6 py-4">2</td>
                             <td class="px-6 py-4">400</td>
                             <td class="px-6 py-4">Demo</td>
-                          
                         </tr>
-
                     </tbody>
                 </table>
             </div>

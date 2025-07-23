@@ -1,9 +1,9 @@
-<?php include '../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?>
 
 <?php
 
-require '../../Database/db.php';
-require '../../Database/Function.php';
+require __DIR__ . '/../../Database/db.php';
+require __DIR__ . '/../../Database/Function.php';
 
 $table = 'vender';
 
@@ -43,12 +43,12 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopizo | Admin</title>
-    <?php include '../../Componenets/Header.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
 </head>
 
 <body>
-    <?php require '../../Componenets/AdminNavbar.php' ?>
-    <?php require '../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
 
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div>
@@ -56,6 +56,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                 <input
                     class="border-[#4fd1c5] bg-white border-2 outline-none rounded-md px-4 py-2 w-[90%]"
                     type="text"
+                    oninput="handleSearch(this.value)"
                     placeholder="Search Vender" />
                 <button onclick="OpenModal()" class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
                     New
@@ -97,7 +98,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                             </th>
                         </tr>
                     </thead>
-                    <tbody id="user-table-body">
+                    <tbody id="vender-table-body">
                     </tbody>
                 </table>
             </div>
@@ -108,7 +109,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         id="myModal"
         tabindex="-1"
         aria-hidden="true"
-        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
         <div class="relative  w-full max-w-md max-h-full bg-white rounded-2xl shadow-lg">
             <div class="relative ">
                 <div
@@ -260,7 +261,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         id="myMessageModal"
         tabindex="-1"
         aria-hidden="true"
-        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
         <div class="relative  w-full max-w-md max-h-full bg-white rounded-2xl shadow-lg">
             <div class="relative ">
                 <div
@@ -336,15 +337,28 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             </form>
         </div>
     </div>
-
     </div>
     <script>
         let AllVender = []
+
+         function handleSearch(searchText) {
+            const query = searchText.toLowerCase().trim();
+
+            const filtered = AllVender.filter(cat =>
+                cat.name.toLowerCase().includes(query)
+            );
+
+            updateTableUI(filtered);
+        }
 
         function OpenModal() {
             document.getElementById('myModal').classList.remove('hidden')
             document.getElementById('myModal').classList.add('flex')
             document.getElementById("formAction").value = "create";
+            setTimeout(() => {
+                document.getElementById('myModal').classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+                document.getElementById('myModal').classList.add("scale-100", "opacity-100", "translate-y-0");
+            }, 10);
         }
 
         function OpenMessageModal(name, email) {
@@ -353,22 +367,42 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             document.getElementById('SendTo').value = email;
             document.getElementById('myMessageModal').classList.remove('hidden')
             document.getElementById('myMessageModal').classList.add('flex')
+
+             setTimeout(() => {
+                document.getElementById('myMessageModal').classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+                document.getElementById('myMessageModal').classList.add("scale-100", "opacity-100", "translate-y-0");
+            }, 10);
         }
 
         function CloseMessageModal() {
-            document.getElementById('myMessageModal').classList.remove('flex')
-            document.getElementById('myMessageModal').classList.add('hidden')
 
-            document.getElementById('VenderMessageForm').reset();
+            const modal = document.getElementById('myMessageModal');
+            modal.classList.remove("scale-100", "opacity-100", "translate-y-0");
+            modal.classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
+            setTimeout(() => {
+                modal.classList.remove("flex");
+                modal.classList.add("hidden");
+                document.getElementById('VenderMessageForm').reset();
+            }, 300);
         }
 
         function CloseModal() {
-            document.getElementById('myModal').classList.remove('flex')
-            document.getElementById('myModal').classList.add('hidden')
-            document.getElementById('VenderForm').reset();
+            const modal = document.getElementById('myModal');
+            modal.classList.remove("scale-100", "opacity-100", "translate-y-0");
+            modal.classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
+            setTimeout(() => {
+                modal.classList.remove("flex");
+                modal.classList.add("hidden");
+                document.getElementById('VenderForm').reset();
+            }, 300);
         }
 
         function OpenEditModal(name, account_no, ifsc_code, mobile, company_name, email, address) {
+            setTimeout(() => {
+                document.getElementById('myModal').classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+                document.getElementById('myModal').classList.add("scale-100", "opacity-100", "translate-y-0");
+            }, 10);
+
             document.getElementById('myModal').classList.remove('hidden')
             document.getElementById('myModal').classList.add('flex')
             document.getElementById("formAction").value = "update";
@@ -386,17 +420,18 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         }
 
         function updateTableUI(value) {
-            const tbody = document.getElementById('user-table-body');
+            const tbody = document.getElementById('vender-table-body');
             tbody.innerHTML = '';
             const row = document.createElement('tr');
 
             if (value.length < 1) {
-                row.innerHTML = '<td colspan="7" class="text-center py-4 text-gray-500"> No Vender are found.</td>'
+                row.innerHTML = '<td colspan="10" id="emptyTable" class="text-center py-4 text-gray-500"> No Vender are found.</td>'
                 tbody.appendChild(row)
 
             } else {
                 value.forEach(value => {
                     const row = document.createElement('tr');
+                    row.id = `row-${value.id}`
                     row.innerHTML = ` <td class="px-6 py-4">${value.id}</td>
                             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${value.name}</td>
                             <td class="px-6 py-4">${value.account_no}</td>
@@ -408,13 +443,14 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                             <td class="px-6 py-4">${value.status}</td>
                              <td class="flex flex-row gap-2 mt-3">
                                 <button 
-                                  onclick="${value.status == 'block' ?  `unblock(${value.id})` :`blockVender(${value.id})` }"
+                                id="auth-${value.id}"
+                                  onclick="${value.status == 'block' ?  `OpenDeleteModal(${value.id})` :`blockVender(${value.id})` }"
                                   class="cursor-pointer text-white ${value.status === 'active' 
                                     ? 'bg-red-500 hover:border-red-500 hover:text-red-500 hover:bg-white' 
                                     : 'bg-green-500 hover:border-green-500 hover:text-green-500 hover:bg-white'} 
                                     border border-transparent font-medium rounded-md text-xs px-5 py-2 transition-colors duration-200 flex flex-row gap-2">
                                 <div id="BlockSpin${value.id}" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-                                 ${value.status === 'active' ? 'Block' : 'Active'}
+                             <span id="authButtonText-${value.id}">    ${value.status === 'active' ? 'Block' : 'Active'} </span>
                                 </button>
                                <button onclick='OpenEditModal(
                                     ${JSON.stringify(value.name)},
@@ -424,14 +460,16 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                                     ${JSON.stringify(value.company_name)},
                                     ${JSON.stringify(value.email)},
                                     ${JSON.stringify(value.address)}
-                                    )' class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
+                                    )' class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
+                                    id="editbutton-${value.id}"
+                                    >
                                      Update
                                 </button>
 
                                 <button onclick="OpenMessageModal(
                                   '${value.name}',
                                   '${value.email}'
-                                )" class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
+                                )" class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md" id="messagebtn-${value.id}">
                                   <svg viewBox="-2 -2.5 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" width="20" height="20">
                                     <path fill="white" d="M9.378 12H17a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1 1 1 0 0 1 1 1v3.013L9.378 12zM3 0h14a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-6.958l-6.444 4.808A1 1 0 0 1 2 18.006V14a2 2 0 0 1-2-2V3a3 3 0 0 1 3-3z"/>
                                    </svg>
@@ -455,45 +493,81 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                 if (data.success) {
                     AllVender = data.vender;
                     updateTableUI(data.vender)
+                } else {
+                    showToast("Server is Down Try again later", "denger")
                 }
             })
         }
 
         function blockVender(id) {
-            document.getElementById(`BlockSpin${id}`).classList.remove('hidden')
-            fetch('/SwiftCart/AJAX/vender_ajax.php', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    action: 'block',
-                    id: id
-                })
+            document.getElementById(`BlockSpin${id}`).classList.remove('hidden');
 
-            }).then((res) => res.json()).then((data) => {
-                if (data.success) {
-                    document.getElementById(`BlockSpin${id}`).classList.add('hidden')
-                    showToast("User Blocked Successfully", "danger");
-                    FetchVender();
-                }
-            })
+            fetch('/SwiftCart/AJAX/vender_ajax.php', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'block',
+                        id: id
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`BlockSpin${id}`).classList.add('hidden');
+                        showToast("User Blocked Successfully", "danger");
+
+                        const row = document.getElementById(`row-${id}`);
+                        row.cells[8].textContent = 'Blocked';
+
+                        let btn = document.getElementById(`auth-${id}`);
+                        btn.setAttribute('onclick', `unblock(${id})`);
+
+                        btn.classList.add(
+                            'bg-green-500',
+                            'hover:border-green-500',
+                            'hover:text-green-500',
+                            'hover:bg-white'
+                        );
+                        document.getElementById(`authButtonText-${id}`).textContent = 'Active';
+                    } else {
+                        showToast("Server is Down Try again later", "denger")
+                    }
+                });
         }
 
         function unblock(id) {
-            document.getElementById(`BlockSpin${id}`).classList.remove('hidden')
+            document.getElementById(`BlockSpin${id}`).classList.remove('hidden');
+
             fetch('/SwiftCart/AJAX/vender_ajax.php', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    action: 'active',
-                    id: id
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        action: 'active',
+                        id: id
+                    })
                 })
-            }).then((res) => res.json()).then((data) => {
-                if (data.success) {
-                    FetchVender();
-                    setTimeout(() => {
-                        document.getElementById(`BlockSpin${id}`).classList.add('hidden')
-                    }, [1000])
-                    showToast("User Unblock Successfully", "success");
-                }
-            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById(`BlockSpin${id}`).classList.add('hidden');
+
+                        const row = document.getElementById(`row-${id}`);
+                        row.cells[8].textContent = 'Active';
+
+                        let btn = document.getElementById(`auth-${id}`);
+                        btn.setAttribute('onclick', `blockVender(${id})`);
+                        document.getElementById(`authButtonText-${id}`).textContent = 'Block';
+                        btn.classList.add(
+                            'bg-red-500',
+                            'hover:border-red-500',
+                            'hover:text-red-500',
+                            'hover:bg-white'
+                        );
+
+
+                        showToast("User Unblocked Successfully", "success");
+                    } else {
+                        showToast("Server is Down Try again later", "denger")
+                    }
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -521,9 +595,56 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     .then((data) => {
                         if (data.success) {
                             showToast("Vendor's account created successfully", "success");
-                            FetchVender()
+                            const emptyTable = document.getElementById('emptyCategorytable');
+                            if (emptyTable) row.remove()
+                            const row = document.createElement('tr');
+                            row.id = `row-${data.data.id}`;
+                            row.innerHTML = `
+                               <td class="px-6 py-4">${data.data.id}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${data.data.name}</td>
+                            <td class="px-6 py-4">${data.data.account_no}</td>
+                            <td class="px-6 py-4">${data.data.ifsc_code}</td>
+                            <td class="px-6 py-4">${data.data.mobile}</td>
+                            <td class="px-6 py-4">${data.data.email}</td>
+                            <td class="px-6 py-4">${data.data.address}</td>
+                            <td class="px-6 py-4">${data.data.company_name}</td>
+                            <td class="px-6 py-4">${data.data.status}</td>
+                             <td class="flex flex-row gap-2 mt-3">
+                                <button 
+                                  onclick="${data.data.status == 'block' ?  `unblock(${data.data.id})` :`blockVender(${data.data.id})` }"
+                                  class="cursor-pointer text-white ${data.data.status === 'active' 
+                                    ? 'bg-red-500 hover:border-red-500 hover:text-red-500 hover:bg-white' 
+                                    : 'bg-green-500 hover:border-green-500 hover:text-green-500 hover:bg-white'} 
+                                    border border-transparent font-medium rounded-md text-xs px-5 py-2 transition-colors duration-200 flex flex-row gap-2">
+                                <div id="BlockSpin${value.id}" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                 ${value.status === 'active' ? 'Block' : 'Active'}
+                                </button>
+                               <button onclick='OpenEditModal(
+                                    ${JSON.stringify(data.data.name)},
+                                    ${JSON.stringify(data.data.account_no)},
+                                    ${JSON.stringify(data.data.ifsc_code)},
+                                    ${JSON.stringify(data.data.mobile)},
+                                    ${JSON.stringify(data.data.company_name)},
+                                    ${JSON.stringify(data.data.email)},
+                                    ${JSON.stringify(data.data.address)}
+                                    )' class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
+                                     Update
+                                </button>
+
+                                <button onclick="OpenMessageModal(
+                                  '${data.data.name}',
+                                  '${data.data.email}'
+                                )" class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
+                                  <svg viewBox="-2 -2.5 24 24" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMin" width="20" height="20">
+                                    <path fill="white" d="M9.378 12H17a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1 1 1 0 0 1 1 1v3.013L9.378 12zM3 0h14a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-6.958l-6.444 4.808A1 1 0 0 1 2 18.006V14a2 2 0 0 1-2-2V3a3 3 0 0 1 3-3z"/>
+                                   </svg>
+                                 </button>
+                                </td>
+                                `;
+                            document.getElementById('vender-table-body').appendChild(row);
+                            AllVender.push(data.data);
                         } else {
-                            showToast("Some error is occured", "danger")
+                            showToast("Server is Down Try again later", "denger")
                         }
                     }).then(() => {
                         spinner.classList.add('hidden');
@@ -548,9 +669,21 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     .then((res) => res.json())
                     .then((data) => {
                         if (data.success) {
-                            showToast("Vender's Details updated successfully", 'success')
+                            showToast("Vender's Details updated successfully", 'success');
+                            const row = document.getElementById(`row-${data.data.id}`);
+                            row.cells[1].textContent = data.data.name
+                            row.cells[2].textContent = data.data.account_no
+                            row.cells[3].textContent = data.data.ifsc_code
+                            row.cells[4].textContent = data.data.mobile
+                            row.cells[5].textContent = data.data.email
+                            row.cells[6].textContent = data.data.address
+                            row.cells[7].textContent = data.data.company_name
+                            const index = AllVender.findIndex(cat => cat.id === data.data.id);
+                            if (index !== -1) {
+                                AllVender[index] = data.data;
+                            }                        
                         } else {
-                            showToast("Some error is occured", "denger")
+                            showToast("Server is Down Try again later", "denger")
                         }
                     }).then(() => {
                         spinner.classList.add('hidden');
@@ -586,7 +719,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                         showToast("Message sent to Vender successfully", "success");
                         form.reset();
                     } else {
-                        showToast("Some error occurred", "denger")
+                        showToast("Server is Down Try again later", "denger")
                         console.log(data)
                     }
                 })

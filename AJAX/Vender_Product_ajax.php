@@ -128,118 +128,117 @@ if ($action == 'upload') {
     }
 } else if ($action == 'create') {
     try {
-        try {
-            if (!isset($_COOKIE['venderToken'])) {
-                throw new Exception("Vender token not found.");
+        if (!isset($_COOKIE['venderToken'])) {
+            throw new Exception("Vender token not found.");
+        }
+
+        $userData = json_decode($_COOKIE['venderToken'], true);
+        $venderid = $userData['id'] ?? null;
+
+        // Fetch required POST values
+        $product_name = $_POST['product_name'] ?? '';
+        $price = $_POST['price'] ?? '';
+        $highlight = $_POST['highlight'] ?? '';
+        $stock = $_POST['stock'] ?? '';
+        $discount = $_POST['discount'] ?? '';
+        $category = $_POST['category'] ?? '';
+        $image = $_POST['image'] ?? '';
+        $product_state = 'requested';
+
+        $info_keys = $_POST['info_key'] ?? $_POST['info_key[]'] ?? [];
+        $info_values = $_POST['info_value'] ?? $_POST['info_value[]'] ?? [];
+
+        // Ensure arrays
+        if (is_string($info_keys)) $info_keys = [$info_keys];
+        if (is_string($info_values)) $info_values = [$info_values];
+
+        $info_array = [];
+        for ($i = 0; $i < count($info_keys); $i++) {
+            $key = trim($info_keys[$i]);
+            $value = trim($info_values[$i]);
+            if ($key !== '') {
+                $info_array[$key] = $value;
             }
+        }
+        $information = json_encode($info_array);
 
-            $userData = json_decode($_COOKIE['venderToken'], true);
-            $venderid = $userData['id'] ?? null;
+        // --- Description (Paragraphs) ---
+        $descValueRaw = $_POST['description'] ?? '';
+        $descValue = json_decode($descValueRaw, true);
 
-            // Fetch required POST values
-            $product_name = $_POST['product_name'] ?? '';
-            $price = $_POST['price'] ?? '';
-            $highlight = $_POST['highlight'] ?? '';
-            $stock = $_POST['stock'] ?? '';
-            $discount = $_POST['discount'] ?? '';
-            $category = $_POST['category'] ?? '';
-            $image = $_POST['image'] ?? '';
-            $product_state = 'requested';
+        if (is_string($descValue)) {
+            $descValue = [$descValue];
+        } elseif (!is_array($descValue)) {
+            $descValue = [];
+        }
 
-            $info_keys = $_POST['info_key'] ?? $_POST['info_key[]'] ?? [];
-            $info_values = $_POST['info_value'] ?? $_POST['info_value[]'] ?? [];
+        $description = [];
+        foreach ($descValue as $i => $para) {
+            $description['para' . $i] = $para;
+        }
+        $description = json_encode($description);
 
-            // Ensure arrays
-            if (is_string($info_keys)) $info_keys = [$info_keys];
-            if (is_string($info_values)) $info_values = [$info_values];
+        // --- Validation ---
+        if (
+            empty($image) || empty($product_name) || empty($price) ||
+            empty($highlight) || empty($stock) || empty($discount) ||
+            empty($category) || empty($information) || empty($description) ||
+            empty($product_state) || empty($venderid)
+        ) {
+            echo json_encode(["success" => false, "message" => "All fields are required"]);
+            return;
+        }
 
-            $info_array = [];
-            for ($i = 0; $i < count($info_keys); $i++) {
-                $key = trim($info_keys[$i]);
-                $value = trim($info_values[$i]);
-                if ($key !== '') {
-                    $info_array[$key] = $value;
-                }
-            }
-            $information = json_encode($info_array);
-
-            // --- Description (Paragraphs) ---
-            $descValueRaw = $_POST['description'] ?? '';
-            $descValue = json_decode($descValueRaw, true);
-
-            if (is_string($descValue)) {
-                $descValue = [$descValue];
-            } elseif (!is_array($descValue)) {
-                $descValue = [];
-            }
-
-            $description = [];
-            foreach ($descValue as $i => $para) {
-                $description['para' . $i] = $para;
-            }
-            $description = json_encode($description);
-
-            // --- Validation ---
-            if (
-                empty($image) || empty($product_name) || empty($price) ||
-                empty($highlight) || empty($stock) || empty($discount) ||
-                empty($category) || empty($information) || empty($description) ||
-                empty($product_state) || empty($venderid)
-            ) {
-                echo json_encode(["success" => false, "message" => "All fields are required"]);
-                return;
-            }
-
-            // --- Insert into DB ---
-            $stmt = $pdo->prepare('
+        // --- Insert into DB ---
+        $stmt = $pdo->prepare('
                     INSERT INTO product (
                         image, venderid, product_name, price, highlight, stock,
                         discount, category, information, description, product_state
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ');
 
-            $success = $stmt->execute([
-                $image,
-                $venderid,
-                $product_name,
-                $price,
-                $highlight,
-                $stock,
-                $discount,
-                $category,
-                $information,
-                $description,
-                $product_state
-            ]);
+        $success = $stmt->execute([
+            $image,
+            $venderid,
+            $product_name,
+            $price,
+            $highlight,
+            $stock,
+            $discount,
+            $category,
+            $information,
+            $description,
+            $product_state
+        ]);
 
-            if ($success) {
-                $userStmt = $pdo->prepare('SELECT email FROM users WHERE id = ?');
-                $userStmt->execute([$venderid]);
-                $user = $userStmt->fetch(PDO::FETCH_ASSOC);
-                $email = $user['email'] ?? null;
+        if ($success) {
+            $userStmt = $pdo->prepare('SELECT email FROM users WHERE id = ?');
+            $userStmt->execute([$venderid]);
+            $user = $userStmt->fetch(PDO::FETCH_ASSOC);
+            $email = $user['email'] ?? null;
 
-                if ($email) {
-                    $mail = new PHPMailer(true);
-                    $mail->isSMTP();
-                    $mail->Host = $_ENV['SMTP_HOST'];
-                    $mail->Port = $_ENV['SMTP_PORT'];
-                    $mail->Username = $_ENV['SMTP_USER'];
-                    $mail->Password = $_ENV['SMTP_PASS'];
-                    $mail->SMTPAuth = true;
-                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            if ($email) {
+                $mail = new PHPMailer(true);
+                $mail->isSMTP();
+                $mail->Host = $_ENV['SMTP_HOST'];
+                $mail->Port = $_ENV['SMTP_PORT'];
+                $mail->Username = $_ENV['SMTP_USER'];
+                $mail->Password = $_ENV['SMTP_PASS'];
+                $mail->SMTPAuth = true;
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-                    $mail->CharSet = 'UTF-8';  
-                    $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
-                    $mail->addAddress($email);
-                    $mail->Subject = "🛒 New Product Created - " . htmlspecialchars($product_name);
-                    $mail->isHTML(true);
+                $mail->CharSet = 'UTF-8';
+                $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+                $mail->addAddress($email);
+                $mail->Subject = "🛒 New Product Created - " . htmlspecialchars($product_name);
+                $mail->isHTML(true);
 
-                    // Secure variables
-                    $encodedName = htmlspecialchars($product_name);
-                    $encodedCategory = htmlspecialchars($category);
-                    $encodedPrice = number_format(floatval($price), 2);
+                // Secure variables
+                $encodedName = htmlspecialchars($product_name);
+                $encodedCategory = htmlspecialchars($category);
+                $encodedPrice = number_format(floatval($price), 2);
 
-                    $mail->Body = "
+                $mail->Body = "
                                     <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
                                         <h2 style=\"color: #4caf50;\">&#128722; Your Product Has Been Submitted!</h2>
                                         <p>Thank you for submitting a new product. Here's a summary of your submission:</p>
@@ -257,21 +256,15 @@ if ($action == 'upload') {
                                     </div>
                                 ";
 
-                    $mail->send();
-                }
+                $mail->send();
             }
-
-
-            echo json_encode([
-                'success' => $success,
-                'action' => 'create'
-            ]);
-        } catch (Exception $e) {
-            echo json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
         }
+
+
+        echo json_encode([
+            'success' => $success,
+            'action' => 'create'
+        ]);
     } catch (Exception $e) {
         echo json_encode([
             "success" => false,
@@ -396,7 +389,7 @@ if ($action == 'upload') {
 
                 $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
                 $mail->addAddress($email);
-                $mail->CharSet = 'UTF-8';  
+                $mail->CharSet = 'UTF-8';
                 $mail->Subject = "✏️ Product Updated - " . htmlspecialchars($product_name);
                 $mail->isHTML(true);
 
@@ -439,63 +432,71 @@ if ($action == 'upload') {
         ]);
     }
 } else if ($action == 'fetch') {
-    $userData = json_decode($_COOKIE['venderToken'], true);
-    $venderid = $userData['id'];
-    $stmt = $pdo->prepare("SELECT * FROM product where venderid=?");
+    try {
+        $userData = json_decode($_COOKIE['venderToken'], true);
+        $venderid = $userData['id'];
+        $stmt = $pdo->prepare("SELECT * FROM product where venderid=?");
 
-    $stmt->execute([$venderid]);
-    $product = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute([$venderid]);
+        $product = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode([
-        'product' => $product,
-        'success' => true
-    ]);
-} else if ($action == 'delete') {
-    $productid = $_POST['id'];
-    $venderid = $_POST['venderid'];
-
-    // Fetch product
-    $stmt = $pdo->prepare('SELECT * FROM product WHERE id = ?');
-    $stmt->execute([$productid]);
-    $product = $stmt->fetch(PDO::FETCH_ASSOC); // only one product
-
-    if (!$product) {
+        echo json_encode([
+            'product' => $product,
+            'success' => true
+        ]);
+    } catch (Exception $e) {
         echo json_encode([
             'success' => false,
-            'notfound' => true
+            'error' => $e->getMessage()
         ]);
-        exit;
     }
+} else if ($action == 'delete') {
+    try {
+        $productid = $_POST['id'];
+        $venderid = $_POST['venderid'];
 
-    // Delete image
-    DeleteImage($product['image']); // assumes function exists
+        // Fetch product
+        $stmt = $pdo->prepare('SELECT * FROM product WHERE id = ?');
+        $stmt->execute([$productid]);
+        $product = $stmt->fetch(PDO::FETCH_ASSOC); // only one product
 
-    // Delete from DB
-    $stmt = $pdo->prepare('DELETE FROM product WHERE id = ?');
-    $success = $stmt->execute([$productid]);
+        if (!$product) {
+            echo json_encode([
+                'success' => false,
+                'notfound' => true
+            ]);
+            exit;
+        }
 
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = $_ENV['SMTP_HOST'];
-    $mail->Port = $_ENV['SMTP_PORT'];
-    $mail->Username = $_ENV['SMTP_USER'];
-    $mail->Password = $_ENV['SMTP_PASS'];
-    $mail->SMTPAuth = true;
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        // Delete image
+        DeleteImage($product['image']); // assumes function exists
 
-    $mail->CharSet = 'UTF-8';  
-    $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
-    $mail->addAddress($email);
-    $mail->Subject = "🗑️ Product Deleted - " . htmlspecialchars($product['name']);
-    $mail->isHTML(true);
+        // Delete from DB
+        $stmt = $pdo->prepare('DELETE FROM product WHERE id = ?');
+        $success = $stmt->execute([$productid]);
 
-    // Sanitize and format values
-    $productName = htmlspecialchars($product['name']);
-    $category = htmlspecialchars($product['category']);
-    $price = number_format(floatval($product['price']), 2);
-    $description = htmlspecialchars($product['description']);
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host = $_ENV['SMTP_HOST'];
+        $mail->Port = $_ENV['SMTP_PORT'];
+        $mail->Username = $_ENV['SMTP_USER'];
+        $mail->Password = $_ENV['SMTP_PASS'];
+        $mail->SMTPAuth = true;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-    $mail->Body = "
+        $mail->CharSet = 'UTF-8';
+        $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+        $mail->addAddress($email);
+        $mail->Subject = "🗑️ Product Deleted - " . htmlspecialchars($product['name']);
+        $mail->isHTML(true);
+
+        // Sanitize and format values
+        $productName = htmlspecialchars($product['name']);
+        $category = htmlspecialchars($product['category']);
+        $price = number_format(floatval($product['price']), 2);
+        $description = htmlspecialchars($product['description']);
+
+        $mail->Body = "
             <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
                 <h2 style=\"color: #e53935;\">&#128465; Product Deleted</h2>
                 <p>We want to inform you that the following product has been <strong>removed</strong> from the SwiftCart platform:</p>
@@ -514,8 +515,14 @@ if ($action == 'upload') {
         ";
 
 
-    echo json_encode([
-        'success' => $success,
-        'action' => 'delete'
-    ]);
+        echo json_encode([
+            'success' => $success,
+            'action' => 'delete'
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
 }

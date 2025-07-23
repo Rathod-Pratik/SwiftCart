@@ -5,79 +5,80 @@ header('Content-Type: application/json');
 $action = $_POST['action'] ?? '';
 
 if ($action == 'fetch') {
-    $categories = $pdo->query("SELECT * FROM category ORDER BY id
+    try {
+        $categories = $pdo->query("SELECT * FROM category ORDER BY id
       DESC")->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode([
-        'success' => true,
-        'action' => 'fetch',
-        'categories' => $categories
-    ]);
-    exit;
-}
-
-if ($action === 'create') {
+        echo json_encode([
+            'success' => true,
+            'action' => 'fetch',
+            'categories' => $categories
+        ]);
+        exit;
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit();
+    }
+} else if ($action === 'create') {
     $name = $_POST['name'] ?? '';
     $desc = $_POST['description'] ?? '';
+    $image = $_POST['image'] ?? '';
 
-    if ($name) {
-        try {
-            $stmt = $pdo->prepare("INSERT INTO category (name, description) VALUES (?, ?)");
-            $stmt->execute([$name, $desc]);
-            $id = $pdo->lastInsertId();
+    try {
+        $stmt = $pdo->prepare("INSERT INTO category (name, description,image) VALUES (?, ?, ?)");
+        $stmt->execute([$name, $desc, $image]);
+        $id = $pdo->lastInsertId();
 
-            $_SESSION["message"] = "Category created successfully";
-            $_SESSION["msg_type"] = "success";
-
-            echo json_encode([
-                'success' => true,
-            ]);
-        } catch (PDOException $e) {
-            $_SESSION["message"] = "Failed to create category: ";
-            $_SESSION["msg_type"] = "danger";
-        }
-        exit;
-    }
-}
-if ($action === 'update') {
-    $id = $_POST['id'] ?? '';
-    $name = $_POST['name'] ?? '';
-    $desc = $_POST['description'] ?? '';
-    if ($id && $name) {
-        try {
-            $stmt = $pdo->prepare("UPDATE category SET name = ?, description = ? WHERE id = ?");
-            $stmt->execute([$name, $desc, $id]);
-
-              echo json_encode([
-                'success' => true,
-            ]);
-
-            $_SESSION["message"] = "Category Updated successfully";
-            $_SESSION["msg_type"] = "success";
-        } catch (PDOException $e) {
-            $_SESSION["message"] = "Failed to Update category: ";
-            $_SESSION["msg_type"] = "danger";
-        }
+        echo json_encode([
+            'success' => true,
+            'create' => true,
+            'data' => [
+                'id' => $id,
+                'name' => $name,
+                'description' => $desc,
+                'image' => $image
+            ]
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit();
     }
     exit;
-}
-if ($action === 'delete') {
-    $id = $_POST['id'] ?? '';
-    if ($id) {
-        try {
-            $stmt = $pdo->prepare("DELETE FROM category WHERE id = ?");
-            $stmt->execute([$id]);
+} else if ($action === 'update') {
+    try {
+        $id = $_POST['id'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $desc = $_POST['description'] ?? '';
+        $image = $_POST['image'];
+        $stmt = $pdo->prepare("UPDATE category SET name = ?, description = ? , image =? WHERE id = ?");
+        $stmt->execute([$name, $desc, $image, $id]);
 
-               echo json_encode([
-                'success' => true,
-            ]);
+        echo json_encode([
+            'success' => true,
+            'update' => true,
+            'data'=> [
+                'name' => $name,
+                'image' => $image,
+                'description' => $desc,
+                'id'=>$id
+            ]
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit();
+    }
+} else if ($action === 'delete') {
+    try {
+        $id = $_POST['id'] ?? '';
+        $stmt = $pdo->prepare("DELETE FROM category WHERE id = ?");
+        $stmt->execute([$id]);
 
-            $_SESSION["message"] = "Category Deleted successfully";
-            $_SESSION["msg_type"] = "success";
-        } catch (PDOException $e) {
-            $_SESSION["message"] = "Failed to Delete category";
-            $_SESSION["msg_type"] = "danger";
-        }
-        exit;
+        echo json_encode([
+            'success' => true,
+            'delete' => true
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit();
     }
 }

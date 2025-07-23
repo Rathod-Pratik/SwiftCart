@@ -1,4 +1,4 @@
-<?php include '../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,12 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopizo | Admin</title>
-    <?php include '../../Componenets/Header.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
 </head>
 
 <body>
-    <?php require '../../Componenets/AdminNavbar.php' ?>
-    <?php require '../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
 
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div>
@@ -71,7 +71,52 @@
             updateTableUI(filtered)
         }
 
+        function updateTableUI(users) {
+            const tbody = document.getElementById("user-table-body");
+            tbody.innerHTML = '';
+            if (users.length < 1) {
+                 const row = document.createElement("tr");
+                row.innerHTML = '<td colspan="7" class="text-center py-4 text-gray-500"> No Users are found.</td>'
+                tbody.appendChild(row)
+
+            } else {
+                users.forEach(user => {
+                    const row = document.createElement("tr");
+                    row.id = user.id;
+
+                    row.innerHTML = `
+                <td class="px-6 py-4">${user.id}</td>
+                <td class="px-6 py-4">${user.name}</td>
+                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${user.email}</th>
+                <td class="px-6 py-4">${user.address ?? '-'}</td>
+                <td class="px-6 py-4">${user.mobile ?? '-'}</td>
+                <td class="px-6 py-4">${user.status}</td>
+                <td class="px-6 py-4">
+                    ${user.status === 'active'
+                        ? `<button onclick="BlockUser(${user.id})"
+                        id='button-${user.id}'
+                            class="cursor-pointer gap-2 text-white flex items-center justify-center bg-red-500 border border-transparent hover:border-red-500 hover:text-red-500 hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
+                             <div id='row-${user.id}' class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                            Block
+                          </button>`
+                        : `<button onclick="ActiveUser(${user.id})"
+                        id='button-${user.id}'
+                            class="cursor-pointer text-white gap-2 flex items-center justify-center bg-green-500 border border-transparent hover:border-green-500 hover:text-green-500 hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
+                              <div id='row-${user.id}' class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                            Active
+                          </button>`
+                    }
+                        </td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
         function ActiveUser(id) {
+            document.getElementById(`row-${id}`).classList.remove('hidden')
+            document.getElementById(`button-${id}`).disabled = true
             fetch('/SwiftCart/AJAX/user_ajax.php', {
                     method: "POST",
                     headers: {
@@ -84,12 +129,27 @@
                 }).then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        FetchUser();
+                        const row = document.getElementById(id);
+                        row.cells[5].textContent = 'active';
+                        row.cells[6].innerHTML = `
+                            <button onclick="BlockUser(${id})"
+                            id='button-${id}'
+                                class="cursor-pointer gap-2 text-white flex items-center justify-center bg-red-500 border border-transparent hover:border-red-500 hover:text-red-500 hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
+                                <div id='row-${id}' class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                                Block
+                            </button>`;
+
+                        const user = allUser.find(u => u.id === id);
+                        if (user) user.status = 'active';
+                    } else {
+                        showToast("Server is Down Try again later", "denger")
                     }
                 });
         }
 
         function BlockUser(id) {
+            document.getElementById(`row-${id}`).classList.remove('hidden')
+            document.getElementById(`button-${id}`).disabled = true
             fetch('/SwiftCart/AJAX/user_ajax.php', {
                     method: "POST",
                     headers: {
@@ -102,7 +162,21 @@
                 }).then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        FetchUser();
+                        const row = document.getElementById(id);
+                        row.cells[5].textContent = 'blocked';
+                        row.cells[6].innerHTML = `
+                        <button onclick="ActiveUser(${id})"
+                        id='button-${id}'
+                            class="cursor-pointer text-white flex gap-2 items-center justify-center bg-green-500 border border-transparent hover:border-green-500 hover:text-green-500 hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
+                            <div id='row-${id}' class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                            Active
+                        </button>`;
+
+                        // update in allUser array too
+                        const user = allUser.find(u => u.id === id);
+                        if (user) user.status = 'blocked';
+                    } else {
+                        showToast("Server is Down Try again later", "denger")
                     }
                 })
         }
@@ -116,54 +190,13 @@
                     body: 'action=fetch'
                 }).then(res => res.json())
                 .then(data => {
-                    console.log(data)
                     if (data.success) {
                         allUser = data.users;
                         updateTableUI(data.users);
+                    } else {
+                        showToast("Server is Down Try again later", "denger")
                     }
                 });
-        }
-
-        function updateTableUI(user) {
-            const tbody = document.getElementById('user-table-body');
-            tbody.innerHTML = '';
-            const row = document.createElement('tr');
-            if (user.length < 1) {
-                row.innerHTML='<td colspan="7" class="text-center py-4 text-gray-500"> No Users are found.</td>'
-                tbody.appendChild(row)
-
-            } else {
-                user.forEach(user => {
-                    row.innerHTML = `
-        <td class="px-6 py-4">${user.id}</td>
-        <td class="px-6 py-4">${user.name}</td>
-        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${user.email}</th>
-        <td class="px-6 py-4">${user.address == null ? '-' : user.address}</td>
-        <td class="px-6 py-4">${user.mobile === null ? '-' : user.mobile}</td>
-        <td class="px-6 py-4">${user.status}</td>
-        ${
-            user.status === 'active'
-                ? `<td class="px-6 py-4">
-                    <button 
-                    onclick="BlockUser(${user.id})"
-                    class="text-white flex items-center justify-center bg-red-500 border border-transparent hover:border-red-500  hover:text-red-500 hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
-                        Block
-                    </button>
-                  </td>`
-                : `<td class="px-6 py-4">
-                    <button 
-                    onclick="ActiveUser(${user.id})"
-                    class="text-white flex items-center justify-center bg-green-500 border border-transparent  hover:border-green-500 hover:text-green-500 hover:bg-white focus:outline-none font-medium rounded-lg  text-sm px-5 py-2.5 text-center transition-colors duration-200">
-                        Active
-                    </button>
-                  </td>`
-        }
-    `;
-
-                    tbody.appendChild(row);
-                });
-
-            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {

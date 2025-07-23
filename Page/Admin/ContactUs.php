@@ -1,4 +1,4 @@
-<?php include '../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ .'/../../Componenets/AdminAuth.php' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,11 +6,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopizo | Admin</title>
-    <?php include '../../Componenets/Header.php'; ?>
+    <?php include __DIR__ .'/../../Componenets/Header.php'; ?>
 </head>
 <body>
-    <?php require '../../Componenets/AdminNavbar.php' ?>
-    <?php require '../../Componenets/AdminSideBar.php'?>
+    <?php require __DIR__ .'/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ .'/../../Componenets/AdminSideBar.php'?>
 
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
             <div class="flex justify-evenly gap-3 mb-6">

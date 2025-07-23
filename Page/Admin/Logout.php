@@ -1,4 +1,4 @@
-<?php include '../../Componenets/Header.php'; ?>
+<?php include __DIR__ .'/../../Componenets/Header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +7,8 @@
     <title>Shopizo | Admin</title>
 </head>
 <body>
-    <?php require '../../Componenets/AdminNavbar.php' ?>
-    <?php require '../../Componenets/AdminSideBar.php'?>
+    <?php require __DIR__ .'/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ .'/../../Componenets/AdminSideBar.php'?>
 
     <div class="p-4 sm:ml-64 pt-20">
     <h2 class="bg-blue-200">This is Logout</h2>

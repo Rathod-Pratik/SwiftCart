@@ -1,7 +1,6 @@
 <?php
-session_start();
-require '../../Database/Function.php';        // Database connection
-require '../../Database/db.php';  // Utility functions
+require __DIR__ . '/../../Database/Function.php';        // Database connection
+require __DIR__ . '/../../Database/db.php';  // Utility functions
 
 $tableName = 'users';
 
@@ -21,102 +20,6 @@ $createSQL = " CREATE TABLE IF NOT EXISTS users (
 );";
 
 checkAndCreateTable($pdo, $tableName, $createSQL);
-
-
-function Login($pdo, $email, $password)
-{
-    // 1. Check if user exists
-    $checkSql = "SELECT * FROM users WHERE email = :email";
-    $checkStmt = $pdo->prepare($checkSql);
-    $checkStmt->execute([':email' => $email]);
-    $user = $checkStmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$user) {
-        $_SESSION['message'] = "User not found with this email.";
-        $_SESSION['msg_type'] = "danger";
-        header("Location: Login.php");
-        exit();
-    }
-
-    // 2. Verify password
-    if (!password_verify($password, $user['password'])) {
-        $_SESSION['message'] = "Incorrect password.";
-        $_SESSION['msg_type'] = "danger";
-        header("Location: Login.php");
-        exit();
-    }
-
-    // 3. Set secure cookie (excluding raw password)
-    $userData = [
-        'id' => $user['id'],
-        'email' => $user['email'],
-        'userType' => $user['userType'],
-        'password' => $user['password']
-    ];
-    $_SESSION['login'] = true;
-
-    if ($user['usertype'] == 'customer') {
-        setcookie("authToken", json_encode($userData), [
-            'expires' => time() + 86400,
-            'path' => '/',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-
-        $_SESSION['message'] = "Login successful.";
-        $_SESSION['msg_type'] = "success";
-
-        // 4. Set success message
-        header("Location: /SwiftCart/Page/Home/Home.php");
-        exit();
-    } elseif ($user['usertype'] == 'admin') {
-        setcookie("AdminToken", json_encode($userData), [
-            'expires' => time() + 86400,
-            'path' => '/',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-        $_SESSION['userType'] = 'admin';
-        $_SESSION['message'] = "Login successful.";
-        $_SESSION['msg_type'] = "success";
-
-        // 4. Set success message
-        header("Location: /SwiftCart/Page/Admin/DashBoard.php");
-        exit();
-    } else {
-        setcookie("venderToken", json_encode($userData), [
-            'expires' => time() + 86400,
-            'path' => '/',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
-        $_SESSION['userType'] = 'vender';
-        $_SESSION['message'] = "Login successful.";
-        $_SESSION['msg_type'] = "success";
-        header("Location: /SwiftCart/Page/Vender/DashBoard.php");
-        exit();
-    }
-
-
-    $_SESSION['message'] = "Login successful.";
-    $_SESSION['msg_type'] = "success";
-}
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['Email'];
-    $password = $_POST['Password'];
-    // Validate password length
-    if (strlen($password) < 8) {
-        $_SESSION['message'] = "Password must be at least 8 characters long.";
-        $_SESSION['msg_type'] = "danger";
-        return;
-    }
-
-    Login($pdo, $email, $password);
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -128,13 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-    <?php include '../../Componenets/Header.php'; ?>
-    <?php include '../../Componenets/Navbar.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Navbar.php'; ?>
     <div class="min-h-[80vh] bg-[#e6f0f1] text-gray-900 flex justify-center">
         <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
             <div class="flex-1 bg-[#b8d8da] text-center hidden lg:flex">
                 <div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-                    style="background-image: url('../../Image/Login.webp');">
+                    style="background-image: url('/SwiftCart/Image/Login.webp');">
                 </div>
             </div>
             <div class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
@@ -143,13 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Login Now
                     </h1>
                     <div class="w-full flex-1 mt-8">
-                        <form class="mx-auto my-auto max-w-xs" method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
+                        <form class="mx-auto my-auto max-w-xs" method="POST" id="login">
+                            <input type="hidden" value="login" name="action">
                             <input
-                                name="Email"
+                                name="email"
                                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white"
                                 type="email" placeholder="Email" />
                             <input
-                                name="Password"
+                                name="password"
                                 class="w-full px-8 py-4 rounded-lg font-medium bg-gray-100 border border-gray-200 placeholder-gray-500 text-sm focus:outline-none focus:border-gray-400 focus:bg-white mt-5"
                                 type="password" placeholder="Password" />
                             <button
@@ -162,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </button>
                             <p class="mt-6 text-xs text-gray-600 text-center">
                                 Don't have Account ?
-                                <a href="./SignUp.php" class="border-b border-gray-500 border-dotted">
+                                <a href="/SwiftCart/signup" class="border-b border-gray-500 border-dotted">
                                     Sign Up
                                 </a>
                                 now
@@ -173,7 +77,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-    <?php include '../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <script>
+        document.getElementById('login').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const forData = new FormData(form);
+
+            fetch('/SwiftCart/AJAX/Auth.php', {
+                method: "POST",
+                body: forData,
+                credentials: "same-origin"
+            }).then(res => res.json()).then((res) => {
+                if (res.success == false && res.notfound == true) {
+                    showToast("User not exist with this email", 'denger')
+                    return;
+                }
+                if (res.success == false && res.incurrect == true) {
+                    showToast("Please Enter currect Password", 'denger')
+                    return;
+                }
+                if (res.success == true) {
+                    showToast("Login successfully", 'success')
+
+                    setTimeout(() => {
+                        if (res.redirect == 'customer') {
+                            window.location.href = '/SwiftCart/home';
+                        }
+                        if (res.redirect == 'admin') {
+                            window.location.href = '/SwiftCart/admin/dashboard';
+                        }
+                        if (res.redirect == 'vender') {
+                            window.location.href = '/SwiftCart/vender/dashboard';
+                        }
+                    }, 1500);
+                }
+            })
+
+
+        })
+    </script>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 <?php
 
-require '../../Database/db.php';
-require '../../Database/Function.php';
+require __DIR__ .'/../../Database/db.php';
+require __DIR__ .'/../../Database/Function.php';
 
 $table = 'product';
 
@@ -31,12 +31,12 @@ checkAndCreateTable($pdo, $table, $createSQL);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vender | Product</title>
-  <?php include '../../Componenets/Header.php'; ?>
+  <?php include __DIR__ .'/../../Componenets/Header.php'; ?>
 </head>
 
 <body>
-  <?php require '../../Componenets/VenderNavbar.php' ?>
-  <?php require '../../Componenets/VenderSideBar.php' ?>
+  <?php require __DIR__ .'/../../Componenets/VenderNavbar.php' ?>
+  <?php require __DIR__ .'/../../Componenets/VenderSideBar.php' ?>
 
   <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
     <div class="flex justify-evenly gap-3 mb-6">

@@ -9,7 +9,7 @@ echo '
    <div class="h-full px-3 pb-4 overflow-y-auto">
       <ul class="space-y-2 font-medium text-sm">
          <li>
-            <a href="/SwiftCart/Page/Admin/DashBoard.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('DashBoard.php').'">
+            <a href="/SwiftCart/admin/dashboard" class="flex items-center p-2 rounded-xl transition-all '.isActive('DashBoard.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/>
@@ -19,7 +19,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/Categories.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('Categories.php').'">
+            <a href="/SwiftCart/admin/categories" class="flex items-center p-2 rounded-xl transition-all '.isActive('Categories.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <rect x="3" y="3" width="7" height="7"/>
@@ -32,7 +32,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/Products.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('Products.php').'">
+            <a href="/SwiftCart/admin/products" class="flex items-center p-2 rounded-xl transition-all '.isActive('Products.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M12 2l9 4.5v11L12 22l-9-4.5v-11L12 2z"/>
@@ -42,7 +42,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/Order.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('Order.php').'">
+            <a href="/SwiftCart/admin/order" class="flex items-center p-2 rounded-xl transition-all '.isActive('Order.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M3 7h18M3 12h18M3 17h18"/>
@@ -52,7 +52,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/User.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('User.php').'">
+            <a href="/SwiftCart/admin/users" class="flex items-center p-2 rounded-xl transition-all '.isActive('User.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 000 7.75"/>
@@ -62,7 +62,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/Vender.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('Vender.php').'">
+            <a href="/SwiftCart/admin/venders" class="flex items-center p-2 rounded-xl transition-all '.isActive('Vender.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <circle cx="12" cy="12" r="10"/>
@@ -73,7 +73,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/Rating.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('Rating.php').'">
+            <a href="/SwiftCart/admin/Rating" class="flex items-center p-2 rounded-xl transition-all '.isActive('Rating.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/>
@@ -83,7 +83,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/ContactUs.php" class="flex items-center p-2 rounded-xl transition-all '.isActive('ContactUs.php').'">
+            <a href="/SwiftCart/admin/Contact" class="flex items-center p-2 rounded-xl transition-all '.isActive('ContactUs.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M21 10a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 9h6v6H9z"/>
@@ -93,7 +93,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/Page/Admin/logout.php" class="flex items-center p-2 rounded-xl transition-all  '.isActive('logout.php').'">
+            <a href="/SwiftCart/admin/logout" class="flex items-center p-2 rounded-xl transition-all  '.isActive('logout.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"/>

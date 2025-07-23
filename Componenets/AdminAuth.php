@@ -1,9 +1,15 @@
 <?php
-// session_start();
-// if (!isset($_SESSION['login']) || $_SESSION['login'] !== true && !isset($_SESSION['userType']) || $_SESSION['userType'] !== 'admin') {
-//     $_SESSION['message'] = "Please login again.";
-//     $_SESSION['msg_type'] = "denger";
-//     header('Location: /SwiftCart/Page/Auth/Login.php');
-//     exit;
-// } 
-?>
+if (isset($_COOKIE['AdminToken'])) {
+    $userData = json_decode($_COOKIE['AdminToken'], true); // true = return associative array
+    $userType = $userData['userType'];
+
+    // Example: Redirect if not vendor
+    if ($userType !== 'admin') {
+        header('Location: /SwiftCart/login');
+        exit();
+    }
+} else {
+    // Cookie not set — redirect to login
+    header('Location: /SwiftCart/login');
+    exit();
+}

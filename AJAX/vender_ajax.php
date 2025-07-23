@@ -13,8 +13,8 @@ $dotenv->load();
 
 $mail = new PHPMailer(true);
 
-try {
-    if ($action == 'create') {
+if ($action == 'create') {
+    try {
         $name = $_POST['name'];
         $account_no = $_POST['account_no'];
         $ifsc_code = $_POST['ifsc_code'];
@@ -106,19 +106,31 @@ try {
 
         $mail->send();
 
+        $id = $pdo->lastInsertId();
+
         echo json_encode([
             'success' => $success,
             'action' => 'create',
-            'name' => $name,
-            'account_no' => $account_no,
-            'ifsc_code' => $ifsc_code,
-            'mobile' => $mobile,
-            'email' => $email,
-            'address' => $address,
-            'company_name' => $company_name,
-            'password' => $password
+            'data' => [
+                'id' => $id,
+                'name' => $name,
+                'account_no' => $account_no,
+                'ifsc_code' => $ifsc_code,
+                'mobile' => $mobile,
+                'email' => $email,
+                'address' => $address,
+                'company_name' => $company_name,
+                'password' => $password
+            ]
         ]);
-    } elseif ($action === 'update') {
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+} elseif ($action === 'update') {
+    try {
         $name = $_POST['name'];
         $account_no = $_POST['account_no'];
         $ifsc_code = $_POST['ifsc_code'];
@@ -190,12 +202,30 @@ try {
             $mail->send();
         }
 
-
+        $id = $pdo->lastInsertId();
         echo json_encode([
             'success' => $success,
-            'action' => 'update'
+            'action' => 'update',
+            'data' => [
+                'id' => $id,
+                'name' => $name,
+                'account_no' => $account_no,
+                'ifsc_code' => $ifsc_code,
+                'mobile' => $mobile,
+                'email' => $email,
+                'address' => $address,
+                'company_name' => $company_name,
+                'password' => $password
+            ]
         ]);
-    } elseif ($action == 'block') {
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+} elseif ($action == 'block') {
+    try {
         $id = $_POST['id'];
         $block = $pdo->prepare("UPDATE users SET status ='block' WHERE id = :id");
 
@@ -240,7 +270,14 @@ try {
             'success' => $success,
             'action' => 'block'
         ]);
-    } elseif ($action == 'active') {
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+} elseif ($action == 'active') {
+    try {
         $id = $_POST['id'];
         $active = $pdo->prepare("UPDATE users SET status ='active' WHERE id = :id");
 
@@ -285,7 +322,14 @@ try {
             'success' => $success,
             'action' => 'active'
         ]);
-    } elseif ($action == 'message') {
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+} elseif ($action == 'message') {
+    try {
         $email = $_POST['SendTo'];
         $reason = $_POST['Subject'];
         $userMessage = $_POST['message'];
@@ -302,7 +346,14 @@ try {
             'success' => $success,
             'action' => 'message'
         ]);
-    } elseif ($action == 'fetch') {
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
+    }
+} elseif ($action == 'fetch') {
+    try {
         $vender = $pdo->query("SELECT * FROM users WHERE userType='vender' ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode([
             'success' => true,
@@ -310,10 +361,10 @@ try {
             'vender' => $vender
         ]);
         exit;
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'error' => $e->getMessage()
+        ]);
     }
-} catch (Exception $e) {
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ]);
 }

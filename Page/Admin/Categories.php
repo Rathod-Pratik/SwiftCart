@@ -1,13 +1,14 @@
-<?php include '../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?>
 
 <?php
-require '../../Database/Function.php';        // Database connection
-require '../../Database/db.php';  // Utility functions
+require __DIR__ . '/../../Database/Function.php';        // Database connection
+require __DIR__ . '/../../Database/db.php';  // Utility functions
 
 $tableName = 'category';
 
 $createSQL = "
     CREATE TABLE IF NOT EXISTS category (
+        image Text,
         id SERIAL PRIMARY KEY,
         name VARCHAR(100),
         description VARCHAR(150),
@@ -26,15 +27,15 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shopizo | Admin</title>
-    <?php include '../../Componenets/Header.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
 </head>
 <script>
 
 </script>
 
 <body>
-    <?php require '../../Componenets/AdminNavbar.php' ?>
-    <?php require '../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
 
     <div id="Categories" class="backdrop-blur-1 p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div class="flex justify-evenly gap-3 mb-6">
@@ -56,10 +57,10 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                 <thead class="text-xs text-[#a0aec0] uppercase bg-gray-50">
                     <tr>
                         <th scope="col" class="px-6 py-3">Id</th>
+                        <th scope="col" class="px-6 py-3">Image</th>
                         <th scope="col" class="px-6 py-3">Name</th>
                         <th scope="col" class="px-6 py-3">Description</th>
-                        <th scope="col" class="px-6 py-3">Edit</th>
-                        <th scope="col" class="px-6 py-3">Delete</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody id="category-table-body">
@@ -72,7 +73,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
     <div
         id="popup-modal"
         tabindex="-1"
-        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-lg shadow-sm">
                 <button
@@ -134,12 +135,11 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         </div>
     </div>
 
-    <!-- Modal for Create/Update Category -->
     <div
         id="myModal"
         tabindex="-1"
         aria-hidden="true"
-        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full   rounded-2xl shadow-lg transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
         <div class="relative p-4 w-full max-w-md max-h-full">
             <div class="relative bg-white rounded-2xl shadow-lg">
                 <div
@@ -174,11 +174,21 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     <input type="hidden" name="id" id="edit_id" />
                     <div class="grid gap-4 mb-4 grid-cols-2">
                         <div class="col-span-2">
+
+                            <div class="flex flex-col items-center gap-4">
+                                <label for="imageInput" class="w-full h-64 border-2 border-dashed border-[#4fd1c5] flex justify-center items-center overflow-hidden rounded-lg cursor-pointer">
+                                    <img id="imagePreview" src="" alt="Preview" class="max-h-full object-contain hidden" />
+                                    <span id="imagePlaceholder" class="text-gray-400">Select image</span>
+                                </label>
+                                <input type="file" name="image" id="imageInput" accept="image/*" class="hidden" />
+                            </div>
+                        </div>
+                        <div class="col-span-2">
                             <label
                                 for="name"
                                 class="block mb-2 text-sm font-medium textcolor">Name</label>
                             <input
-                                required=""
+                                required
                                 type="text"
                                 name="name"
                                 id="modal_name"
@@ -190,7 +200,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                                 for="description"
                                 class="block mb-2 text-sm font-medium textcolor">Description</label>
                             <textarea
-                                required=""
+                                required
                                 name="description"
                                 id="modal_description"
                                 rows="4"
@@ -200,7 +210,6 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     </div>
                     <button
                         type="submit"
-                        onclick="handleModalSubmit()"
                         id="modalSubmitBtn"
                         class="text-white cursor-pointer inline-flex items-center gap-2 bg-[#4fd1c5] hover:border hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200">
 
@@ -217,7 +226,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
     </div>
 
     <script>
-        let deleteCategoryId = null;
+        let deleteCategoryId;
         let allCategories = [];
 
         function handleSearch(searchText) {
@@ -225,22 +234,68 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
             const filtered = allCategories.filter(cat =>
                 cat.name.toLowerCase().includes(query)
-                //  ||
-                // cat.description.toLowerCase().includes(query)
             );
 
             updateTableUI(filtered);
         }
 
+        let file;
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePlaceholder = document.getElementById('imagePlaceholder');
+        const deleteImageBtn = document.getElementById('deleteImageBtn');
+
+        imageInput.addEventListener('change', function() {
+            file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    imagePlaceholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
         function openModal() {
+            const modal = document.getElementById("myModal");
+
+            // Reset form
             document.getElementById("categoryForm").reset();
             document.getElementById("formAction").value = "create";
-            document.getElementById("modalTitle").textContent =
-                "Create New Category";
+            document.getElementById("modalTitle").textContent = "Create New Category";
             document.getElementById("modalBtnText").textContent = "Create";
             document.getElementById("edit_id").value = "";
-            document.getElementById("myModal").classList.remove("hidden");
-            document.getElementById("myModal").classList.add("flex");
+
+            // Show modal
+            modal.classList.remove("hidden");
+            modal.classList.add("flex");
+
+            // Animate drop popup effect
+            setTimeout(() => {
+                modal.classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+                modal.classList.add("scale-100", "opacity-100", "translate-y-0");
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("myModal");
+
+            // Animate out (back to initial state)
+            modal.classList.remove("scale-100", "opacity-100", "translate-y-0");
+            modal.classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
+            file = null;
+
+            // After transition ends, hide the modal
+            setTimeout(() => {
+                modal.classList.remove("flex");
+                modal.classList.add("hidden");
+
+                document.getElementById("categoryForm").reset();
+                document.getElementById('imagePreview').classList.add('hidden');
+                document.getElementById('imagePlaceholder').classList.remove('hidden');
+            }, 300);
         }
 
         function OpenDeleteModal(id, name) {
@@ -250,27 +305,35 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
             ).textContent = `Are you sure you want to delete ${name} Category?`;
             document.getElementById("popup-modal").classList.remove("hidden");
             document.getElementById("popup-modal").classList.add("flex");
+            setTimeout(() => {
+                document.getElementById("popup-modal").classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+                document.getElementById("popup-modal").classList.add("scale-100", "opacity-100", "translate-y-0");
+            }, 10);
         }
 
         function CloseDeleteModal() {
-            document.getElementById("popup-modal").classList.add("hidden");
+            document.getElementById("popup-modal").classList.remove("scale-100", "opacity-100", "translate-y-0");
+            document.getElementById("popup-modal").classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
+            deleteCategoryId = null
+            setTimeout(() => {
+                document.getElementById("popup-modal").classList.remove("flex");
+                document.getElementById("popup-modal").classList.add("hidden");
+            }, 300);
         }
 
-        function openEditModal(id, name, description) {
-            document.getElementById("myModal").classList.remove("hidden");
-            document.getElementById("myModal").classList.add("flex");
+        function openEditModal(id, name, description, image) {
+            openModal()
             document.getElementById("formAction").value = "update";
             document.getElementById("modalTitle").textContent = "Edit Category";
             document.getElementById("modalBtnText").textContent = "Update";
+            imagePreview.src = image;
+            imagePreview.classList.remove('hidden');
+            imagePlaceholder.classList.add('hidden');
             document.getElementById("edit_id").value = id;
             document.getElementById("modal_name").value = name;
             document.getElementById("modal_description").value = description;
         }
 
-        function closeModal() {
-            document.getElementById("myModal").classList.remove("flex");
-            document.getElementById("myModal").classList.add("hidden");
-        }
 
         function fetchCategories() {
             fetch('/SwiftCart/AJAX/category_ajax.php', {
@@ -292,9 +355,10 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         function updateTableUI(categories) {
             const tbody = document.getElementById('category-table-body');
             tbody.innerHTML = '';
-            
+
             if (categories.length < 1) {
                 const row = document.createElement('tr');
+                row.id = 'emptyCategorytable'
                 row.innerHTML = `
               <td colspan="5" class="text-center py-4 text-gray-500">
                 No categories found.
@@ -305,20 +369,20 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
             }
             categories.forEach(cat => {
                 const row = document.createElement('tr');
+                row.id = `row-${cat.id}`;
                 row.innerHTML = `
                                  <td class="px-6 py-4">${cat.id}</td>
+                                 <td class="px-6 py-4"> <img src='${cat.image}' class="w-16 h-16 object-contain rounded"  alt='categoryicon'/></td>
                                  <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${cat.name}</th>
                                  <td class="px-6 py-4">${cat.description}</td>
-                                 <td class="px-6 py-4">
-                                     <button class="cursor-pointer edit-button cursor-pointer"
-                                         onclick="openEditModal(${cat.id}, '${cat.name}', '${cat.description}')">
-                                         <img src="/SwiftCart/Image/Edit.svg" class="w-5 h-5 inline" />
-                                     </button>
-                                 </td>
-                                 <td class="px-6 py-4">
-                                     <button class="cursor-pointer delete-button text-red-600 hover:text-red-800 cursor-pointer"
+                                 <td class=" py-4 px-6 flex justify-end gap-2 mt-3">
+                                     <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
+                                         onclick="openEditModal(${cat.id}, '${cat.name}', '${cat.description}','${cat.image}')">
+                                         Update
+                                    </button>
+                                     <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
                                          onclick="OpenDeleteModal(${cat.id}, '${cat.name}')">
-                                         <img src="/SwiftCart/Image/Delete.svg" class="w-5 h-5 inline" />
+                                         Delete
                                      </button>
                                  </td>
                                  `;
@@ -328,7 +392,6 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         }
 
         function DeleteCategory() {
-            if (!deleteCategoryId) return;
             document.getElementById('modalSpinner').classList.remove('hidden')
             document.getElementById('deleteBtn').disabled = true;
             fetch("/SwiftCart/AJAX/category_ajax.php", {
@@ -341,17 +404,18 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success) {
-                        return fetchCategories()
+                        const row = document.getElementById(deleteCategoryId);
+                        row.remove()
+                        deleteCategoryId = null
+                        allCategories = allCategories.filter(cat => cat.id !== deleteCategoryId);
+
+                    } else {
+                        showToast("Server is Down Try again leter", "denger")
                     }
                 }).then(() => {
-                    requestAnimationFrame(() => {
-                        setTimeout(() => {
-                            document.getElementById('modalSpinner').classList.add('hidden')
-                            document.getElementById('deleteBtn').disabled = false;
-                            CloseDeleteModal()
-                        }, 1000);
-                    });
-
+                    document.getElementById('modalSpinner').classList.add('hidden')
+                    document.getElementById('deleteBtn').disabled = false;
+                    CloseDeleteModal()
                 });
         }
 
@@ -359,8 +423,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
             fetchCategories();
         });
 
-        // AJAX for create category
-        document.getElementById("categoryForm").addEventListener("submit", function(e) {
+        document.getElementById("categoryForm").addEventListener("submit", async function(e) {
             e.preventDefault();
 
             const spinner = document.getElementById('spinner');
@@ -375,6 +438,21 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
                 const form = e.target;
                 const formData = new FormData(form);
+
+                if (file) {
+                    const uploadFormData = new FormData();
+                    uploadFormData.append('action', 'upload');
+                    uploadFormData.append('image', file);
+
+                    await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+                            method: 'POST',
+                            body: uploadFormData
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            formData.set('image', res.data.secure_url)
+                        })
+                }
                 fetch("/SwiftCart/AJAX/category_ajax.php", {
                         method: "POST",
                         body: formData,
@@ -382,26 +460,62 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     .then((res) => res.json())
                     .then((data) => {
                         if (data.success) {
-                            return fetchCategories();
+                            const emptyTable = document.getElementById('emptyCategorytable');
+                            if (emptyTable) row.remove()
+                            const row = document.createElement('tr');
+                            row.id = `row-${data.data.id}`;
+                            row.innerHTML = `
+                                <td class="px-6 py-4">${data.data.id}</td>
+                                 <td class="px-6 py-4"> <img src='${data.data.image}' class="w-16 h-16 object-contain rounded"  alt='categoryicon'/></td>
+                                 <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${data.data.name}</th>
+                                 <td class="px-6 py-4">${data.data.description}</td>
+                                 <td class="">
+                                     <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
+                                         onclick="openEditModal(${data.data.id}, '${data.data.name}', '${data.data.description}','${data.data.image}')">
+                                         Update
+                                    </button>
+                                     <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
+                                         onclick="OpenDeleteModal(${data.data.id}, '${data.data.name}')">
+                                         Delete
+                                     </button>
+                                 </td>
+                                `;
+                            document.getElementById('category-table-body').appendChild(row);
+                            allCategories.push(data.data);
+                        } else {
+                            showToast("Server is Down Try again leter", "denger")
                         }
+
                     }).then(() => {
-                        requestAnimationFrame(() => {
-                            setTimeout(() => {
-                                spinner.classList.add('hidden');
-                                text.textContent = 'Create';
-                                button.disabled = false;
-                                closeModal();
-                            }, 1000);
-                        });
+                        spinner.classList.add('hidden');
+                        text.textContent = 'Create';
+                        button.disabled = false;
+                        closeModal();
                     })
             } else if (actionValue == "update") {
                 spinner.classList.remove('hidden');
-                icon.classList.add('hidden');
                 text.textContent = 'Updating...';
                 button.disabled = true;
 
                 const form = e.target;
                 const formData = new FormData(form);
+
+                if (file) {
+                    const uploadFormData = new FormData();
+                    uploadFormData.append('action', 'upload');
+                    uploadFormData.append('image', file);
+
+                    await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+                            method: 'POST',
+                            body: uploadFormData
+                        })
+                        .then(res => res.json())
+                        .then(res => {
+                            formData.set('image', res.data.secure_url)
+                        })
+                } else {
+                    formData.set('image', imagePreview.src)
+                }
                 fetch("/SwiftCart/AJAX/category_ajax.php", {
                         method: "POST",
                         body: formData,
@@ -409,7 +523,28 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     .then((res) => res.json())
                     .then((data) => {
                         if (data.success) {
-                            return fetchCategories()
+                            const row = document.getElementById(`row-${data.data.id}`);
+                            row.cells[0].textContent = data.data.id;
+                            row.cells[1].querySelector('img').src = data.data.image;
+                            row.cells[2].textContent = data.data.name;
+                            row.cells[3].textContent = data.data.description;
+                            row.cells[4].innerHTML = `
+                                                <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
+                                                    onclick="openEditModal(${data.data.id}, '${data.data.name}', '${data.data.description}','${data.data.image}')">
+                                                    Update
+                                                </button>
+                                                <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md"
+                                                    onclick="OpenDeleteModal(${data.data.id}, '${data.data.name}')">
+                                                    Delete
+                                                </button>
+                                                `;
+                            const index = allCategories.findIndex(cat => cat.id === data.data.id);
+                            if (index !== -1) {
+                                allCategories[index] = data.data;
+                            }
+
+                        } else {
+                            showToast("Server is Down Try again later", "denger")
                         }
                     }).then(() => {
                         requestAnimationFrame(() => {
@@ -422,8 +557,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                         });
                     })
             }
-
-        });
+        })
     </script>
 </body>
 

@@ -68,58 +68,59 @@ if ($action == 'fetchRequestedProduct') {
           ]);
      }
 } else if ($action == 'approved') {
-     $productid = $_POST['id'];
-     $email = $_POST['email'];
-     // Fetch product info
-     $stmt = $pdo->prepare("SELECT product_name, price, category, description FROM product WHERE id = ?");
-     $stmt->execute([$productid]);
-     $product = $stmt->fetch(PDO::FETCH_ASSOC);
+     try {
+          $productid = $_POST['id'];
+          $email = $_POST['email'];
+          // Fetch product info
+          $stmt = $pdo->prepare("SELECT * FROM product WHERE id = ?");
+          $stmt->execute([$productid]);
+          $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-     if (!$product) {
-          echo json_encode(['error' => 'Product not found']);
-          exit;
-     }
+          if (!$product) {
+               echo json_encode(['error' => 'Product not found']);
+               exit;
+          }
 
-     $name = $product['product_name'];
-     $price = $product['price'];
-     $category = $product['category'];
-     $description = $product['description'];
+          $name = $product['product_name'];
+          $price = $product['price'];
+          $category = $product['category'];
+          $description = $product['description'];
 
-     // Update product state
-     $stmp = $pdo->prepare('UPDATE product SET product_state=? WHERE id=?');
-     $accept = $stmp->execute(['approved', $productid]);
+          // Update product state
+          $stmp = $pdo->prepare('UPDATE product SET product_state=? WHERE id=?');
+          $accept = $stmp->execute(['approved', $productid]);
 
-     // Insert simple message into contact
-     $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
-     $success = $message->execute([
-          ':email' => $email,
-          ':reason' => 'Product Approved',
-          ':message' => "Your product '$name' has been approved by admin.",
-          ':sender' => 'admin'
-     ]);
+          // Insert simple message into contact
+          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
+          $success = $message->execute([
+               ':email' => $email,
+               ':reason' => 'Product Approved',
+               ':message' => "Your product '$name' has been approved by admin.",
+               ':sender' => 'admin'
+          ]);
 
-     // Send email
-     $mail = new PHPMailer(true);
-     $mail->isSMTP();
-     $mail->Host = $_ENV['SMTP_HOST'];
-     $mail->Port = $_ENV['SMTP_PORT'];
-     $mail->Username = $_ENV['SMTP_USER'];
-     $mail->Password = $_ENV['SMTP_PASS'];
-     $mail->SMTPAuth = true;
-     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+          // Send email
+          $mail = new PHPMailer(true);
+          $mail->isSMTP();
+          $mail->Host = $_ENV['SMTP_HOST'];
+          $mail->Port = $_ENV['SMTP_PORT'];
+          $mail->Username = $_ENV['SMTP_USER'];
+          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->SMTPAuth = true;
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-     $mail->CharSet = 'UTF-8';
-     $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
-     $mail->addAddress($email);
-     $mail->Subject = "✅ Product Approved - " . htmlspecialchars($name);
-     $mail->isHTML(true);
+          $mail->CharSet = 'UTF-8';
+          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->addAddress($email);
+          $mail->Subject = "✅ Product Approved - " . htmlspecialchars($name);
+          $mail->isHTML(true);
 
-     // Safely encode dynamic values
-     $encodedName = htmlspecialchars($name);
-     $encodedCategory = htmlspecialchars($category);
-     $encodedPrice = number_format(floatval($price), 2);
+          // Safely encode dynamic values
+          $encodedName = htmlspecialchars($name);
+          $encodedCategory = htmlspecialchars($category);
+          $encodedPrice = number_format(floatval($price), 2);
 
-     $mail->Body = "
+          $mail->Body = "
     <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
         <h2 style=\"color: #4CAF50;\">&#127881; Your Product Has Been Approved!</h2>
         <p>We're excited to let you know that your product has been approved and is now live on <strong>SwiftCart</strong>!</p>
@@ -136,65 +137,75 @@ if ($action == 'fetchRequestedProduct') {
     </div>
           ";
 
-     $mail->send();
+          $mail->send();
+          $vender = $pdo->prepare('SELECT name FROM users WHERE email = ?');
+          $exe = $vender->execute([$email]);
 
-     echo json_encode(['action' => 'approved', 'success' => true]);
-} else if ($action == 'reject') {
-     $productid = $_POST['id'];
-     $email = $_POST['email'];
+          $name = $vender->fetchColumn();
 
-     // Fetch product info
-     $stmt = $pdo->prepare("SELECT product_name, price, category, description, (SELECT email FROM users WHERE users.id = product.venderid) as email FROM product WHERE id = ?");
-     $stmt->execute([$productid]);
-     $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-     if (!$product) {
-          echo json_encode(['error' => 'Product not found']);
-          exit;
+          echo json_encode(['action' => 'approved', 'success' => true, 'data' => $product, 'name' => $name]);
+     } catch (PDOException $e) {
+          echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+          exit();
      }
+} else if ($action == 'reject') {
+     try {
+          $productid = $_POST['id'];
+          $email = $_POST['email'];
 
-     $name = $product['product_name'];
-     $price = $product['price'];
-     $category = $product['category'];
-     $description = $product['description'];
-     $email = $product['email'];
+          // Fetch product info
+          $stmt = $pdo->prepare("SELECT product_name, price, category, description, (SELECT email FROM users WHERE users.id = product.venderid) as email FROM product WHERE id = ?");
+          $stmt->execute([$productid]);
+          $product = $stmt->fetch(PDO::FETCH_ASSOC);
 
-     // Update product state
-     $stmp = $pdo->prepare('UPDATE product SET product_state=? WHERE id=?');
-     $accept = $stmp->execute(['rejected', $productid]);
+          if (!$product) {
+               echo json_encode(['error' => 'Product not found']);
+               exit;
+          }
 
-     // Insert simple message into contact
-     $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
-     $success = $message->execute([
-          ':email' => $email,
-          ':reason' => 'Product Rejected',
-          ':message' => "Your product '$name' has been rejected by admin.",
-          ':sender' => 'admin'
-     ]);
+          $name = $product['product_name'];
+          $price = $product['price'];
+          $category = $product['category'];
+          $description = $product['description'];
+          $email = $product['email'];
 
-     // Send email
-     $mail = new PHPMailer(true);
-     $mail->isSMTP();
-     $mail->Host = $_ENV['SMTP_HOST'];
-     $mail->Port = $_ENV['SMTP_PORT'];
-     $mail->Username = $_ENV['SMTP_USER'];
-     $mail->Password = $_ENV['SMTP_PASS'];
-     $mail->SMTPAuth = true;
-     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+          // Update product state
+          $stmp = $pdo->prepare('UPDATE product SET product_state=? WHERE id=?');
+          $accept = $stmp->execute(['rejected', $productid]);
 
-     $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
-     $mail->CharSet = 'UTF-8';
-     $mail->addAddress($email);
-     $mail->CharSet = 'UTF-8';
-     $mail->Subject = "❌ Product Rejected - " . htmlspecialchars($name);
-     $mail->isHTML(true);
+          // Insert simple message into contact
+          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
+          $success = $message->execute([
+               ':email' => $email,
+               ':reason' => 'Product Rejected',
+               ':message' => "Your product '$name' has been rejected by admin.",
+               ':sender' => 'admin'
+          ]);
 
-     // Encode dynamic variables to prevent XSS
-     $encodedName = htmlspecialchars($name);
-     $encodedCategory = htmlspecialchars($category);
-     $encodedPrice = number_format(floatval($price), 2);
+          // Send email
+          $mail = new PHPMailer(true);
+          $mail->isSMTP();
+          $mail->Host = $_ENV['SMTP_HOST'];
+          $mail->Port = $_ENV['SMTP_PORT'];
+          $mail->Username = $_ENV['SMTP_USER'];
+          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->SMTPAuth = true;
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-     $mail->Body = "
+          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->CharSet = 'UTF-8';
+          $mail->addAddress($email);
+          $mail->CharSet = 'UTF-8';
+          $mail->Subject = "❌ Product Rejected - " . htmlspecialchars($name);
+          $mail->isHTML(true);
+
+          // Encode dynamic variables to prevent XSS
+          $encodedName = htmlspecialchars($name);
+          $encodedCategory = htmlspecialchars($category);
+          $encodedPrice = number_format(floatval($price), 2);
+
+          $mail->Body = "
                <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
                     <h2 style=\"color: #e53935;\">&#10060; Your Product Has Been Rejected</h2>
                     <p>Unfortunately, your product did not meet our listing criteria. Below are the details you submitted:</p>
@@ -211,7 +222,157 @@ if ($action == 'fetchRequestedProduct') {
                </div>
                ";
 
-     $mail->send();
+          $mail->send();
 
-     echo json_encode(['action' => 'rejected', 'success' => true]);
+          echo json_encode(['action' => 'rejected', 'success' => true]);
+     } catch (PDOException $e) {
+          echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+          exit();
+     }
+} else if ($action == 'publish') {
+     try {
+          $id = $_POST['id'];
+
+          // Fetch product and vendor email
+          $stmt = $pdo->prepare("SELECT product_name, venderid FROM product WHERE id = ?");
+          $stmt->execute([$id]);
+          $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+          if (!$product) {
+               echo json_encode(['success' => false, 'error' => 'Product not found']);
+               exit();
+          }
+
+          $name = $product['product_name'];
+          $venderid = $product['venderid'];
+
+          // Get vendor email
+          $stmtEmail = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+          $stmtEmail->execute([$venderid]);
+          $user = $stmtEmail->fetch(PDO::FETCH_ASSOC);
+          $email = $user['email'];
+
+          // Unpublish the product
+          $stmt = $pdo->prepare('UPDATE product SET is_published = TRUE WHERE id = ?');
+          $unpublish = $stmt->execute([$id]);
+
+          // Log message in contact table
+          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
+          $message->execute([
+               ':email' => $email,
+               ':reason' => 'Product Republished',
+               ':message' => "Your product '$name' has been Republished by admin.",
+               ':sender' => 'admin'
+          ]);
+
+          // Send email to vendor
+          $mail = new PHPMailer(true);
+          $mail->isSMTP();
+          $mail->Host = $_ENV['SMTP_HOST'];
+          $mail->Port = $_ENV['SMTP_PORT'];
+          $mail->Username = $_ENV['SMTP_USER'];
+          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->SMTPAuth = true;
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+
+          $mail->CharSet = 'UTF-8';
+          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->addAddress($email);
+          $mail->Subject = "✅ Product Republished - " . htmlspecialchars($name);
+          $mail->isHTML(true);
+
+          $mail->Body = "
+            <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
+                <h2 style=\"color: #fb8c00;\">✅ Product Republished</h2>
+                <p>Dear Vendor,</p>
+                <p>Your product <strong>" . htmlspecialchars($name) . "</strong> has been Republished by the admin. Now It is visible on the site.</p>
+                <p>You can now view your product live on the SwiftCart platform and start selling!</p>
+                <hr style=\"margin-top: 20px; margin-bottom: 20px;\" />
+                <p style=\"font-size: 13px; color: #888;\">This is an automated message from SwiftCart. Please do not reply directly.</p>
+            </div>
+        ";
+
+          $mail->send();
+
+          echo json_encode([
+               'success' => true,
+               'id' => $id
+          ]);
+     } catch (Exception $e) {
+          echo json_encode(['success' => false, 'error' => 'Email failed: ' . $e->getMessage()]);
+          exit();
+     }
+} else if ($action == 'unpublish') {
+     try {
+          $id = $_POST['id'];
+
+          // Fetch product and vendor email
+          $stmt = $pdo->prepare("SELECT product_name, venderid FROM product WHERE id = ?");
+          $stmt->execute([$id]);
+          $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+          if (!$product) {
+               echo json_encode(['success' => false, 'error' => 'Product not found']);
+               exit();
+          }
+
+          $name = $product['product_name'];
+          $venderid = $product['venderid'];
+
+          // Get vendor email
+          $stmtEmail = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+          $stmtEmail->execute([$venderid]);
+          $user = $stmtEmail->fetch(PDO::FETCH_ASSOC);
+          $email = $user['email'];
+
+          // Unpublish the product
+          $stmt = $pdo->prepare('UPDATE product SET is_published = FALSE WHERE id = ?');
+          $unpublish = $stmt->execute([$id]);
+
+          // Log message in contact table
+          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
+          $message->execute([
+               ':email' => $email,
+               ':reason' => 'Product Unpublished',
+               ':message' => "Your product '$name' has been unpublished by admin.",
+               ':sender' => 'admin'
+          ]);
+
+          // Send email to vendor
+          $mail = new PHPMailer(true);
+          $mail->isSMTP();
+          $mail->Host = $_ENV['SMTP_HOST'];
+          $mail->Port = $_ENV['SMTP_PORT'];
+          $mail->Username = $_ENV['SMTP_USER'];
+          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->SMTPAuth = true;
+          $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+
+          $mail->CharSet = 'UTF-8';
+          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->addAddress($email);
+          $mail->Subject = "🚫 Product Unpublished - " . htmlspecialchars($name);
+          $mail->isHTML(true);
+
+          $mail->Body = "
+            <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
+                <h2 style=\"color: #fb8c00;\">🚫 Product Unpublished</h2>
+                <p>Dear Vendor,</p>
+                <p>Your product <strong>" . htmlspecialchars($name) . "</strong> has been unpublished by the admin. It is no longer visible on the site.</p>
+                <p>If you believe this is a mistake, please contact our support team.</p>
+                <hr style=\"margin-top: 20px; margin-bottom: 20px;\" />
+                <p style=\"font-size: 13px; color: #888;\">This is an automated message from SwiftCart. Please do not reply directly.</p>
+            </div>
+        ";
+
+          $mail->send();
+
+          echo json_encode([
+               'success' => true,
+               'id' => $id
+          ]);
+     } catch (Exception $e) {
+          echo json_encode(['success' => false, 'error' => 'Email failed: ' . $e->getMessage()]);
+          exit();
+     }
 }
