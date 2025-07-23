@@ -6,6 +6,7 @@ $tableName = 'users';
 
 $createSQL = " CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    photo TEXT,
     name VARCHAR(100),
     email VARCHAR(150) UNIQUE,
     password VARCHAR(100) UNIQUE,

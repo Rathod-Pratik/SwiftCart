@@ -261,9 +261,14 @@ if ($action == 'upload') {
         }
 
 
+          $stmt = $pdo->prepare('SELECT * FROM product WHERE product_name=?');
+          $stmt->execute([$product_name]);
+          $product=$stmt->fetch(PDO::FETCH_ASSOC);
+
         echo json_encode([
             'success' => $success,
-            'action' => 'create'
+            'action' => 'create',
+            'data' =>  $product
         ]);
     } catch (Exception $e) {
         echo json_encode([
@@ -343,10 +348,6 @@ if ($action == 'upload') {
             return;
         }
 
-        if ($product['product_state'] === 'requested') {
-            echo json_encode(["request" => true, "message" => "Product request is not approved"]);
-            return;
-        }
         if ($product['image'] != $image) {
             DeleteImage(($product['image']));
         }
@@ -421,9 +422,14 @@ if ($action == 'upload') {
         }
 
 
+        $stmt = $pdo->prepare('SELECT * FROM product WHERE product_name=?');
+          $stmt->execute([$product_name]);
+          $product=$stmt->fetch(PDO::FETCH_ASSOC);
+
         echo json_encode([
             'success' => $success,
-            'action' => 'update'
+            'action' => 'update',
+            'data'=> $product
         ]);
     } catch (Exception $e) {
         echo json_encode([
@@ -458,7 +464,11 @@ if ($action == 'upload') {
         // Fetch product
         $stmt = $pdo->prepare('SELECT * FROM product WHERE id = ?');
         $stmt->execute([$productid]);
-        $product = $stmt->fetch(PDO::FETCH_ASSOC); // only one product
+        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $stmt1 = $pdo->prepare('SELECT * FROM users WHERE id = ?');
+        $stmt1->execute([$venderid]);
+        $vender = $stmt1->fetch(PDO::FETCH_ASSOC);
 
         if (!$product) {
             echo json_encode([
@@ -486,15 +496,14 @@ if ($action == 'upload') {
 
         $mail->CharSet = 'UTF-8';
         $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
-        $mail->addAddress($email);
-        $mail->Subject = "🗑️ Product Deleted - " . htmlspecialchars($product['name']);
+        $mail->addAddress($vender['email']);
+        $mail->Subject = "🗑️ Product Deleted - " . htmlspecialchars($product['product_name']);
         $mail->isHTML(true);
 
         // Sanitize and format values
-        $productName = htmlspecialchars($product['name']);
+        $productName = htmlspecialchars($product['product_name']);
         $category = htmlspecialchars($product['category']);
         $price = number_format(floatval($product['price']), 2);
-        $description = htmlspecialchars($product['description']);
 
         $mail->Body = "
             <div style=\"font-family: Arial, sans-serif; color: #333; padding: 10px;\">
@@ -505,7 +514,6 @@ if ($action == 'upload') {
                     <tr><td><strong>Product Name:</strong></td><td> $productName</td></tr>
                     <tr><td><strong>Category:</strong></td><td> $category</td></tr>
                     <tr><td><strong>Price:</strong></td><td> ₹$price</td></tr>
-                    <tr><td><strong>Description:</strong></td><td> $description</td></tr>
                 </table>
 
                 <hr style=\"margin: 20px 0;\" />

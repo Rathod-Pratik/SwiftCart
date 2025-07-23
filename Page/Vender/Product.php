@@ -1,7 +1,7 @@
 <?php
 
-require __DIR__ .'/../../Database/db.php';
-require __DIR__ .'/../../Database/Function.php';
+require __DIR__ . '/../../Database/db.php';
+require __DIR__ . '/../../Database/Function.php';
 
 $table = 'product';
 
@@ -31,18 +31,19 @@ checkAndCreateTable($pdo, $table, $createSQL);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vender | Product</title>
-  <?php include __DIR__ .'/../../Componenets/Header.php'; ?>
+  <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
 </head>
 
 <body>
-  <?php require __DIR__ .'/../../Componenets/VenderNavbar.php' ?>
-  <?php require __DIR__ .'/../../Componenets/VenderSideBar.php' ?>
+  <?php require __DIR__ . '/../../Componenets/VenderNavbar.php' ?>
+  <?php require __DIR__ . '/../../Componenets/VenderSideBar.php' ?>
 
   <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
     <div class="flex justify-evenly gap-3 mb-6">
       <input
         class="border-[#4fd1c5] bg-white border-2 outline-none rounded-md px-4 py-2 w-[90%]"
         type="text"
+        oninput="handleSearch(this.value)"
         placeholder="Search Product" />
       <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md" onclick="openModal()">
         New
@@ -78,7 +79,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
             </th>
           </tr>
         </thead>
-        <tbody id="Approved-table-body">
+        <tbody id="Product-table-body">
         </tbody>
       </table>
     </div>
@@ -87,10 +88,9 @@ checkAndCreateTable($pdo, $table, $createSQL);
       id="myModal"
       tabindex="-1"
       aria-hidden="true"
-      class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-      <div class="relative p-4 w-full max-w-4xl max-h-full">
+      class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
+      <div class="relative p-4 w-full max-w-4xl max-h-full ">
         <div class="relative bg-white rounded-2xl shadow-lg">
-          <!-- Header -->
           <div class="flex items-center justify-between p-4 md:p-5 rounded-t bgcolor">
             <h3 class="text-lg font-semibold text-white" id="modalTitle">Add Product Request</h3>
             <button onclick="closeModal()" type="button" class="text-white hover:text-[#4fd1c5] cursor-pointer hover:bg-white bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center transition-colors duration-200">
@@ -102,7 +102,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
 
           <form class="p-4 md:p-5" method="post" id="productForm" enctype="multipart/form-data">
             <input type="hidden" name="action" id="action" value="create" />
-            <input type="hidden" name="id" id="id"  />
+            <input type="hidden" name="id" id="id" />
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="flex flex-col items-center gap-4">
                 <label for="imageInput" class="w-full h-64 border-2 border-dashed border-[#4fd1c5] flex justify-center items-center overflow-hidden rounded-lg cursor-pointer">
@@ -189,7 +189,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
             </div>
 
             <div class="flex justify-end mt-6">
-              <button type="submit" id="modalSubmitBtn" class="text-white flex items-center gap-2 bg-[#4fd1c5] hover:border hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200">
+              <button type="submit" id="modalSubmitBtn" class="text-white flex items-center gap-2 bg-[#4fd1c5] hover:border hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200 cursor-pointer">
                 <div id="spinner" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 <span id="modalBtnText">Create</span>
               </button>
@@ -198,8 +198,113 @@ checkAndCreateTable($pdo, $table, $createSQL);
         </div>
       </div>
     </div>
+
+    <div
+      id="DeleteProductModal"
+      tabindex="-1"
+      class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
+      <div class="relative p-4 w-full max-w-md max-h-full">
+        <div class="relative bg-white rounded-lg shadow-sm">
+          <button
+            onclick="CloseDeleteModal()"
+            type="button"
+            class="absolute top-3 end-2.5 text-gray-400 cursor-pointer bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+            data-modal-hide="popup-modal">
+            <svg
+              class="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+            </svg>
+            <span class="sr-only">Close modal</span>
+          </button>
+          <div class="p-4 md:p-5 text-center">
+            <svg
+              class="mx-auto mb-4 text-gray-400 w-12 h-12"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20">
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <h3
+              id="ConfirmText"
+              class="mb-5 text-lg font-normal text-gray-500"></h3>
+            <button
+              id="deleteBtn"
+              data-modal-hide="popup-modal"
+              type="button"
+              class="text-white cursor-pointer bg-red-600 hover:bg-red-800 outline-none gap-2 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+              <div id="modalSpinner" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+              <span id="btnText">Yes, I'm sure</span>
+            </button>
+
+            <button
+              onclick="CloseDeleteModal()"
+              data-modal-hide="popup-modal"
+              type="button"
+              class="py-2.5 px-5 ms-3 cursor-pointer text-sm font-medium text-gray-900 outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10">
+              No, cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
-      function FetchApprovedProduct() {
+      AllProduct = [];
+
+      function handleSearch(searchText) {
+        const query = searchText.toLowerCase().trim();
+
+        const filtered = AllProduct.filter(cat =>
+          cat.product_name.toLowerCase().includes(query)
+        );
+
+        UpdateProductTableUI(filtered);
+      }
+
+      function OpenDeleteModal(id, venderid, product_name) {
+        const modal = document.getElementById('DeleteProductModal')
+        modal.classList.remove('hidden')
+        modal.classList.add('flex')
+
+        document.getElementById('ConfirmText').innerHTML = `Are You sure You Want to Delete ${product_name} Product`
+
+        const deletebutton = document.getElementById('deleteBtn')
+        deletebutton.onclick = () => DeleteProduct(id, venderid);
+
+        setTimeout(() => {
+          modal.classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+          modal.classList.add("scale-100", "opacity-100", "translate-y-0");
+        }, 10);
+      }
+
+      function CloseDeleteModal() {
+        const modal = document.getElementById('DeleteProductModal')
+        modal.classList.remove("scale-100", "opacity-100", "translate-y-0");
+        modal.classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
+        const deletebutton = document.getElementById('deleteBtn')
+        deletebutton.onclick = DeleteProduct()
+        setTimeout(() => {
+          modal.classList.remove("flex");
+          modal.classList.add("hidden");
+        }, 300);
+      }
+
+      function FetchProduct() {
         fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
           method: "POST",
           headers: {
@@ -208,17 +313,19 @@ checkAndCreateTable($pdo, $table, $createSQL);
           body: 'action=fetch'
         }).then(res => res.json()).then(data => {
           if (data.success) {
-            UpdateApprovedProductTableUI(data.product)
+            AllProduct=data.product
+            UpdateProductTableUI(data.product)
           }
         })
       }
 
-      function UpdateApprovedProductTableUI(products) {
-        const tbody = document.getElementById('Approved-table-body');
+      function UpdateProductTableUI(products) {
+        const tbody = document.getElementById('Product-table-body');
         tbody.innerHTML = '';
 
         if (!Array.isArray(products) || products.length < 1) {
           const row = document.createElement('tr');
+          row.id = 'EmptyProductTable'
           row.classList.add('bg-white', 'border-b', 'border-gray-200', 'hover:bg-gray-50');
           row.innerHTML = `
                     <td colspan="8" class="text-center py-4 text-gray-500">
@@ -233,6 +340,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
           const tr = document.createElement('tr');
           tr.classList.add('bg-white', 'border-b', 'border-gray-200', 'hover:bg-gray-50');
           const productJSON = encodeURIComponent(JSON.stringify(product));
+          tr.id = `product-${product.id}`
           tr.innerHTML = `
                     <td class="px-6 py-4">${product.id}</td>
                     <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${product.product_name}</th>
@@ -242,10 +350,10 @@ checkAndCreateTable($pdo, $table, $createSQL);
                     <td class="px-6 py-4">${product.discount}%</td>
                     <td class="px-6 py-4">${product.product_state}</td>
                      <td class="flex gap-2 py-2">
-                                    <button onclick="OpenEditModal(this)" data-product="${productJSON}" class="text-white border-transparent bg-[#4fd1c5] border hover:border-[#4fd1c5] hover:text-[#4fd1c5] font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 hover:bg-white flex items-center justify-center" title="Add">
+                                    <button onclick="OpenEditModal(this)" data-product="${productJSON}" class="cursor-pointer text-white border-transparent bg-[#4fd1c5] border hover:border-[#4fd1c5] hover:text-[#4fd1c5] font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 hover:bg-white flex items-center justify-center" title="Add">
                                         Update
                                     </button>
-                                    <button onclick="DeleteProduct(${product.id},${product.venderid})" class="text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200" title="Delete">
+                                    <button onclick="OpenDeleteModal(${product.id},${product.venderid},'${product.product_name}')" class="cursor-pointer text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200" title="Delete">
                                         Delete
                                     </button>
                                 </td>
@@ -254,19 +362,29 @@ checkAndCreateTable($pdo, $table, $createSQL);
         });
       }
       document.addEventListener('DOMContentLoaded', function() {
-        FetchApprovedProduct()
+        FetchProduct()
       });
 
       function openModal() {
         document.getElementById('myModal').classList.remove('hidden')
         document.getElementById('myModal').classList.add('flex')
+        setTimeout(() => {
+          document.getElementById('myModal').classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+          document.getElementById('myModal').classList.add("scale-100", "opacity-100", "translate-y-0");
+        }, 10);
       }
 
       function closeModal() {
-        document.getElementById('myModal').classList.add('hidden')
-        document.getElementById('myModal').classList.remove('flex')
         document.getElementById('productForm').reset();
         const imagePreview = document.getElementById('imagePreview').src = null
+        const modal = document.getElementById('myModal');
+
+        modal.classList.remove("scale-100", "opacity-100", "translate-y-0");
+        modal.classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
+        setTimeout(() => {
+          modal.classList.remove("flex");
+          modal.classList.add("hidden");
+        }, 300);
       }
 
 
@@ -325,7 +443,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
         }
       });
 
-      document.getElementById('productForm').addEventListener('submit',async function(e) {
+      document.getElementById('productForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const action = document.getElementById('action').value;
@@ -347,7 +465,6 @@ checkAndCreateTable($pdo, $table, $createSQL);
               })
               .then(res => res.json())
               .then(res => {
-                // console.log("Image upload successfilly")
                 formData.set('image', res.data.secure_url)
 
                 const description = formData.get('description');
@@ -372,8 +489,32 @@ checkAndCreateTable($pdo, $table, $createSQL);
                     document.getElementById('spinner').classList.add('hidden');
                     document.getElementById('modalBtnText').textContent = "Create"
                     document.getElementById('modalSubmitBtn').disabled = false
-                    FetchApprovedProduct()
+
+                    const tbody = document.getElementById('Product-table-body');
+                    const tr = document.createElement('tr')
+                    tr.classList.add('bg-white', 'border-b', 'border-gray-200', 'hover:bg-gray-50');
+                    const productJSON = encodeURIComponent(JSON.stringify(res.data));
+                    tr.id = `product-${res.data.id}`
+                    tr.innerHTML = `
+                    <td class="px-6 py-4">${res.data.id}</td>
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${res.data.product_name}</th>
+                    <td class="px-6 py-4">${res.data.category}</td>
+                    <td class="px-6 py-4">${res.data.price}</td>
+                    <td class="px-6 py-4">${res.data.stock ==0 ? 'out of stock':res.data.stock}</td>
+                    <td class="px-6 py-4">${res.data.discount}%</td>
+                    <td class="px-6 py-4">${res.data.product_state}</td>
+                     <td class="flex gap-2 py-2">
+                                    <button onclick="OpenEditModal(this)" data-product="${productJSON}" class="cursor-pointer text-white border-transparent bg-[#4fd1c5] border hover:border-[#4fd1c5] hover:text-[#4fd1c5] font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 hover:bg-white flex items-center justify-center" title="Add">
+                                        Update
+                                    </button>
+                                    <button onclick="OpenDeleteModal(${res.data.id},${res.data.venderid},'${res.data.product_name}')" class="cursor-pointer text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200" title="Delete">
+                                        Delete
+                                    </button>
+                                </td>
+                      `;
+                    tbody.appendChild(tr);
                     closeModal();
+                    AllProduct.push(res.data)
 
                   }
                 })
@@ -384,6 +525,9 @@ checkAndCreateTable($pdo, $table, $createSQL);
                 document.getElementById('modalSubmitBtn').disabled = false
                 console.error("Upload Failed:", error);
               });
+          } else {
+            showToast("Please select Product Image", "denger")
+            return;
           }
 
         } else if (action == 'update') {
@@ -397,7 +541,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
             uploadFormData.append('action', 'upload');
             uploadFormData.append('image', file);
 
-          await  fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+            await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
                 method: 'POST',
                 body: uploadFormData
               })
@@ -405,9 +549,8 @@ checkAndCreateTable($pdo, $table, $createSQL);
               .then(res => {
                 formData.set('image', res.data.secure_url)
               })
-          }
-          else{
-             formData.set('image', imagePreview.src)
+          } else {
+            formData.set('image', imagePreview.src)
           }
           const description = formData.get('description');
 
@@ -431,8 +574,35 @@ checkAndCreateTable($pdo, $table, $createSQL);
                 document.getElementById('spinner').classList.add('hidden');
                 document.getElementById('modalBtnText').textContent = "Update"
                 document.getElementById('modalSubmitBtn').disabled = false
-                FetchApprovedProduct()
+
+                const tbody = document.getElementById('Product-table-body');
+                const tr = document.getElementById(`product-${res.data.id}`)
+
+                const productJSON = encodeURIComponent(JSON.stringify(res.data));
+                tr.id = `product-${res.data.id}`
+                tr.innerHTML = `
+                    <td class="px-6 py-4">${res.data.id}</td>
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${res.data.product_name}</th>
+                    <td class="px-6 py-4">${res.data.category}</td>
+                    <td class="px-6 py-4">${res.data.price}</td>
+                    <td class="px-6 py-4">${res.data.stock ==0 ? 'out of stock':res.data.stock}</td>
+                    <td class="px-6 py-4">${res.data.discount}%</td>
+                    <td class="px-6 py-4">${res.data.product_state}</td>
+                     <td class="flex gap-2 py-2">
+                                    <button onclick="OpenEditModal(this)" data-product="${productJSON}" class="cursor-pointer text-white border-transparent bg-[#4fd1c5] border hover:border-[#4fd1c5] hover:text-[#4fd1c5] font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 hover:bg-white flex items-center justify-center" title="Add">
+                                        Update
+                                    </button>
+                                    <button onclick="OpenDeleteModal(${res.data.id},${res.data.venderid},'${res.data.product_name}')" class="cursor-pointer text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200" title="Delete">
+                                        Delete
+                                    </button>
+                                </td>
+                      `;
                 closeModal();
+                const index = AllProduct.findIndex(p => p.id === res.data.id);
+
+                if (index !== -1) {
+                  AllProduct[index] = res.data;
+                }
 
               }
             })
@@ -448,6 +618,10 @@ checkAndCreateTable($pdo, $table, $createSQL);
       })
 
       function OpenEditModal(button) {
+        setTimeout(() => {
+          document.getElementById('myModal').classList.remove("scale-95", "opacity-0", "translate-y-[-20px]");
+          document.getElementById('myModal').classList.add("scale-100", "opacity-100", "translate-y-0");
+        }, 10);
         const productData = decodeURIComponent(button.getAttribute('data-product'));
         const products = JSON.parse(productData);
         document.getElementById('action').value = 'update'
@@ -459,7 +633,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
         document.getElementById('id').value = products.id
         document.getElementById('category').value = products.category
         document.getElementById('highlight').value = products.highlight
-        imagePreview.src = products.image
+        imagePreview.src = products.image 
         imagePreview.classList.remove('hidden');
         imagePlaceholder.classList.add('hidden');
         deleteImageBtn.classList.remove('hidden');
@@ -507,20 +681,31 @@ checkAndCreateTable($pdo, $table, $createSQL);
 
       }
 
-      function DeleteProduct(id,venderid) {
-        const formData=new FormData();
-        formData.append('id',id)
-        formData.append('venderid',venderid);
-        formData.append('action','delete');
+      function DeleteProduct(id, venderid) {
+        document.getElementById('modalSpinner').classList.remove('hidden')
+        const formData = new FormData();
+        formData.append('id', id)
+        formData.append('venderid', venderid);
+        formData.append('action', 'delete');
 
         fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
-                method: 'POST',
-                body: formData
-              }).then(res=> res.json()).then((res)=>{
-                if(res.success){
-                  showToast("Product Deleted successfully","success")
-                }
-              })
+          method: 'POST',
+          body: formData
+        }).then(res => res.json()).then((res) => {
+          if (res.success) {
+            showToast("Product Deleted successfully", "success")
+            const tr=document.getElementById(`product-${id}`);
+            tr.remove();
+            AllProduct = AllProduct.filter(p => p.id !== id);
+
+
+          } else {
+            showToast("Failed to Deleted Product", "denger")
+          }
+        }).then(() => {
+          CloseDeleteModal();
+          document.getElementById('modalSpinner').classList.add('hidden')
+        })
       }
     </script>
 

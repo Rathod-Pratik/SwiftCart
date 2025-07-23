@@ -342,7 +342,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                 row.id = 'EmptyApprovedProduct'
                 row.classList.add('bg-white', 'border-b', 'border-gray-200', 'hover:bg-gray-50');
                 row.innerHTML = `
-                    <td colspan="8" class="text-center py-4 text-gray-500">
+                    <td colspan="9" class="text-center py-4 text-gray-500">
                         No Products found.
                     </td>
                 `;
