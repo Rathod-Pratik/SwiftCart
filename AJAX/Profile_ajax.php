@@ -27,6 +27,6 @@ if ($action == 'fetch') {
 
     echo json_encode([
         'success' => true,
-        'data' => $user
+        'photo' => $photo
     ]);
 }

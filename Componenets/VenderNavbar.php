@@ -6,19 +6,19 @@ require __DIR__ . "/../Database/db.php";
 $venderToken = $_COOKIE['venderToken'] ?? null;
 
 if ($venderToken) {
-    $vender = json_decode($venderToken, true);
-    $vendor_id = $vender['id'] ?? null;
+  $vender = json_decode($venderToken, true);
+  $vendor_id = $vender['id'] ?? null;
 
-    if ($vendor_id) {
-        $stmt = $pdo->prepare("SELECT name, photo FROM users WHERE id = ?");
-        $stmt->execute([$vendor_id]);
-        $vendor = $stmt->fetch(PDO::FETCH_ASSOC);
+  if ($vendor_id) {
+    $stmt = $pdo->prepare("SELECT name, photo FROM users WHERE id = ?");
+    $stmt->execute([$vendor_id]);
+    $vendor = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($vendor) {
-            $name = $vendor['name'];
-            $image = !empty($vendor['photo']) ? $vendor['photo'] : "/SwiftCart/Image/default-user.png";
-        }
+    if ($vendor) {
+      $name = $vendor['name'];
+      $image = !empty($vendor['photo']) ? $vendor['photo'] : "/SwiftCart/Image/default-user.png";
     }
+  }
 }
 
 
@@ -40,14 +40,14 @@ echo ' <nav class="fixed top-0 z-50 w-full bg-[#f8fafd]">
       </div>
       <div class="flex items-center">
         <div class="flex items-center ms-3 gap-3">
-          <p class="text-[#a0aec0]">Welcome '.htmlspecialchars($name).'</p>
+          <p class="text-[#a0aec0]">Welcome ' . htmlspecialchars($name) . '</p>
           <div>';
 
 if (!empty($vendor['photo'])) {
-    echo '<img class="w-8 h-8 rounded-full object-cover border-2 border-white" src="'.htmlspecialchars($image).'" alt="User Photo">';
+  echo '<img id="venderPhoto" class="w-8 h-8 rounded-full object-cover border-2 border-white" src="' . htmlspecialchars($image) . '" alt="User Photo">';
 } else {
-    $initial = strtoupper(substr($name, 0, 1));
-    echo '<div class="w-8 h-8 flex items-center justify-center bg-gray-500 text-white rounded-full">'.htmlspecialchars($initial).'</div>';
+  $initial = strtoupper(substr($name, 0, 1));
+  echo '<div class="w-8 h-8 flex items-center justify-center bg-gray-500 text-white rounded-full">' . htmlspecialchars($initial) . '</div>';
 }
 
 echo '   </div>
@@ -56,4 +56,3 @@ echo '   </div>
     </div>
   </div>
 </nav>';
-?>

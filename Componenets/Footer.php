@@ -52,7 +52,6 @@ echo '
                 </li>
             </ul>
         </div>
-
     </div>
     <div class="px-4 py-6 bg-gray-100  md:flex md:items-center md:justify-between">
         <span class="text-sm text-gray-500 sm:text-center">© 2025 Shopizo. All Rights Reserved.
