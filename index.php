@@ -81,6 +81,13 @@ $router->get('/vender/logout', function () {
 });
 
 
+$router->get('/home', function () {
+    require __DIR__ . '/Page/Home/Home.php';
+});
+
+
+
+
 
 
 // 404 Handler

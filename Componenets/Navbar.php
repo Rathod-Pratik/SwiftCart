@@ -1,6 +1,6 @@
 <?php
 echo '
-    <nav class="bg-[#2d5356]  w-full z-20 top-0 start-0 border-b border-gray-200 ">
+    <nav class="bg-[#204d4f]  w-full z-20 top-0 start-0  sticky">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
   <a href="https://flowbite.com/" class="flex items-center space-x-3 rtl:space-x-reverse">
       <span class="self-center text-white text-2xl font-semibold whitespace-nowrap">SwiftCart</span>
