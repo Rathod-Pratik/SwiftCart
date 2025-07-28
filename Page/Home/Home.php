@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+    <style>
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 </head>
 
 <body>
@@ -19,6 +23,7 @@
     <?php require __DIR__ . '/../../Componenets/Home/CashBack.php' ?>
     <?php require __DIR__ . '/../../Componenets/Home/Review.php' ?>
     <?php require __DIR__ . '/../../Componenets/Home/FAQ.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/SubScribe.php' ?>
     <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
 
 <script>
@@ -60,9 +65,43 @@
       }
     });
   });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("reviewScrollWrapper");
+  const STEP = 660; // width + gap
+  const DURATION = 400;
+
+  function smoothScrollBy(delta){
+    return new Promise(res=>{
+      const start = container.scrollLeft;
+      const target = start + delta;
+      container.scrollTo({left:target, behavior:"smooth"});
+      setTimeout(res, DURATION);
+    });
+  }
+
+  document.getElementById("reviewNextBtn").addEventListener("click",()=>smoothScrollBy(STEP));
+  document.getElementById("reviewPrevBtn").addEventListener("click",()=>smoothScrollBy(-STEP));
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const container = document.getElementById("scrollWrapper");
+  const STEP = 260;
+  const DURATION = 400;
+
+  function smoothScrollBy(delta){
+    return new Promise(res=>{
+      const start = container.scrollLeft;
+      const target = start + delta;
+      container.scrollTo({left:target, behavior:"smooth"});
+      setTimeout(res, DURATION);
+    });
+  }
+
+  document.getElementById("nextBtn").addEventListener("click",()=>smoothScrollBy(STEP));
+  document.getElementById("prevBtn").addEventListener("click",()=>smoothScrollBy(-STEP));
+});
 </script>
-
-
 </body>
 
 </html>

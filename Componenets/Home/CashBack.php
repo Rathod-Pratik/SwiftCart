@@ -4,9 +4,9 @@ echo '
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     <!-- Left Card -->
-    <div class="relative rounded-2xl overflow-hidden min-h-[350px] flex items-center justify-start p-8 text-white bg-cover bg-center" style="background-image: url(\'https://source.unsplash.com/640x480/?interior,livingroom \');">
+    <div class="relative rounded-2xl overflow-hidden min-h-[350px] flex items-center justify-start p-8 text-white bg-cover bg-center" style="background-image: url(\'/SwiftCart/Image/offer.png \');">
       <!-- Overlay -->
-      <div class="absolute inset-0 bg-[#214d51] bg-opacity-60"></div>
+      <div class="absolute inset-0 bg-[url(\'/SwiftCart/Image/OfferBackGround.webp\')] "></div>
 
       <div class="relative z-10 space-y-4 max-w-md">
         <div class="flex items-center gap-3">

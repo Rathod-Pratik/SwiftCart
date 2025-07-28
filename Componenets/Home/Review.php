@@ -54,11 +54,7 @@ echo '
         <!-- Review Text (Vertically Centered) -->
         <div class="flex-1 z-10">
           <p class="text-base leading-relaxed font-light mb-6">
-            I recently purchased a beautiful dining set from FurniFlex, and I
-            couldnt be happier! The quality is top-notch, and it looks even
-            better in person than it did online. Plus, the customer service team
-            was incredibly helpful throughout the entire process. Highly
-            recommend!
+            I ordered a smartphone from SwiftCart and received it within two days! The packaging was secure and the product was exactly as described. Will definitely shop again.
           </p>
           <hr class="border-white/30 mb-3" />
           <h4 class="text-lg font-semibold">Emily K.</h4>
@@ -93,11 +89,7 @@ echo '
         <!-- Review Text (Vertically Centered) -->
         <div class="flex-1 z-10">
           <p class="text-base leading-relaxed font-light mb-6">
-            I recently purchased a beautiful dining set from FurniFlex, and I
-            couldnt be happier! The quality is top-notch, and it looks even
-            better in person than it did online. Plus, the customer service team
-            was incredibly helpful throughout the entire process. Highly
-            recommend!
+            As a vendor, listing my products on SwiftCart was super easy. The dashboard is user-friendly and I started getting orders quickly. Great platform for sellers!
           </p>
           <hr class="border-white/30 mb-3" />
           <h4 class="text-lg font-semibold">Emily K.</h4>
@@ -132,11 +124,7 @@ echo '
         <!-- Review Text (Vertically Centered) -->
         <div class="flex-1 z-10">
           <p class="text-base leading-relaxed font-light mb-6">
-            I recently purchased a beautiful dining set from FurniFlex, and I
-            couldnt be happier! The quality is top-notch, and it looks even
-            better in person than it did online. Plus, the customer service team
-            was incredibly helpful throughout the entire process. Highly
-            recommend!
+            The variety of products on SwiftCart is amazing! I found everything I needed for my home in one place, and the prices were very reasonable.
           </p>
           <hr class="border-white/30 mb-3" />
           <h4 class="text-lg font-semibold">Emily K.</h4>
@@ -171,11 +159,7 @@ echo '
         <!-- Review Text (Vertically Centered) -->
         <div class="flex-1 z-10">
           <p class="text-base leading-relaxed font-light mb-6">
-            I recently purchased a beautiful dining set from FurniFlex, and I
-            couldnt be happier! The quality is top-notch, and it looks even
-            better in person than it did online. Plus, the customer service team
-            was incredibly helpful throughout the entire process. Highly
-            recommend!
+            Customer support at SwiftCart is fantastic. They resolved my query about a delayed order quickly and kept me updated throughout. Highly recommend!
           </p>
           <hr class="border-white/30 mb-3" />
           <h4 class="text-lg font-semibold">Emily K.</h4>
@@ -186,29 +170,4 @@ echo '
     </div>
   </div>
 </section>
-
-<style>
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("reviewScrollWrapper");
-  const STEP = 660; // width + gap
-  const DURATION = 400;
-
-  function smoothScrollBy(delta){
-    return new Promise(res=>{
-      const start = container.scrollLeft;
-      const target = start + delta;
-      container.scrollTo({left:target, behavior:"smooth"});
-      setTimeout(res, DURATION);
-    });
-  }
-
-  document.getElementById("reviewNextBtn").addEventListener("click",()=>smoothScrollBy(STEP));
-  document.getElementById("reviewPrevBtn").addEventListener("click",()=>smoothScrollBy(-STEP));
-});
-</script>
 ';

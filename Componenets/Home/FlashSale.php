@@ -13,14 +13,7 @@ echo '
             Act fast to grab incredible deals on select furniture pieces in our limited-time flash sale.
           </p>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-gray-700 font-semibold">End time</span>
-          <div class="flex gap-1 text-white text-sm">
-            <span class="bg-white text-black px-2 py-1 rounded">12 H</span>
-            <span class="bg-white text-black px-2 py-1 rounded">36 M</span>
-            <span class="bg-white text-black px-2 py-1 rounded">57 S</span>
-          </div>
-        </div>
+  
       </div>
 
       <!-- Bottom Section -->
@@ -28,14 +21,14 @@ echo '
         
         <!-- Image -->
         <div class="flex-shrink-0">
-          <img src="/SwiftCart/Image/stationary.jpg" alt="Sofa" class="w-48 h-40 object-contain" />
+          <img src="/SwiftCart/Image/GamingMonitor.png" alt="Gaming Monitor" class="w-48 h-40 object-contain" />
         </div>
 
         <!-- Details -->
         <div class="flex flex-col gap-2">
-          <h3 class="text-lg font-semibold text-gray-900">Vintage Leather Armchai</h3>
+          <h3 class="text-lg font-semibold text-gray-900">UltraWide Gaming Monitor</h3>
           <p class="text-gray-600 max-w-xs">
-            Bring a touch of retro charm to your home with this vintage leather armchair. Sturdy construction ensures durability.
+            Experience immersive gameplay with this 34" UltraWide monitor featuring 144Hz refresh rate and vibrant colors for the ultimate gaming setup.
           </p>
           <div class="flex items-center gap-4 mt-2">
             <span class="text-2xl font-bold text-gray-900">$599</span>
@@ -57,10 +50,10 @@ echo '
       <div class="bg-[#f6f6f6] rounded-xl p-6 shadow flex justify-between items-center">
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-center mb-2 w-full">
-            <img src="/SwiftCart/Image/stationary.jpg" alt="Bookshelf" class="w-full max-w-[96px] h-24 object-contain" />
+            <img src="/SwiftCart/Image/KeyBoard.png" alt="Mechanical Keyboard" class="w-full max-w-[96px] h-24 object-contain" />
           </div>
           <div class="flex flex-row justify-between w-full">
-            <h4 class="text-lg font-medium text-gray-800">Modern Bookshelf</h4>
+            <h4 class="text-lg font-medium text-gray-800">Mechanical Keyboard</h4>
             <button class="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -74,10 +67,10 @@ echo '
       <div class="bg-[#f6f6f6] rounded-xl p-6 shadow flex justify-between items-center">
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-center mb-2 w-full">
-            <img src="/SwiftCart/Image/stationary.jpg" alt="Bookshelf" class="w-full max-w-[96px] h-24 object-contain" />
+            <img src="/SwiftCart/Image/Mouse.png" alt="Wireless Mouse" class="w-full max-w-[96px] h-24 object-contain" />
           </div>
           <div class="flex flex-row justify-between w-full">
-            <h4 class="text-lg font-medium text-gray-800">Modern Bookshelf</h4>
+            <h4 class="text-lg font-medium text-gray-800">Wireless Mouse</h4>
             <button class="bg-yellow-600 hover:bg-yellow-700 text-white p-2 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />

@@ -22,17 +22,25 @@
     }
 
     .toast-msg {
-        display: none;
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        pointer-events: none;
         position: fixed;
         left: 50%;
         bottom: 40px;
-        transform: translateX(-50%);
         padding: 15px 20px;
         border-radius: 8px;
         color: white;
         z-index: 9999;
         font-weight: bold;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .toast-msg.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
     }
 
     .toast-msg.success {
@@ -45,35 +53,29 @@
 
     .toast-msg.warning {
         background-color: #ffc107;
+        color: black;
     }
 
     .toast-msg.info {
         background-color: #17a2b8;
     }
 </style>
+
 <div id="toast" class="toast-msg"></div>
+
 <script>
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         toast.textContent = message;
-        toast.className = 'toast-msg';
-        toast.classList.add(type);
-        toast.style.display = 'block';
+        toast.className = 'toast-msg'; // reset class
+        toast.classList.add(type, 'show'); // add animation + type
+
         setTimeout(() => {
-            toast.style.display = 'none';
+            toast.classList.remove('show');
         }, 3000);
     }
 </script>
-<script type="text/javascript"
-    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-</script>
-<script type="text/javascript">
-    (function() {
-        emailjs.init({
-            publicKey: "ajDJCmWAEkNodrj5s",
-        });
-    })();
-</script>
+
 <?php if (isset($_SESSION['message'])): ?>
     <script>
         showToast(<?php echo json_encode($_SESSION['message']); ?>, <?php echo json_encode($_SESSION['msg_type']); ?>);

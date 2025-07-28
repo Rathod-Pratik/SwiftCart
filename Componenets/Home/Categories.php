@@ -31,7 +31,7 @@ foreach ($categories as $category) {
 
     echo '
       <a href="product.php?category=' . $catName . '" class="min-w-[250px]  rounded-lg shadow p-4 text-center hover:shadow-lg transition">
-        <img src="' . $catImage . '" alt="' . $catName . '" class="m-auto w-32 h-32 object-cover mb-2 bg-gray-100 rounded-full" />
+        <img src="' . $catImage . '" alt="' . $catName . '" class="m-auto w-32 h-32 object-contain mb-2 bg-gray-100 rounded-full" />
         <h2 class="font-semibold text-lg">' . $catName . '</h2>
       </a>
     ';
@@ -41,30 +41,5 @@ echo '
     </div>
   </div>
 </section>
-
-<style>
-.scrollbar-hide::-webkit-scrollbar{display:none;}
-.scrollbar-hide{-ms-overflow-style:none;scrollbar-width:none;}
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("scrollWrapper");
-  const STEP = 260;
-  const DURATION = 400;
-
-  function smoothScrollBy(delta){
-    return new Promise(res=>{
-      const start = container.scrollLeft;
-      const target = start + delta;
-      container.scrollTo({left:target, behavior:"smooth"});
-      setTimeout(res, DURATION);
-    });
-  }
-
-  document.getElementById("nextBtn").addEventListener("click",()=>smoothScrollBy(STEP));
-  document.getElementById("prevBtn").addEventListener("click",()=>smoothScrollBy(-STEP));
-});
-</script>
 ';
 ?>
