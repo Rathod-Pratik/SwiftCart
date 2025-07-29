@@ -101,6 +101,46 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("nextBtn").addEventListener("click",()=>smoothScrollBy(STEP));
   document.getElementById("prevBtn").addEventListener("click",()=>smoothScrollBy(-STEP));
 });
+
+const AddToCart=(productid)=>{
+  const formData=new FormData();
+  formData.append('action',"ADD")
+  formData.append('productid',productid)
+  fetch('/SwiftCart/AJAX/Cart_ajax.php',{
+    method:"POST",
+    body:formData,
+    credentials:"include"
+  }).then(res=>res.json()).then((res)=>{
+    if(res.status == 'unauthorized'){
+      showToast(res.message,"denger")
+    }
+    if(res.status== 'added'){
+      showToast("Product Add To Cart Successfully","success")
+    }
+    if(res.status== 'exists'){
+      showToast("Product Already Exist in Cart","warning")
+    }
+  })
+}
+
+// const RemoveFromCart=(productid)=>{
+//   const formData=new FormData();
+//   formData.append('action',"REMOVE")
+//   formData.append('productid',productid)
+//   fetch('/SwiftCart/AJAX/Cart_ajax.php',{
+//     method:"POST",
+//     body:formData,
+//     credentials:"include"
+//   }).then(res=>res.json()).then((res)=>{
+
+//     if(res.status== 'removed'){
+//       showToast("Product Remove From Cart Successfully","success")
+//     }
+//     if(res.status== 'not_found'){
+//       showToast("Product Not Found in Cart","warning")
+//     }
+//   })
+// }
 </script>
 </body>
 

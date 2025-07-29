@@ -26,8 +26,8 @@ echo '
 
 foreach ($categories as $category) {
     $catName = htmlspecialchars($category['name']);
-    $catImage = htmlspecialchars($category['image']); // Assuming 'image' is the column name
-    $catId = urlencode($category['id']); // You can also use 'slug' or 'name' depending on routing
+    $catImage = htmlspecialchars($category['image']);
+    $catId = urlencode($category['id']); 
 
     echo '
       <a href="product.php?category=' . $catName . '" class="min-w-[250px]  rounded-lg shadow p-4 text-center hover:shadow-lg transition">

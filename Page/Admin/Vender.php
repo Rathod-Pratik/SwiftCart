@@ -375,7 +375,6 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         }
 
         function CloseMessageModal() {
-
             const modal = document.getElementById('myMessageModal');
             modal.classList.remove("scale-100", "opacity-100", "translate-y-0");
             modal.classList.add("scale-95", "opacity-0", "translate-y-[-20px]");
@@ -444,7 +443,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                              <td class="flex flex-row gap-2 mt-3">
                                 <button 
                                 id="auth-${value.id}"
-                                  onclick="${value.status == 'block' ?  `OpenDeleteModal(${value.id})` :`blockVender(${value.id})` }"
+                                  onclick="${value.status == 'block' ?  `unblock(${value.id})` :`blockVender(${value.id})` }"
                                   class="cursor-pointer text-white ${value.status === 'active' 
                                     ? 'bg-red-500 hover:border-red-500 hover:text-red-500 hover:bg-white' 
                                     : 'bg-green-500 hover:border-green-500 hover:text-green-500 hover:bg-white'} 

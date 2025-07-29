@@ -1,5 +1,5 @@
 <?php
-echo '<section class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackground.png\')] min-h-[calc(100vh-68px)] text-white flex items-center">
+echo '<section class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackground.png\')] min-h-[calc(100vh-64px)] text-white flex items-center">
         <div class="flex flex-col-reverse lg:flex-row w-full px-4 sm:px-6 md:px-16 items-center justify-between gap-10 md:gap-0">
 
             <!-- Left Content -->
