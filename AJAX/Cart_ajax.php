@@ -16,9 +16,9 @@ if (isset($_COOKIE['authToken'])) {
 
 $userid = $userData['id'];
 $action = $_POST['action'];
-$productid = $_POST['productid'];
 
 if ($action == "ADD") {
+    $productid = $_POST['productid'];
     $check = $pdo->prepare("SELECT 1 FROM cart WHERE userid = ? AND productid = ?");
     $check->execute([$userid, $productid]);
 
@@ -29,8 +29,8 @@ if ($action == "ADD") {
     } else {
         echo json_encode(['status' => 'exists']);
     }
-}
-elseif ($action == "REMOVE") {
+} elseif ($action == "REMOVE") {
+    $productid = $_POST['productid'];
     $check = $pdo->prepare("SELECT 1 FROM cart WHERE userid = ? AND productid = ?");
     $check->execute([$userid, $productid]);
 
@@ -41,5 +41,29 @@ elseif ($action == "REMOVE") {
     } else {
         echo json_encode(['status' => 'not_found']);
     }
+}else if ($action == 'fetch') {
+    $stmt = $pdo->prepare('
+    SELECT 
+        w.id,
+        w.userid,
+        w.productid,
+        w.created_at,
+        p.id ,
+        p.product_name,
+        p.price,
+        p.image
+    FROM cart w
+    JOIN product p ON w.productid = p.id
+    WHERE w.userid = ?
+    ORDER BY w.created_at DESC
+    ');
+
+    $stmt->execute([$userid]);
+    $CartWithProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    echo json_encode([
+        "success"=>true,
+        'product' => $CartWithProducts,
+        'action' => 'fetch'
+    ]);
 }
-?>

@@ -21,26 +21,43 @@
         background-color: #f8fafd;
     }
 
+    #toastContainer {
+        position: fixed;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        z-index: 9999;
+    }
+
     .toast-msg {
         opacity: 0;
-        transform: translateX(-50%) translateY(20px);
+        transform: translateX(-50%) translateY(30px);
         transition: opacity 0.4s ease, transform 0.4s ease;
         pointer-events: none;
-        position: fixed;
+        position: relative;
         left: 50%;
-        bottom: 40px;
         padding: 15px 20px;
         border-radius: 8px;
         color: white;
-        z-index: 9999;
         font-weight: bold;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        min-width: 200px;
+        text-align: center;
     }
 
     .toast-msg.show {
         opacity: 1;
         transform: translateX(-50%) translateY(0);
         pointer-events: auto;
+    }
+
+    .toast-msg.hide {
+        opacity: 0;
+        transform: translateX(-50%) translateY(40px);
+        pointer-events: none;
     }
 
     .toast-msg.success {
@@ -61,27 +78,28 @@
     }
 </style>
 
-<div id="toast" class="toast-msg"></div>
+
+<!-- Toast container -->
+<div id="toastContainer"></div>
 
 <script>
     function showToast(message, type = 'success') {
-        const toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.className = 'toast-msg'; // reset class
-        toast.classList.add(type, 'show'); // add animation + type
+        const toastContainer = document.getElementById('toastContainer');
 
+        const toast = document.createElement('div');
+        toast.className = `toast-msg ${type}`;
+        toast.textContent = message;
+
+        toastContainer.appendChild(toast);
+
+        void toast.offsetHeight; 
+        toast.classList.add('show');
+
+        // Hide after 3 seconds
         setTimeout(() => {
             toast.classList.remove('show');
+            toast.classList.add('hide');
+            setTimeout(() => toast.remove(), 400);
         }, 3000);
     }
 </script>
-
-<?php if (isset($_SESSION['message'])): ?>
-    <script>
-        showToast(<?php echo json_encode($_SESSION['message']); ?>, <?php echo json_encode($_SESSION['msg_type']); ?>);
-    </script>
-    <?php
-    unset($_SESSION['message']);
-    unset($_SESSION['msg_type']);
-    ?>
-<?php endif; ?>

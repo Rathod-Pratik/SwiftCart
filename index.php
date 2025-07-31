@@ -81,8 +81,31 @@ $router->get('/vender/logout', function () {
 });
 
 
-$router->get('/home', function () {
+$router->get('/', function () {
     require __DIR__ . '/Page/Home/Home.php';
+});
+
+$router->get('/contact',function (){
+    require __DIR__ . '/Page/ContactUS/Contact.php';
+});
+$router->get('/about',function (){
+    require __DIR__ . '/Page/About/About.php';
+});
+
+$router->get('/product',function(){
+ require __DIR__ . '/Page/Product/Product.php';
+});
+
+$router->get('/productdetails',function(){
+ require __DIR__ . '/Page/Product/ProductDetail.php';
+});
+
+$router->get('/wishlist',function(){
+ require __DIR__ . '/Page/WishList/WishList.php';
+});
+
+$router->get('/cart',function(){
+ require __DIR__ . '/Page/Cart/Cart.php';
 });
 
 

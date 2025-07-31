@@ -1,6 +1,6 @@
 <?php
 if (isset($_COOKIE['AdminToken'])) {
-    $userData = json_decode($_COOKIE['AdminToken'], true); // true = return associative array
+    $userData = json_decode($_COOKIE['AdminToken'], true); 
     $userType = $userData['userType'];
 
     // Example: Redirect if not vendor

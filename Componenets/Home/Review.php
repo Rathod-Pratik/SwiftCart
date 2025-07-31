@@ -45,7 +45,7 @@ echo '
         <!-- Reviewer Photo (Larger Image) -->
         <div class="flex-shrink-0 z-10">
           <img
-            src="/SwiftCart/Image/VajaKaran.jpg"
+            src="/SwiftCart/Image/Review1.jpg"
             alt="Customer"
             class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover border-4 border-white/20 shadow-md"
           />
@@ -57,8 +57,8 @@ echo '
             I ordered a smartphone from SwiftCart and received it within two days! The packaging was secure and the product was exactly as described. Will definitely shop again.
           </p>
           <hr class="border-white/30 mb-3" />
-          <h4 class="text-lg font-semibold">Emily K.</h4>
-          <p class="text-sm text-teal-100">- New York, NY</p>
+          <h4 class="text-lg font-semibold">Isha Sonaria.</h4>
+          <p class="text-sm text-teal-100">- Gujrat, INDIA</p>
         </div>
       </div>
       <div
@@ -80,7 +80,7 @@ echo '
         <!-- Reviewer Photo (Larger Image) -->
         <div class="flex-shrink-0 z-10">
           <img
-            src="/SwiftCart/Image/VajaKaran.jpg"
+            src="/SwiftCart/Image/Review2.jpg"
             alt="Customer"
             class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover border-4 border-white/20 shadow-md"
           />
@@ -92,8 +92,8 @@ echo '
             As a vendor, listing my products on SwiftCart was super easy. The dashboard is user-friendly and I started getting orders quickly. Great platform for sellers!
           </p>
           <hr class="border-white/30 mb-3" />
-          <h4 class="text-lg font-semibold">Emily K.</h4>
-          <p class="text-sm text-teal-100">- New York, NY</p>
+          <h4 class="text-lg font-semibold">Harshil Rughani.</h4>
+          <p class="text-sm text-teal-100">- Gujrat, INDIA</p>
         </div>
       </div>
       <div
@@ -115,9 +115,9 @@ echo '
         <!-- Reviewer Photo (Larger Image) -->
         <div class="flex-shrink-0 z-10">
           <img
-            src="/SwiftCart/Image/VajaKaran.jpg"
+            src="/SwiftCart/Image/Review3.jpg"
             alt="Customer"
-            class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover border-4 border-white/20 shadow-md"
+            class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover bg-top border-4 border-white/20 shadow-md"
           />
         </div>
 
@@ -127,8 +127,8 @@ echo '
             The variety of products on SwiftCart is amazing! I found everything I needed for my home in one place, and the prices were very reasonable.
           </p>
           <hr class="border-white/30 mb-3" />
-          <h4 class="text-lg font-semibold">Emily K.</h4>
-          <p class="text-sm text-teal-100">- New York, NY</p>
+          <h4 class="text-lg font-semibold">Kavya Sirodariya.</h4>
+          <p class="text-sm text-teal-100">- Gujrat, INDIA</p>
         </div>
       </div>
       <div
@@ -150,7 +150,7 @@ echo '
         <!-- Reviewer Photo (Larger Image) -->
         <div class="flex-shrink-0 z-10">
           <img
-            src="/SwiftCart/Image/VajaKaran.jpg"
+            src="/SwiftCart/Image/Review4.jpg"
             alt="Customer"
             class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover border-4 border-white/20 shadow-md"
           />
@@ -162,8 +162,8 @@ echo '
             Customer support at SwiftCart is fantastic. They resolved my query about a delayed order quickly and kept me updated throughout. Highly recommend!
           </p>
           <hr class="border-white/30 mb-3" />
-          <h4 class="text-lg font-semibold">Emily K.</h4>
-          <p class="text-sm text-teal-100">- New York, NY</p>
+          <h4 class="text-lg font-semibold">Vatsal Satvani.</h4>
+          <p class="text-sm text-teal-100">- Gujrat, INDIA</p>
         </div>
       </div>
 

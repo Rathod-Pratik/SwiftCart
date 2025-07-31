@@ -54,7 +54,7 @@ foreach ($products as $p) {
     echo '
     <div class="rounded-2xl shadow-md bg-white relative overflow-hidden">
       ' . $badge . '
-         <button onclick="AddToCart(\'' . htmlspecialchars($p['id'], ENT_QUOTES) . '\')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
+         <button onclick="AddToWishList(\'' . htmlspecialchars($p['id'], ENT_QUOTES) . '\')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
                         <span class="group cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 transition-colors duration-200" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="2">
                                 <path class="group-hover:fill-red-500 group-hover:stroke-red-500" stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
@@ -69,7 +69,7 @@ foreach ($products as $p) {
           <h3 class="text-sm font-medium">' . htmlspecialchars($p['product_name']) . '</h3>
           <p class="text-xs mt-1">₹' . number_format($p['price'], 2) . '</p>
         </div>
-        <button class="bg-white text-[#234445] rounded-full p-2 hover:bg-gray-100 transition">
+        <button onclick="AddToCart(\'' . htmlspecialchars($p['id'], ENT_QUOTES) . '\')" class="bg-white cursor-pointer text-[#234445] rounded-full p-2 hover:bg-gray-100 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round"
