@@ -64,4 +64,14 @@ if ($action == 'fetch') {
             'action' => 'fetch'
         ]);
     }
+}else if($action=='fetchOneProduct'){
+    $productid= $_POST['id'];
+    $stmt=$pdo->prepare('SELECT * FROM product WHERE id=?');
+    $stmt->execute([$productid]);
+   $product= $stmt->fetch(PDO::FETCH_ASSOC);
+
+    echo json_encode([
+        'action'=> 'fetchOne',
+        'product'=> $product
+    ]);
 }

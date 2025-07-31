@@ -115,8 +115,7 @@ $router->get('/cart',function(){
 
 // 404 Handler
 $router->set404(function () {
-    http_response_code(404);
-    echo '404 - Page Not Found';
+    require __DIR__ . '/Page/NotFound/NotFound.php';
 });
 
 $router->run();

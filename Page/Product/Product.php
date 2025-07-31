@@ -69,7 +69,7 @@
                             </svg>
                         </span>
                         </button>
-                        <img src="${p.image}" alt="${p.product_name}" class="w-full h-44 object-contain mt-6 mb-4" />
+                        <a href='/SwiftCart/productdetails?productId=${p.id}'> <img src="${p.image}" alt="${p.product_name}" class="w-full h-44 object-contain mt-6 mb-4" /></a>
                         <div class="bg-[#234445] text-white px-4 py-3 rounded-b-2xl flex items-center justify-between">
                         <div>
                             <h3 class="text-sm font-medium">${p.product_name}</h3>
