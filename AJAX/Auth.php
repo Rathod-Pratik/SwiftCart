@@ -36,7 +36,6 @@ if ($action == 'login') {
             'id' => $user['id'],
             'email' => $user['email'],
             'userType' => $user['usertype'],
-            'password' => $user['password']
         ];
 
         if ($user['usertype'] == 'customer') {
@@ -90,7 +89,7 @@ if ($action == 'login') {
     try {
         $email = $_POST['email'];
         $name = $_POST['name'];
-        $password = $_POST['password'];
+        $password = $_POST['Password'];
         $userType = 'customer';
 
         $checkStmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
@@ -116,23 +115,40 @@ if ($action == 'login') {
             ':password' => $hashedPassword,
             ':userType' => $userType
         ]);
-        $userData = [
-            'email' => $email,
-            'role' => 'customer',
-        ];
+        if ($result) {
+            $lastId = $pdo->lastInsertId();
 
-        setcookie("authToken", json_encode($userData), [
-            'expires' => time() + 86400,
-            'path' => '/',
-            'secure' => true,
-            'httponly' => true,
-            'samesite' => 'Strict'
-        ]);
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+            $stmt->execute([':id' => $lastId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        echo json_encode([
-            'success' => true,
-            'created' => true
-        ]);
+            if ($user) {
+                $userData = [
+                    'id' => $user['id'],
+                    'role' => 'customer',
+                    'email' => $user['email'],
+                    'userType' => $user['usertype'],
+                ];
+
+                setcookie("authToken", json_encode($userData), [
+                    'expires' => time() + 86400,
+                    'path' => '/',
+                    'secure' => true,
+                    'httponly' => true,
+                    'samesite' => 'Strict'
+                ]);
+
+                echo json_encode([
+                    'success' => true,
+                    'created' => true
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'User not found after insert'
+                ]);
+            }
+        }
     } catch (PDOException $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit();

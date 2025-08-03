@@ -1,5 +1,5 @@
-<?php include __DIR__ .'/../../Componenets/Header.php'; ?>
-<?php include __DIR__ .'/../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+<?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,11 +11,11 @@
 </head>
 
 <body>
-    <?php require __DIR__ .'/../../Componenets/AdminNavbar.php' ?>
-    <?php require __DIR__ .'/../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
 
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <!-- <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
             <div class="relative bg-gradient-to-br from-green-100 to-green-50 p-6 rounded-2xl shadow-lg text-center border border-green-200 hover:scale-105 transition-transform duration-200">
                 <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-green-200/60">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -55,16 +55,17 @@
                 <p class="text-cyan-700 font-semibold mb-1 tracking-wide">Process</p>
                 <h2 class="text-2xl font-bold text-cyan-600">50</h2>
             </div>
-        </div>
+        </div> -->
 
         <div>
             <div class="flex justify-evenly gap-3 mb-6">
                 <input
                     class="border-[#4fd1c5] bg-white border-2 outline-none rounded-md px-4 py-2 w-[90%]"
                     type="text"
+                    oninput="handleSearch(this.value)"
                     placeholder="Search Orders" />
                 <button class="text-white bg-[#4fd1c5] px-5 cursor-pointer py-2 rounded-md">
-                    Search 
+                    Search
                 </button>
             </div>
             <div>
@@ -94,8 +95,8 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
+                    <tbody id="order-body">
+                        <!-- <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
                             <td class="px-6 py-4">1</td>
                             <td class="px-6 py-4">Rathod Pratik</td>
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Apple MacBook Pro 17</th>
@@ -103,12 +104,79 @@
                             <td class="px-6 py-4">2</td>
                             <td class="px-6 py-4">400</td>
                             <td class="px-6 py-4">Demo</td>
-                        </tr>
+                        </tr> -->
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+    <script>
+        let AllProduct = []
+
+        function handleSearch(searchText) {
+            const query = searchText.toLowerCase().trim();
+
+            const filtered = AllProduct.filter(cat =>
+                cat.name.toLowerCase().includes(query)
+            );
+
+            UpdateProductTableUI(filtered);
+        }
+
+        function UpdateProductTableUI(data) {
+            const container = document.getElementById('order-body');
+            container.innerHTML = ""
+            if (data.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td colspan="7" class="bg-white border-b border-gray-200" >
+                        <div class="flex items-center justify-center h-32 text-gray-500 text-lg">
+                            No Order Found
+                        </div>
+                    </td>
+                `;
+                container.append(tr);
+
+            } else {
+                data.forEach(order => {
+                    const tr = document.createElement('tr');
+                    tr.classList.add('bg-white', 'border-b', 'border-gray-200', 'hover:bg-gray-50');
+                    tr.id = `product-${order.id}`
+                    tr.innerHTML = `
+                             <td class="px-6 py-4">${order.id}</td>
+                            <td class="px-6 py-4">${order.name}</td>
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">${order.product_name}</th>
+                            <td class="px-6 py-4">${order.price}</td>
+                            <td class="px-6 py-4">${order.quantity}</td>
+                            <td class="px-6 py-4">${order.price * order.quantity}</td>
+                            <td class="px-6 py-4">${new Date(order.created_at).toLocaleString()}</td>
+                            
+                            `;
+                    container.append(tr)
+                });
+            }
+        }
+        async function loadOrders() {
+            const formData = new FormData();
+            formData.append('action', 'fetchAllOrder')
+            const res = await fetch('/SwiftCart/AJAX/Checkout_ajax.php', {
+                method: "POST",
+                body: formData
+            });
+            const json = await res.json();
+
+            if (json.status === 'success') {
+                AllProduct = json.data;
+                UpdateProductTableUI(json.data)
+
+            } else {
+                showToast("Failed to load orders", 'danger');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            loadOrders()
+        })
+    </script>
 </body>
 
 </html>

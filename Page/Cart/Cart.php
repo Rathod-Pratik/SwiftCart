@@ -39,7 +39,7 @@
                 <div class="space-y-3 text-sm text-gray-700">
                     <div class="flex justify-between">
                         <span>Subtotal</span>
-                        <span id="subtotal" class="font-semibold text-gray-900">$774.96</span>
+                        <span id="subtotal" class="font-semibold text-gray-900"></span>
                     </div>
                     <div class="flex justify-between">
                         <span>Shipping</span>
@@ -48,13 +48,14 @@
 
                     <div class="border-t border-gray-200 pt-4 flex justify-between text-base font-semibold">
                         <span>Total</span>
-                        <span id="total">$774.96</span>
+                        <span id="total"></span>
                     </div>
                 </div>
 
-                <button class="w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded-full font-semibold transition cursor-pointer">
+                <button onclick="window.location.href='/SwiftCart/checkout'" class="w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded-full font-semibold transition cursor-pointer">
                     Proceed To Checkout
                 </button>
+
             </div>
 
         </div>
@@ -73,10 +74,21 @@
                 .then(res => res.json())
                 .then((res) => {
                     if (res.success) {
-                        RenderCart(res.product);
-                        UpdateCartTotals();
+                        let cart = {};
+                        res.product.forEach(p => {
+                            cart[p.id] = {
+                                id: p.id,
+                                name: p.product_name,
+                                price: parseFloat(p.price),
+                                quantity: 1,
+                                image: p.image,
+                                venderid: p.venderid
+                            };
+                        });
+
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        RenderCart(Object.values(cart));
                     } else {
-                        // If no products, still update totals to 0
                         UpdateCartTotals();
                     }
                 });
@@ -89,89 +101,71 @@
             if (!products || products.length === 0) {
                 container.innerHTML = `
             <tr><td colspan="4" class="text-center h-[50vh] text-gray-500 py-10 text-lg font-medium">No Products found in Cart.</td></tr>
-          `;
-                // Set totals to 0
-                document.getElementById('subtotal').textContent = "$0.00";
-                document.getElementById('total').textContent = "$0.00";
+            `;
+                UpdateCartTotals();
                 return;
             }
 
             products.forEach(p => {
-                const quantity = 1;
-                const subtotal = (p.price * quantity).toFixed(2);
+                const subtotal = (p.price * p.quantity).toFixed(2);
 
                 const productHTML = `
-          <tr id="${p.id}">
-            <td class="px-6 py-6">
-              <div class="flex items-center gap-4">
-                <img src="${p.image}" class="w-12 h-12 bg-gray-200 rounded-md" />
-                <span class="text-sm font-medium">${p.product_name}</span>
-              </div>
-            </td>
-            <td class="px-6 py-6 text-sm font-medium">$${p.price}</td>
-            <td class="px-6 py-6">
-              <div class="flex items-center bg-gray-100 rounded-full w-max px-3 py-1">
-                <button onclick="DecreaseQuantity(${p.id},${p.price})" class="text-xl cursor-pointer font-bold text-gray-500 px-1">−</button>
-                <span id="cartItem-${p.id}" class="mx-2 w-6 text-center">${quantity}</span>
-                <button onclick="IncreaseQuantity(${p.id},${p.price})" class="text-xl cursor-pointer font-bold text-gray-500 px-1">+</button>
-              </div>
-            </td>
-            <td class="px-6 py-6">
-              <div class="flex justify-between items-center">
-                <span id="subtotal-${p.id}" class="text-sm font-medium">$${subtotal}</span>
-                <button onclick="RemoveFromCart(${p.id})" class="ml-4 text-xl border-gray-500 cursor-pointer px-3 py-1 border-2 rounded-full text-gray-500 hover:bg-red-500 hover:border-white hover:text-white transition-all duration-300">×</button>
-              </div>
-            </td>
-          </tr>
-           `;
+                                    <tr id="${p.id}">
+                                        <td class="px-6 py-6">
+                                            <div class="flex items-center gap-4">
+                                                <img src="${p.image}" class="w-12 h-12 bg-gray-200 rounded-md" />
+                                                <span class="text-sm font-medium">${p.name}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-6 text-sm font-medium">$${p.price}</td>
+                                        <td class="px-6 py-6">
+                                            <div class="flex items-center bg-gray-100 rounded-full w-max px-3 py-1">
+                                                <button onclick="DecreaseQuantity(${p.id})" class="text-xl cursor-pointer font-bold text-gray-500 px-1">−</button>
+                                                <span id="cartItem-${p.id}" class="mx-2 w-6 text-center">${p.quantity}</span>
+                                                <button onclick="IncreaseQuantity(${p.id})" class="text-xl cursor-pointer font-bold text-gray-500 px-1">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-6">
+                                            <div class="flex justify-between items-center">
+                                                <span id="subtotal-${p.id}" class="text-sm font-medium">$${subtotal}</span>
+                                                <button onclick="RemoveFromCart(${p.id})" class="ml-4 text-xl border-gray-500 cursor-pointer px-3 py-1 border-2 rounded-full text-gray-500 hover:bg-red-500 hover:border-white hover:text-white transition-all duration-300">×</button>
+                                            </div>
+                                        </td>
+                                    </tr>`;
                 container.insertAdjacentHTML('beforeend', productHTML);
             });
 
-            // ✅ Initial update of summary totals
             UpdateCartTotals();
         }
 
-        function DecreaseQuantity(id, price) {
-            const quantityElement = document.getElementById("cartItem-" + id);
-            const subtotalElement = document.getElementById("subtotal-" + id);
+        function IncreaseQuantity(id) {
+            let cart = JSON.parse(localStorage.getItem('cart'));
+            cart[id].quantity += 1;
 
-            let quantity = parseInt(quantityElement.textContent);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            RenderCart(Object.values(cart));
+        }
 
-            if (quantity > 1) {
-                quantity -= 1;
-                quantityElement.textContent = quantity;
-                subtotalElement.textContent = "$" + (price * quantity).toFixed(2);
-                UpdateCartTotals(); // ✅ Update after change
+        function DecreaseQuantity(id) {
+            let cart = JSON.parse(localStorage.getItem('cart'));
+            if (cart[id].quantity > 1) {
+                cart[id].quantity -= 1;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                RenderCart(Object.values(cart));
             }
         }
 
-        function IncreaseQuantity(id, price) {
-            const quantityElement = document.getElementById("cartItem-" + id);
-            const subtotalElement = document.getElementById("subtotal-" + id);
-
-            let quantity = parseInt(quantityElement.textContent);
-            quantity += 1;
-
-            quantityElement.textContent = quantity;
-            subtotalElement.textContent = "$" + (price * quantity).toFixed(2);
-            UpdateCartTotals(); // ✅ Update after change
-        }
-
-        // ✅ GLOBAL FUNCTION: Calculates total from all product subtotals
         function UpdateCartTotals() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || {};
             let subtotal = 0;
 
-            document.querySelectorAll('[id^="subtotal-"]').forEach(el => {
-                const value = parseFloat(el.textContent.replace('$', ''));
-                if (!isNaN(value)) subtotal += value;
+            Object.values(cart).forEach(p => {
+                subtotal += p.price * p.quantity;
             });
 
             document.getElementById('subtotal').textContent = "$" + subtotal.toFixed(2);
-            document.getElementById('total').textContent = "$" + subtotal.toFixed(2); // Shipping = Free
+            document.getElementById('total').textContent = "$" + subtotal.toFixed(2);
         }
-
-
-
 
         function RemoveFromCart(id) {
             const formData = new FormData();
@@ -183,18 +177,26 @@
                 body: formData
             }).then(res => res.json()).then((res) => {
                 if (res.status == 'removed') {
-                    showToast("Product Removed From Cart", "success")
+                    showToast("Product Removed From Cart", "success");
                     document.getElementById(id).remove();
+
+                    // update localStorage
+                    let cart = JSON.parse(localStorage.getItem('cart'));
+                    delete cart[id];
+                    localStorage.setItem('cart', JSON.stringify(cart));
+
                     const WishList = parseInt(document.getElementById('CartLength').textContent);
                     const updatedWishList = WishList - 1;
                     document.getElementById('CartLength').textContent = updatedWishList;
-                    UpdateCartTotals()
+                    UpdateCartTotals();
                 }
+
                 if (res.status == 'not_found') {
-                    showToast("Product Not found in Cart", "warning")
+                    showToast("Product Not found in Cart", "warning");
                 }
-            })
+            });
         }
+
         document.addEventListener('DOMContentLoaded', function() {
             FetchCart()
         })

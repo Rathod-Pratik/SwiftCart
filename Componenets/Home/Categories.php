@@ -27,15 +27,18 @@ echo '
 foreach ($categories as $category) {
     $catName = htmlspecialchars($category['name']);
     $catImage = htmlspecialchars($category['image']);
-    $catId = urlencode($category['id']); 
+    
+    // Properly encode the category name for use in URL
+    $encodedCatName = urlencode($category['name']);
 
     echo '
-      <a href="product.php?category=' . $catName . '" class="min-w-[250px]  rounded-lg shadow p-4 text-center hover:shadow-lg transition">
+      <a href="product?category=' . $encodedCatName . '" class="min-w-[250px] rounded-lg shadow p-4 text-center hover:shadow-lg transition">
         <img src="' . $catImage . '" alt="' . $catName . '" class="m-auto w-32 h-32 object-contain mb-2 bg-gray-100 rounded-full" />
         <h2 class="font-semibold text-lg">' . $catName . '</h2>
       </a>
     ';
 }
+
 
 echo '
     </div>

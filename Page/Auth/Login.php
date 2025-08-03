@@ -86,17 +86,31 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
             const form = e.target;
             const forData = new FormData(form);
 
+            if (document.cookie.includes("authToken=")) {
+                document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+
+            if (document.cookie.includes("AdminToken=")) {
+                document.cookie = "AdminToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+
+            if (document.cookie.includes("venderToken=")) {
+                document.cookie = "venderToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+
+
+
             fetch('/SwiftCart/AJAX/Auth.php', {
                 method: "POST",
                 body: forData,
                 credentials: "same-origin"
             }).then(res => res.json()).then((res) => {
                 if (res.success == false && res.notfound == true) {
-                    showToast("User not exist with this email", 'denger')
+                    showToast("User not exist with this email", 'danger')
                     return;
                 }
                 if (res.success == false && res.incurrect == true) {
-                    showToast("Please Enter currect Password", 'denger')
+                    showToast("Please Enter currect Password", 'danger')
                     return;
                 }
                 if (res.success == true) {
@@ -104,7 +118,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
                     setTimeout(() => {
                         if (res.redirect == 'customer') {
-                            window.location.href = '/SwiftCart/home';
+                            window.location.href = '/SwiftCart';
                         }
                         if (res.redirect == 'admin') {
                             window.location.href = '/SwiftCart/admin/dashboard';

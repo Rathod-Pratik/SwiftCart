@@ -105,10 +105,10 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
                     showToast("User is already Exist with this Email", 'denger')
                     return;
                 }
-                if (res.success == false && res.created == true) {
+                if (res.success == true && res.created == true) {
                     showToast("SignUp successfully", 'success')
                     setTimeout(() => {
-                        window.location.href = '/SwiftCart/home';
+                        window.location.href = '/SwiftCart';
                     }, 1500);
                 }
             })

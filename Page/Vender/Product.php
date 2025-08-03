@@ -30,7 +30,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vender | Product</title>
+  <title>SwiftCart | Product Section</title>
   <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
 </head>
 
@@ -262,7 +262,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
         </div>
       </div>
     </div>
-
+  </div>
     <script>
       AllProduct = [];
 
@@ -313,7 +313,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
           body: 'action=fetch'
         }).then(res => res.json()).then(data => {
           if (data.success) {
-            AllProduct=data.product
+            AllProduct = data.product
             UpdateProductTableUI(data.product)
           }
         })
@@ -633,7 +633,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
         document.getElementById('id').value = products.id
         document.getElementById('category').value = products.category
         document.getElementById('highlight').value = products.highlight
-        imagePreview.src = products.image 
+        imagePreview.src = products.image
         imagePreview.classList.remove('hidden');
         imagePlaceholder.classList.add('hidden');
         deleteImageBtn.classList.remove('hidden');
@@ -694,7 +694,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
         }).then(res => res.json()).then((res) => {
           if (res.success) {
             showToast("Product Deleted successfully", "success")
-            const tr=document.getElementById(`product-${id}`);
+            const tr = document.getElementById(`product-${id}`);
             tr.remove();
             AllProduct = AllProduct.filter(p => p.id !== id);
 

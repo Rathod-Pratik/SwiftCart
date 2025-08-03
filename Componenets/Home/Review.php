@@ -79,10 +79,10 @@ echo '
 
         <!-- Reviewer Photo (Larger Image) -->
         <div class="flex-shrink-0 z-10">
-          <img
+         <img
             src="/SwiftCart/Image/Review2.jpg"
             alt="Customer"
-            class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover border-4 border-white/20 shadow-md"
+            class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover object-top border-4 border-white/20 shadow-md"
           />
         </div>
 
@@ -114,10 +114,10 @@ echo '
 
         <!-- Reviewer Photo (Larger Image) -->
         <div class="flex-shrink-0 z-10">
-          <img
+         <img
             src="/SwiftCart/Image/Review3.jpg"
             alt="Customer"
-            class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover bg-top border-4 border-white/20 shadow-md"
+            class="md:w-60 md:h-80 h-24 w-24 rounded-2xl object-cover object-top border-4 border-white/20 shadow-md"
           />
         </div>
 

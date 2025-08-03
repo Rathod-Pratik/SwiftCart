@@ -90,15 +90,6 @@ if ($action == 'fetchRequestedProduct') {
           $stmp = $pdo->prepare('UPDATE product SET product_state=? WHERE id=?');
           $accept = $stmp->execute(['approved', $productid]);
 
-          // Insert simple message into contact
-          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
-          $success = $message->execute([
-               ':email' => $email,
-               ':reason' => 'Product Approved',
-               ':message' => "Your product '$name' has been approved by admin.",
-               ':sender' => 'admin'
-          ]);
-
           // Send email
           $mail = new PHPMailer(true);
           $mail->isSMTP();
@@ -174,15 +165,6 @@ if ($action == 'fetchRequestedProduct') {
           $stmp = $pdo->prepare('UPDATE product SET product_state=? WHERE id=?');
           $accept = $stmp->execute(['rejected', $productid]);
 
-          // Insert simple message into contact
-          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
-          $success = $message->execute([
-               ':email' => $email,
-               ':reason' => 'Product Rejected',
-               ':message' => "Your product '$name' has been rejected by admin.",
-               ':sender' => 'admin'
-          ]);
-
           // Send email
           $mail = new PHPMailer(true);
           $mail->isSMTP();
@@ -256,15 +238,6 @@ if ($action == 'fetchRequestedProduct') {
           $stmt = $pdo->prepare('UPDATE product SET is_published = TRUE WHERE id = ?');
           $unpublish = $stmt->execute([$id]);
 
-          // Log message in contact table
-          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
-          $message->execute([
-               ':email' => $email,
-               ':reason' => 'Product Republished',
-               ':message' => "Your product '$name' has been Republished by admin.",
-               ':sender' => 'admin'
-          ]);
-
           // Send email to vendor
           $mail = new PHPMailer(true);
           $mail->isSMTP();
@@ -328,15 +301,6 @@ if ($action == 'fetchRequestedProduct') {
           // Unpublish the product
           $stmt = $pdo->prepare('UPDATE product SET is_published = FALSE WHERE id = ?');
           $unpublish = $stmt->execute([$id]);
-
-          // Log message in contact table
-          $message = $pdo->prepare("INSERT INTO contact (email, reason, message, sender) VALUES (:email, :reason, :message, :sender)");
-          $message->execute([
-               ':email' => $email,
-               ':reason' => 'Product Unpublished',
-               ':message' => "Your product '$name' has been unpublished by admin.",
-               ':sender' => 'admin'
-          ]);
 
           // Send email to vendor
           $mail = new PHPMailer(true);

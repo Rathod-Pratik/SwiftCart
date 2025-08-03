@@ -19,6 +19,7 @@
             e.preventDefault()
             const form=e.target;
             const formData=new FormData(form);
+            formData.append('action','create')
 
             fetch('/SwiftCart/AJAX/Contact_ajax.php',{
                 method:"POST",

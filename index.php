@@ -108,6 +108,22 @@ $router->get('/cart',function(){
  require __DIR__ . '/Page/Cart/Cart.php';
 });
 
+$router->get('/profile',function(){
+ require __DIR__ . '/Page/Profile/Profile.php';
+});
+
+$router->get('/checkout',function(){
+ require __DIR__ . '/Page/CheckOut/CheckOut.php';
+});
+
+$router->get('/order',function(){
+ require __DIR__ . '/Page/Order/Order.php';
+});
+
+$router->get('/Completeorder',function(){
+ require __DIR__ . '/Page/CheckOut/SuccessOrder.php';
+});
+
 
 
 

@@ -50,6 +50,7 @@ if ($action == "ADD") {
         w.created_at,
         p.id ,
         p.product_name,
+        p.venderid,
         p.price,
         p.image
     FROM cart w

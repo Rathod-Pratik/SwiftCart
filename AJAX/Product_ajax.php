@@ -26,8 +26,8 @@ if ($action == 'fetch') {
 } else if ($action == 'filter') {
     $category = $_POST['category'];
 
-            if ($category == 'All Product') {
-            $stmt = $pdo->prepare("
+    if ($category == 'All Product') {
+        $stmt = $pdo->prepare("
             SELECT *
             FROM product
             ORDER BY created_at DESC
@@ -43,7 +43,7 @@ if ($action == 'fetch') {
         echo json_encode([
             'product' => $products,
             'length' => $totalProducts,
-            'action' => 'fetch'
+            'action' => 'filter'
         ]);
     } else {
         $stmt = $pdo->prepare("SELECT *
@@ -61,17 +61,35 @@ if ($action == 'fetch') {
         echo json_encode([
             'product' => $products,
             'length' => $totalProducts,
-            'action' => 'fetch'
+            'action' => 'filter'
         ]);
     }
-}else if($action=='fetchOneProduct'){
-    $productid= $_POST['id'];
-    $stmt=$pdo->prepare('SELECT * FROM product WHERE id=?');
+} else if ($action == 'fetchOneProduct') {
+    $productid = $_POST['id'];
+    $stmt = $pdo->prepare('SELECT * FROM product WHERE id=?');
     $stmt->execute([$productid]);
-   $product= $stmt->fetch(PDO::FETCH_ASSOC);
+    $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $stmt2 = $pdo->prepare('
+            SELECT 
+                r.*, 
+                u.name 
+            FROM 
+                review r
+            INNER JOIN 
+                users u 
+            ON 
+                r.user_id = u.id
+            WHERE 
+                r.product_id = ?
+        ');
+    $stmt2->execute([$productid]);
+    $review = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
 
     echo json_encode([
-        'action'=> 'fetchOne',
-        'product'=> $product
+        'action' => 'fetchOne',
+        'product' => $product,
+        'review' => $review
     ]);
 }
