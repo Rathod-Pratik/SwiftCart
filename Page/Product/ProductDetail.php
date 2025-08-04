@@ -108,13 +108,17 @@
             <!-- Quantity + Buttons row -->
             <div class="flex items-center mb-6">
 
-                <button class="bg-[#234445] hover:bg-[#1b3536] text-white text-lg font-semibold rounded-xl px-6 py-2 shadow transition-all duration-150">
+                <button id="CartButton" onclick="AddToCart()" class="bg-[#234445] hover:bg-[#1b3536] text-white text-lg font-semibold rounded-xl px-6 py-2 shadow transition-all duration-150 cursor-pointer">
                     Add To Cart
                 </button>
                 <!-- Like/share icons -->
-                <button class="ml-2 p-2 rounded-full border border-gray-200 hover:bg-gray-100 text-gray-400 transition">
-                    ♥
+                <button id="wishlistButton" class="ml-2 p-2 rounded-full border border-gray-200 hover:bg-gray-100 bg-white text-gray-700 flex items-center gap-2 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="#4a5565" stroke="white" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                    </svg>
+
                 </button>
+
 
             </div>
         </div>
@@ -180,6 +184,14 @@
 
     <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
     <script>
+        document.getElementById('wishlistButton').onclick = function() {
+            AddToWishList(res.product.id);
+        };
+
+        document.getElementById('CartButton').onclick = function() {
+            AddToCart(res.product.id);
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const productId = parseFloat(urlParams.get('productId'));
@@ -192,6 +204,13 @@
                     body: formData
                 }).then(res => res.json()).then((res) => {
                     document.getElementById('ProductImage').src = res.product.image;
+                    document.getElementById('wishlistButton').onclick = function() {
+                        AddToWishList(res.product.id);
+                    };
+
+                    document.getElementById('CartButton').onclick = function() {
+                        AddToCart(res.product.id);
+                    };
                     document.getElementById('price').textContent = res.product.price;
                     document.getElementById('product_name').textContent = res.product.product_name;
                     document.getElementById('ProductHeading').textContent = `Product Details/${res.product.product_name}`
@@ -304,6 +323,58 @@
             document.getElementById(`${tab}Tab`).classList.remove('hidden');
             document.getElementById(`${tab}Btn`).classList.add('text-yellow-600', 'border-yellow-500');
             document.getElementById(`${tab}Btn`).classList.remove('text-gray-600');
+        }
+
+        const AddToWishList = (productid) => {
+            const formData = new FormData();
+            formData.append('action', "ADD")
+            formData.append('productid', productid)
+            fetch('/SwiftCart/AJAX/WishList_ajax.php', {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            }).then(res => res.json()).then((res) => {
+                if (res.status == 'unauthorized') {
+                    showToast(res.message, "denger")
+                }
+                if (res.status == 'added') {
+                    showToast("Product Add To WishList Successfully", "success")
+                    const WishList = parseInt(document.getElementById('wishListLength').textContent) || 0;
+                    const updatedWishList = WishList + 1;
+                    document.getElementById('wishListLength').classList.remove('hidden')
+                    document.getElementById('wishListLength').textContent = updatedWishList;
+
+                }
+                if (res.status == 'exists') {
+                    showToast("Product Already Exist in Cart", "warning")
+                }
+            })
+        }
+
+        const AddToCart = (productid) => {
+            const formData = new FormData();
+            formData.append('action', "ADD")
+            formData.append('productid', productid)
+            fetch('/SwiftCart/AJAX/Cart_ajax.php', {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            }).then(res => res.json()).then((res) => {
+                if (res.status == 'unauthorized') {
+                    showToast(res.message, "denger")
+                }
+                if (res.status == 'added') {
+                    showToast("Product Add To Cart Successfully", "success")
+                    const Cart = parseInt(document.getElementById('CartLength').textContent) || 0;
+                    const UpdatedCart = Cart + 1;
+                    document.getElementById('CartLength').classList.remove('hidden')
+                    document.getElementById('CartLength').textContent = UpdatedCart;
+
+                }
+                if (res.status == 'exists') {
+                    showToast("Product Already Exist in Cart", "warning")
+                }
+            })
         }
     </script>
 </body>

@@ -165,25 +165,6 @@
         }
       })
     }
-
-    // const RemoveFromCart=(productid)=>{
-    //   const formData=new FormData();
-    //   formData.append('action',"REMOVE")
-    //   formData.append('productid',productid)
-    //   fetch('/SwiftCart/AJAX/Cart_ajax.php',{
-    //     method:"POST",
-    //     body:formData,
-    //     credentials:"include"
-    //   }).then(res=>res.json()).then((res)=>{
-
-    //     if(res.status== 'removed'){
-    //       showToast("Product Remove From Cart Successfully","success")
-    //     }
-    //     if(res.status== 'not_found'){
-    //       showToast("Product Not Found in Cart","warning")
-    //     }
-    //   })
-    // }
   </script>
 </body>
 

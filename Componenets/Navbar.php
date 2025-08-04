@@ -46,12 +46,12 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
           </svg> 
           ';
-  if ($wishlistCount > 0) {
-    echo '<span id="wishListLength" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">' . $wishlistCount  . '</span>';
-  } else {
-    echo '<span id="wishListLength" class="hidden absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>';
-  }
-  echo ' 
+          if ($wishlistCount > 0) {
+            echo '<span id="wishListLength" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">' . $wishlistCount  . '</span>';
+          } else {
+            echo '<span id="wishListLength" class="hidden absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>';
+          }
+          echo ' 
         </a>
     </div>
     <div class="relative">
@@ -62,13 +62,13 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
             <path d="M320 160v-32c0-35.3-28.7-64-64-64s-64 28.7-64 64v32"/>
             <path d="M112 160l144 112 144-112"/>
           </svg>';
-  if ($CartlistCount > 0) {
-    echo '<span id="CartLength" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">'
-      . $CartlistCount .
-      '</span>';
-  } else {
-    echo '<span id="CartLength" class="absolute hidden -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>';
-  }
+          if ($CartlistCount > 0) {
+            echo '<span id="CartLength" class="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">'
+              . $CartlistCount .
+              '</span>';
+          } else {
+            echo '<span id="CartLength" class="absolute hidden -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>';
+          }
   echo '
         </a>
     </div>
@@ -116,8 +116,13 @@ echo '
               </ul>
             </div>
              <div id="navbar-sticky"
-                  class="fixed w-[90%] border border-white shadow-xl top-0 left-0 right-0 z-40 md:hidden m-auto rounded-md p-4 transition-transform duration-300 transform -translate-y-full backdrop-blur bg-[#204d4f]">
-                <ul class="flex flex-col items-center justify-center gap-6 text-lg font-medium ">
+              class="fixed h-full w-[80vw] max-w-xs top-0 right-0 z-40 md:hidden rounded-l-xl p-4 transition-transform duration-300 transform translate-x-full backdrop-blur bg-[#204d4f] shadow-xl border-l border-white">
+                  <button id="close-navbar" class="md:hidden cursor-pointer text-white mr-4 flex justify-end w-[92%]">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                </button>
+                <ul class="flex flex-col items-center justify-center gap-6 text-lg font-medium mt-10">
                   <li><a href="/SwiftCart/" class="text-white hover:text-[#d09523]">Home</a></li>
                   <li><a href="#" class="text-white hover:text-[#d09523]">About</a></li>
                   <li><a href="#" class="text-white hover:text-[#d09523]">Services</a></li>
@@ -209,16 +214,32 @@ echo '
 
   const toggleBtn = document.getElementById("menu-toggle");
   const navbar = document.getElementById("navbar-sticky");
+  const closeBtn = document.getElementById("close-navbar");
 
   toggleBtn.addEventListener("click", () => {
-    if (navbar.classList.contains("-translate-y-full")) {
-      navbar.classList.remove("hidden");
-      navbar.classList.add("mt-[82px]");
-      setTimeout(() => navbar.classList.remove("-translate-y-full"), 10);
-    } else {
-      navbar.classList.add("-translate-y-full");
-    navbar.classList.remove("mt-[82px]");
-      setTimeout(() => navbar.classList.add("hidden"), 300); 
+    navbar.classList.remove("hidden");
+    setTimeout(() => {
+      navbar.classList.remove("translate-x-full");
+    }, 10);
+    document.body.style.overflow = "hidden";
+  });
+
+  closeBtn.addEventListener("click", () => {
+    navbar.classList.add("translate-x-full");
+    document.body.style.overflow = "";
+    setTimeout(() => {
+      navbar.classList.add("hidden");
+    }, 300);
+  });
+
+  // Optional: close navbar when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!navbar.contains(e.target) && !toggleBtn.contains(e.target) && !navbar.classList.contains("hidden")) {
+      navbar.classList.add("translate-x-full");
+      document.body.style.overflow = "";
+      setTimeout(() => {
+        navbar.classList.add("hidden");
+      }, 300);
     }
   });
 </script>
