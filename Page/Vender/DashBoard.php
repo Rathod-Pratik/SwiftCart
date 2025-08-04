@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Dashboard</title>
-    <?php include __DIR__ .'/../../Componenets/Header.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
-<?php require __DIR__ .'/../../Componenets/VenderNavbar.php' ?>
-<?php require __DIR__ .'/../../Componenets/VenderSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/VenderNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/VenderSideBar.php' ?>
     <div class="p-4 lg:ml-64 pt-20  max-w-7xl mx-auto bg-gray-100">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Revenue</p>
-                <h2 class="text-2xl font-bold text-green-600">₹ 50000</h2>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow text-center">
-                <p class="text-gray-500 mb-2">Total Users</p>
-                <h2 class="text-2xl font-bold text-blue-600">50</h2>
+                <h2 class="text-2xl font-bold text-green-600 " id="totalamount">₹ 0</h2>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Order</p>
-                <h2 class="text-2xl font-bold text-purple-600">50</h2>
+                <h2 class="text-2xl font-bold text-purple-600" id="TotalOrder">0</h2>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Products</p>
-                <h2 class="text-2xl font-bold text-cyan-600">50</h2>
+                <h2 class="text-2xl font-bold text-cyan-600" id="TotalProduct">0</h2>
             </div>
         </div>
         <div class="bg-gray-100 font-sans pb-6">
@@ -78,81 +77,30 @@
                             <span class="text-[#4fd1c5] text-lg font-bold">$2,750</span>
                             <span class="text-gray-500">Mar Sales</span>
                         </div>
-                        <!-- <div class="bg-gray-50 rounded-lg p-3 flex flex-col items-center">
-                            <span class="text-[#4fd1c5] text-lg font-bold">$3,100</span>
-                            <span class="text-gray-500">Apr Sales</span>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-3 flex flex-col items-center">
-                            <span class="text-[#4fd1c5] text-lg font-bold">$2,950</span>
-                            <span class="text-gray-500">May Sales</span>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-3 flex flex-col items-center">
-                            <span class="text-[#4fd1c5] text-lg font-bold">$3,400</span>
-                            <span class="text-gray-500">Jun Sales</span>
-                        </div> -->
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="bg-gray-50 sm:rounded-lg">
-            <h1 class="text-2xl font-bold p-2 text-gray-800 tracking-tight mb-2">Recent Orders</h1>
-            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                <table class="w-full text-[15px] text-left text-gray-700 font-sans">
-                    <thead class="text-xs font-semibold text-[#4fd1c5] uppercase bg-gray-50 border-b border-gray-200">
-                        <tr>
-                            <th scope="col" class="px-4 py-3 text-center">Id</th>
-                            <th scope="col" class="px-4 py-3">Product name</th>
-                            <th scope="col" class="px-4 py-3">UserId</th>
-                            <th scope="col" class="px-4 py-3">Category</th>
-                            <th scope="col" class="px-4 py-3">Price</th>
-                            <th scope="col" class="px-4 py-3">Quantity</th>
-                            <th scope="col" class="px-4 py-3">Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="bg-white border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="px-4 py-3 text-center font-semibold text-[#4fd1c5]">1</td>
-                            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">Apple MacBook Pro 17</td>
-                            <td class="px-4 py-3">901561625</td>
-                            <td class="px-4 py-3">Laptop</td>
-                            <td class="px-4 py-3">$2999</td>
-                            <td class="px-4 py-3">2</td>
-                            <td class="px-4 py-3 font-bold text-green-600">6000</td>
-                        </tr>
-                        <tr class="bg-white border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="px-4 py-3 text-center font-semibold text-[#4fd1c5]">2</td>
-                            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">Samsung Galaxy S22</td>
-                            <td class="px-4 py-3">901561626</td>
-                            <td class="px-4 py-3">Mobile</td>
-                            <td class="px-4 py-3">$999</td>
-                            <td class="px-4 py-3">1</td>
-                            <td class="px-4 py-3 font-bold text-green-600">999</td>
-                        </tr>
-                        <tr class="bg-white border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="px-4 py-3 text-center font-semibold text-[#4fd1c5]">3</td>
-                            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">Sony WH-1000XM4</td>
-                            <td class="px-4 py-3">901561627</td>
-                            <td class="px-4 py-3">Headphones</td>
-                            <td class="px-4 py-3">$349</td>
-                            <td class="px-4 py-3">3</td>
-                            <td class="px-4 py-3 font-bold text-green-600">1047</td>
-                        </tr>
-                        <tr class="bg-white border-b border-gray-100 hover:bg-gray-50 transition">
-                            <td class="px-4 py-3 text-center font-semibold text-[#4fd1c5]">4</td>
-                            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">HP Pavilion 15</td>
-                            <td class="px-4 py-3">901561628</td>
-                            <td class="px-4 py-3">Laptop</td>
-                            <td class="px-4 py-3">$799</td>
-                            <td class="px-4 py-3">1</td>
-                            <td class="px-4 py-3 font-bold text-green-600">799</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 
     <script>
+        function FetchData() {
+            const formData = new FormData();
+            formData.append('action', 'FetchVenderData')
+            fetch('/SwiftCart/AJAX/DashBoard_ajax.php', {
+                method: "POST",
+                body: formData
+            }).then(res => res.json()).then((res) => {
+                document.getElementById('totalamount').textContent = res.amount.sum;
+                document.getElementById('TotalOrder').textContent = res.order.count;
+                document.getElementById('TotalProduct').textContent = res.product.total_products;
+
+            })
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            FetchData()
+        })
+
         // Bar Chart
         const barCtx = document.getElementById('barChart').getContext('2d');
         new Chart(barCtx, {
@@ -254,4 +202,5 @@
         });
     </script>
 </body>
+
 </html>

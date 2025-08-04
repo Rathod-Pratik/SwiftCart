@@ -97,17 +97,16 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     </tr>
                 </thead>
                 <tbody id="Approved-table-body">
-                    <tr class="">
-
-                    </tr>
 
                 </tbody>
             </table>
         </div>
     </div>
-    <div id="myModal" tabindex="-1" aria-hidden="true" class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-40 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
-        <div class="relative p-4  max-w-5xl max-h-full">
-            <div class="relative bg-white rounded-2xl shadow-lg">
+    <div id="myModal" tabindex="-1" aria-hidden="true" class="h-screen backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-40  justify-center items-start pt-10 w-full md:inset-0 max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
+
+        <div class="relative p-4 w-full max-w-7xl max-h-[90vh] overflow-hidden">
+            <div class="relative bg-white rounded-2xl shadow-lg overflow-y-auto max-h-[85vh]">
+
                 <!-- Modal header -->
                 <div class="flex items-center justify-between p-4 md:p-5 rounded-t bgcolor ">
                     <h3 class="text-lg font-semibold text-white">
@@ -123,6 +122,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                 <!-- Modal body -->
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <table class="text-sm text-left rtl:text-right text-gray-500">
+
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 ">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
@@ -253,7 +253,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     const row = document.createElement('tr');
                     row.id = `RequestedProduct-${value.id}`
                     row.innerHTML = `<td class="px-6 py-4">
-                    <img src='${value.image}' class='h-12 w-12' />
+                    <img src='${value.image}'  />
                                 </td>
                                 <td class="px-6 py-4">
                                     ${value.vendor_name}
@@ -374,53 +374,53 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             });
         }
 
-       async function PublishProduct(id) {
-           document.getElementById(`rejectspinner-${id}`).classList.remove('hidden')
-        const formData = new FormData();
-        formData.append('id',id)
-        formData.append('action','publish')
-            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php',{
-                method:"POST",
-                body:formData
-                
-            }).then(res =>res.json()).then((res)=>{
-                if(res.success){
-                    showToast("Product Publish Successfully",'success')
-                    const row=document.getElementById(`ApprovedProduct-${id}`)
-                    row.cells[7].textContent='Publish'
-                    row.cells[8].innerHTML=`
+        async function PublishProduct(id) {
+            document.getElementById(`rejectspinner-${id}`).classList.remove('hidden')
+            const formData = new FormData();
+            formData.append('id', id)
+            formData.append('action', 'publish')
+            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+                method: "POST",
+                body: formData
+
+            }).then(res => res.json()).then((res) => {
+                if (res.success) {
+                    showToast("Product Publish Successfully", 'success')
+                    const row = document.getElementById(`ApprovedProduct-${id}`)
+                    row.cells[7].textContent = 'Publish'
+                    row.cells[8].innerHTML = `
                      <button onclick="UnPublishProduct(${id})" class="cursor-pointer text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 gap-2" title="Delete">
                                         <div id="rejectspinner-${id}" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                                          UnPublish
                         </button>
                     `
-                }else {
+                } else {
                     showToast("Server is Down Try again leter", "denger")
                 }
             })
         }
 
-       async function UnPublishProduct(id) {
-        document.getElementById(`rejectspinner-${id}`).classList.remove('hidden')
-               const formData = new FormData();
-        formData.append('id',id)
-        formData.append('action','unpublish')
-            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php',{
-                method:"POST",
-                body:formData
-                
-            }).then(res =>res.json()).then((res)=>{
-                if(res.success){
-                    showToast("Product UnPublish Successfully",'success')
-                    const row=document.getElementById(`ApprovedProduct-${id}`)
-                    row.cells[7].textContent='UnPublish'
-                    row.cells[8].innerHTML=`
+        async function UnPublishProduct(id) {
+            document.getElementById(`rejectspinner-${id}`).classList.remove('hidden')
+            const formData = new FormData();
+            formData.append('id', id)
+            formData.append('action', 'unpublish')
+            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+                method: "POST",
+                body: formData
+
+            }).then(res => res.json()).then((res) => {
+                if (res.success) {
+                    showToast("Product UnPublish Successfully", 'success')
+                    const row = document.getElementById(`ApprovedProduct-${id}`)
+                    row.cells[7].textContent = 'UnPublish'
+                    row.cells[8].innerHTML = `
                      <button onclick="PublishProduct(${id})" class="cursor-pointer text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 gap-2" title="Delete">
                                         <div id="rejectspinner-${id}" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                                          Publish
                         </button>
                     `
-                }else {
+                } else {
                     showToast("Server is Down Try again leter", "denger")
                 }
             })
@@ -446,6 +446,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
 
                     const tbody = document.getElementById('Approved-table-body');
                     const row1 = document.createElement('tr');
+                    row1.classList.add('bg-white', 'border-b', 'border-gray-200', 'hover:bg-gray-50');
                     row1.id = `ApprovedProduct-${id}`
                     row1.innerHTML = `
                    <td class="px-6 py-4">${res.data.id}</td>
@@ -455,6 +456,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
                     <td class="px-6 py-4">${res.data.stock ==0 ? 'out of stock':res.data.stock}</td>
                     <td class="px-6 py-4">${res.data.discount}%</td>
                     <td class="px-6 py-4">${res.name}</td>
+                    <td class="px-6 py-4">${product.is_published ? "Published":"UnPublished"}</td>
                     <td class="px-6 py-4 text-center">
                          <button class="cursor-pointer text-white flex items-center justify-center bg-[#4fd1c5] border border-transparent hover:border-[#4fd1c5] hover:text-[#4fd1c5] hover:bg-white font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-colors duration-200 gap-2" title="Delete">
                                         <div id="rejectspinner-${res.data.id}" class="hidden w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>

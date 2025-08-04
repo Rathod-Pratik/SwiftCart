@@ -1,36 +1,37 @@
-<?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?>
+<!-- <?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?> -->
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Shopizo | Admin</title>
-        <?php include __DIR__ .'/../../Componenets/Header.php'; ?>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopizo | Admin</title>
+    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <?php require __DIR__ .'/../../Componenets/AdminNavbar.php' ?>
-    <?php require __DIR__ .'/../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
 
     <div class="p-4 lg:ml-64 pt-20  max-w-7xl mx-auto bg-gray-100">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Revenue</p>
-                <h2 class="text-2xl font-bold text-green-600">₹ 50000</h2>
+                <h2 class="text-2xl font-bold text-green-600" id="totalamount">₹ 0</h2>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Users</p>
-                <h2 class="text-2xl font-bold text-blue-600">50</h2>
+                <h2 class="text-2xl font-bold text-blue-600" id="TotalUser">0</h2>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Order</p>
-                <h2 class="text-2xl font-bold text-purple-600">50</h2>
+                <h2 class="text-2xl font-bold text-purple-600" id="TotalOrder">0</h2>
             </div>
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Products</p>
-                <h2 class="text-2xl font-bold text-cyan-600">50</h2>
+                <h2 class="text-2xl font-bold text-cyan-600" id="TotalProduct">0</h2>
             </div>
         </div>
         <div class="bg-gray-100 font-sans pb-6">
@@ -83,23 +84,11 @@
                             <span class="text-[#4fd1c5] text-lg font-bold">$2,750</span>
                             <span class="text-gray-500">Mar Sales</span>
                         </div>
-                        <!-- <div class="bg-gray-50 rounded-lg p-3 flex flex-col items-center">
-                            <span class="text-[#4fd1c5] text-lg font-bold">$3,100</span>
-                            <span class="text-gray-500">Apr Sales</span>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-3 flex flex-col items-center">
-                            <span class="text-[#4fd1c5] text-lg font-bold">$2,950</span>
-                            <span class="text-gray-500">May Sales</span>
-                        </div>
-                        <div class="bg-gray-50 rounded-lg p-3 flex flex-col items-center">
-                            <span class="text-[#4fd1c5] text-lg font-bold">$3,400</span>
-                            <span class="text-gray-500">Jun Sales</span>
-                        </div> -->
                     </div>
                 </div>
             </div>
         </div>
-        <div class="bg-gray-50 sm:rounded-lg">
+        <!-- <div class="bg-gray-50 sm:rounded-lg">
             <h1 class="text-2xl font-bold p-2 text-gray-800 tracking-tight mb-2">Recent Orders</h1>
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table class="w-full text-[15px] text-left text-gray-700 font-sans">
@@ -154,10 +143,13 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <script>
+         document.addEventListener('DOMContentLoaded',function(){
+            FetchData()
+        })
         // Bar Chart
         const barCtx = document.getElementById('barChart').getContext('2d');
         new Chart(barCtx, {
@@ -257,6 +249,21 @@
                 }
             }
         });
+
+        function FetchData(){
+            const formData=new FormData();
+            formData.append('action','FetchAdminData')
+            fetch('/SwiftCart/AJAX/DashBoard_ajax.php',{
+                method:"POST",
+                body:formData
+            }).then(res=>res.json()).then((res)=>{
+                document.getElementById('totalamount').textContent=res.amount
+                document.getElementById('TotalUser').textContent=res.user
+                document.getElementById('TotalOrder').textContent=res.order
+                document.getElementById('TotalProduct').textContent=res.product
+            })
+        }
+       
     </script>
 
 </body>
