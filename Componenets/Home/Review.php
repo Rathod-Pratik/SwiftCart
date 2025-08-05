@@ -2,8 +2,8 @@
 echo '
 <section class="py-8 bg-gray-50 font-sans">
   <div class="flex justify-between lg:w-[90vw] m-auto mt-3 px-4">
-    <h1 class="text-2xl font-semibold">Customer Reviews</h1>
-    <div class="flex gap-3">
+    <h1 data-aos="fade-right" class="text-2xl font-semibold">Customer Reviews</h1>
+    <div data-aos="fade-left" class="flex gap-3">
       <button
         id="reviewPrevBtn"
         class="px-6 py-2 rounded-md font-semibold shadow text-white bg-[#d09523] hover:bg-[#f4b942] cursor-pointer text-sm transition"
@@ -26,7 +26,7 @@ echo '
   >
     <div class="flex gap-6 w-max pb-4">
       <!-- New Styled Review Card -->
-      <div
+      <div data-aos="zoom-in"
         class="md:w-[720px] md:h-[420px] w-[380px] h-[410px] flex-col md:flex-row  bg-[#245955] text-white rounded-2xl p-8 relative overflow-hidden flex items-center gap-8 shadow-lg"
        >
         <!-- Decorative Stars -->
@@ -62,6 +62,7 @@ echo '
         </div>
       </div>
       <div
+      data-aos="zoom-in"
         class="md:w-[720px] h-[410px] md:h-[420px] w-[380px] flex-col md:flex-row  bg-[#245955] text-white rounded-2xl p-8 relative overflow-hidden flex items-center gap-8 shadow-lg"
        >
         <!-- Decorative Stars -->
@@ -97,6 +98,7 @@ echo '
         </div>
       </div>
       <div
+        data-aos="zoom-in"
         class="md:w-[720px] md:h-[420px] h-[410px] w-[380px] flex-col md:flex-row  bg-[#245955] text-white rounded-2xl p-8 relative overflow-hidden flex items-center gap-8 shadow-lg"
         >
         <!-- Decorative Stars -->
@@ -131,7 +133,7 @@ echo '
           <p class="text-sm text-teal-100">- Gujrat, INDIA</p>
         </div>
       </div>
-      <div
+      <div data-aos="zoom-in"
         class="md:w-[720px] md:h-[420px] h-[410px] w-[380px] flex-col md:flex-row  bg-[#245955] text-white rounded-2xl p-8 relative overflow-hidden flex items-center gap-8 shadow-lg"
          >
         <!-- Decorative Stars -->

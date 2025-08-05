@@ -2,7 +2,7 @@
 echo '
 <section class="bg-[#f6f6f6] rounded-2xl max-w-7xl mx-auto p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-10">
   <!-- Left Content -->
-  <div class="md:w-1/2">
+  <div data-aos="fade-right" class="md:w-1/2">
     <h2 class="text-3xl md:text-4xl font-semibold mb-4 leading-snug text-gray-900">
       Subscribe To Our<br />Newsletter
     </h2>
@@ -24,7 +24,7 @@ echo '
   </div>
 
   <!-- Right Image -->
-  <div class="md:w-1/2 hidden md:block">
+  <div data-aos="fade-left" class="md:w-1/2 hidden md:block">
     <div class="rounded-2xl overflow-hidden">
       <img src=\'/SwiftCart/Image/Email.webp\' alt="Subscribe" class="bg-cover w-[572px] h-[243px] object-cover" />
     </div>

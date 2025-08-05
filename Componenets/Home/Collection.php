@@ -5,7 +5,7 @@ echo '
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
     
     <!-- Left Column -->
-    <div class="flex flex-col lg:col-span-3 gap-6 h-full">
+    <div data-aos="fade-right" class="flex flex-col lg:col-span-3 gap-6 h-full">
       
       <div class="bg-[#f6f6f6] rounded-xl p-6 shadow flex flex-col sm:flex-row justify-between items-center min-h-[270px]">
         <div class="w-full sm:w-2/3">
@@ -61,7 +61,7 @@ echo '
     </div>
 
     <!-- Right Column -->
-    <div class="bg-[#f6f6f6] lg:col-span-2 rounded-xl p-6 shadow flex flex-col justify-evenly h-full">
+    <div data-aos="fade-left" class="bg-[#f6f6f6] lg:col-span-2 rounded-xl p-6 shadow flex flex-col justify-evenly h-full">
       <div>
         <p class="text-xs py-2 px-2 font-semibold inline text-[#405d5b] shadow bg-white rounded-2xl">NEW COLLECTION</p>
         <h3 class="text-lg font-bold mt-4">Laptop</h3>

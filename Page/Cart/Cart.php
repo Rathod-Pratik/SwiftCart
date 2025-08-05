@@ -14,7 +14,7 @@
 
     <div class="bg-gray-100 p-10">
         <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-white rounded-lg overflow-hidden shadow">
+            <div data-aos="fade-right" class="lg:col-span-2 bg-white rounded-lg overflow-hidden shadow">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-[#2c4c49] text-white">
@@ -32,7 +32,7 @@
             </div>
 
             <!-- Order Summary -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm mx-auto h-[275px]">
+            <div data-aos="fade-left" class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-sm mx-auto h-[275px]">
                 <!-- Header -->
                 <h2 class="text-xl font-semibold text-[#2c4c49] mb-6">Order Summary</h2>
 

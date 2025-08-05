@@ -3,10 +3,10 @@ echo '
 
 
 <section class="max-w-2xl mx-auto px-4 py-16">
-  <h2 class="text-3xl font-semibold text-center mb-10">Frequently Asked Questions</h2>
+  <h2 class="text-3xl font-semibold text-center mb-10" data-aos="fade-down">Frequently Asked Questions</h2>
 
   <!-- FAQ Items -->
-  <div class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
+  <div data-aos="fade-down" class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
     <div class="faq-question flex justify-between items-center">
       <span class="text-lg">How do I place an order on SwiftCart?</span>
       <span class="faq-icon text-2xl text-gray-600">→</span>
@@ -16,7 +16,7 @@ echo '
     </p>
   </div>
 
-  <div class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
+  <div data-aos="fade-down" class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
     <div class="faq-question flex justify-between items-center">
       <span class="text-lg">Can I track my order after purchase?</span>
       <span class="faq-icon text-2xl text-gray-600">→</span>
@@ -26,7 +26,7 @@ echo '
     </p>
   </div>
 
-  <div class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
+  <div data-aos="fade-down" class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
     <div class="faq-question flex justify-between items-center">
       <span class="text-lg">What is your return and refund policy?</span>
       <span class="faq-icon text-2xl text-gray-600">→</span>
@@ -36,7 +36,7 @@ echo '
     </p>
   </div>
 
-  <div class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
+  <div data-aos="fade-down" class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
     <div class="faq-question flex justify-between items-center">
       <span class="text-lg">How do I become a vendor and sell on SwiftCart?</span>
       <span class="faq-icon text-2xl text-gray-600">→</span>
@@ -46,7 +46,7 @@ echo '
     </p>
   </div>
 
-  <div class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
+  <div data-aos="fade-down" class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
     <div class="faq-question flex justify-between items-center">
       <span class="text-lg">What payment methods are accepted?</span>
       <span class="faq-icon text-2xl text-gray-600">→</span>
@@ -56,7 +56,7 @@ echo '
     </p>
   </div>
 
-  <div class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
+  <div data-aos="fade-down" class="faq-item bg-gray-100 rounded-xl mb-4 px-6 py-4 cursor-pointer overflow-hidden transition-all duration-300">
     <div class="faq-question flex justify-between items-center">
       <span class="text-lg">How do I contact customer support?</span>
       <span class="faq-icon text-2xl text-gray-600">→</span>

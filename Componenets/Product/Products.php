@@ -26,8 +26,8 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
 echo '
 <section class="py-8">
   <div class="flex justify-between lg:w-[90vw] m-auto mt-3 px-4">
-    <h1 id="ProductResult" class="text-lg text-gray-500 font-semibold"></h1>
-    <div class="flex gap-2 items-center">
+    <h1 id="ProductResult" data-aos="rade-right" class="text-lg text-gray-500 font-semibold"></h1>
+    <div data-aos="rade-left" class="flex gap-2 items-center">
       <label class="text-gray-500 text-sm font-medium block mb-1">Short By</label>
       <select required name="category" id="category" class="border border-gray-500 text-sm rounded-lg block  p-2.5 outline-none" onchange="filterProduct(this.value)">
         <option class="text-gray-500" value="All Product" selected>All Product</option>';
@@ -42,11 +42,6 @@ echo '
     </div>
   </div>
   <div id="productItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-[90vw] mx-auto mt-5">
-';
-
-
-
-echo '
   </div>
 </section>
 ';

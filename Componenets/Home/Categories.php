@@ -8,8 +8,8 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 echo '
 <section class="py-8">
   <div class="flex justify-between lg:w-[90vw] m-auto mt-3 px-4">
-    <h1 class="text-2xl font-semibold">Featured Categories</h1>
-    <div class="flex gap-3">
+    <h1 data-aos="fade-right" class="text-2xl font-semibold">Featured Categories</h1>
+    <div data-aos="fade-left" class="flex gap-3">
       <button id="prevBtn" class="px-6 py-2 rounded-md font-semibold shadow text-white bg-[#d09523] hover:bg-[#f4b942] cursor-pointer text-sm transition">
         ←
       </button>
@@ -20,7 +20,7 @@ echo '
   </div>
 
   <!-- Scrollable Slider Container -->
-  <div id="scrollWrapper" class="overflow-x-auto overflow-y-hidden mt-6 px-4 max-w-[90vw] m-auto scrollbar-hide scroll-smooth">
+  <div data-aos="fade-down" id="scrollWrapper" class="overflow-x-auto overflow-y-hidden mt-6 px-4 max-w-[90vw] m-auto scrollbar-hide scroll-smooth">
     <div class="flex gap-6 w-max">
 ';
 

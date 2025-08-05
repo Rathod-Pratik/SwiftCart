@@ -1,12 +1,14 @@
 <link rel="icon" href="/SwiftCart/Image/favicon.png" type="image/x-icon">
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
     body {
         font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
     }
 
     .bgcolor {
@@ -82,7 +84,9 @@
 <!-- Toast container -->
 <div id="toastContainer"></div>
 
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script>
+     AOS.init();
     function showToast(message, type = 'success') {
         const toastContainer = document.getElementById('toastContainer');
 

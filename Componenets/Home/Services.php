@@ -1,5 +1,5 @@
 <?php
-echo '<section class="bg-white py-12 px-4 md:px-20">
+echo '<section class=" py-12 px-4 md:px-20" data-aos="fade-down">
   <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
     <div class="flex flex-col items-center gap-2">
       <div class="bg-yellow-200 p-3 rounded-full">

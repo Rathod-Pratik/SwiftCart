@@ -34,8 +34,8 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 echo '
 <section class="py-8">
   <div class="flex justify-between lg:w-[90vw] m-auto mt-3 px-4">
-    <h1 class="text-2xl font-semibold">Trending Products for you!</h1>
-    <div>
+    <h1 data-aos="fade-right" class="text-2xl font-semibold">Trending Products for you!</h1>
+    <div data-aos="fade-left">
       <button id="viewAllBtn" class="px-6 py-4 rounded-full font-semibold shadow text-white bg-[#d09523] hover:bg-[#f4b942] cursor-pointer text-sm transition">
         View All Products →
       </button>
@@ -52,7 +52,7 @@ foreach ($products as $p) {
     }
 
     echo '
-    <div class="rounded-2xl shadow-md bg-white relative overflow-hidden">
+    <div data-aos="zoom-in" class="rounded-2xl shadow-md bg-white relative overflow-hidden">
       ' . $badge . '
          <button onclick="AddToWishList(\'' . htmlspecialchars($p['id'], ENT_QUOTES) . '\')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
                         <span class="group cursor-pointer">

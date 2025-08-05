@@ -45,14 +45,14 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
 
 <body>
   <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
-  <div class="bg-gray-100 p-6">
+  <div class="bg-gray-100 p-6 min-h-[60vh]" >
     <div class="max-w-7xl mx-auto">
-      <h1 class="text-3xl font-bold mb-6 text-center">All Orders</h1>
+      <h1 class="text-3xl font-bold mb-6 text-center" data-aos="zoom-in">All Orders</h1>
       <div id="orderContainer" class="space-y-6"></div>
     </div>
   </div>
 
-  <div id="crud-modal" tabindex="-1" aria-hidden="true" class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
+  <!-- <div id="crud-modal" tabindex="-1" aria-hidden="true" class="backdrop-blur-sm hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full transform scale-95 opacity-0 translate-y-[-20px] transition-all duration-300 ease-out">
     <div class="relative p-4 w-full max-w-md max-h-full">
       <div class="relative bg-white rounded-lg shadow-sm ">
         <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t bg-[#204d4f]  border-gray-200">
@@ -122,7 +122,7 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
         </form>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
   <script>
@@ -186,9 +186,9 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
             `).join('');
 
           container.innerHTML += `
-    <div class="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
+    <div data-aos="zoom-in" class="bg-white shadow-lg rounded-2xl p-8 border border-gray-100">
       <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-        <div class="text-lg font-bold text-[#234445]">Order Group</div>
+        <div class="text-lg font-bold text-[#234445]"># ${group.id}</div>
         <div class="text-sm text-gray-500">${new Date(group.created_at).toLocaleString()}</div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

@@ -12,7 +12,7 @@
     <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
     <div class="min-h-[100vh] w-full md:w-[90%] lg:w-[80%] mt-10 mx-auto flex flex-col gap-8 p-4">
         <p data-aos="fade-left" class="flex justify-center lg:justify-end gap-2 text-[#d09523] text-lg">
-            <span class="text-black">Welcome</span> <span id="welcome"></span>
+            <span data-aos="fade-left" class="text-black">Welcome</span> <span id="welcome"></span>
         </p>
 
         <section class="flex flex-col-reverse lg:flex-row gap-8 min-h-[80vh]">
@@ -37,7 +37,7 @@
                 <p class="font-medium text-lg hover:text-gray-700">My Wishlist</p>
             </div>
 
-            <form method="post" id="Profileform" class="flex flex-col w-full">
+            <form data-aos="fade-left" method="post" id="Profileform" class="flex flex-col w-full">
                 <h2 class="text-[#d09523] text-xl font-semibold mb-4">Edit Your Profile</h2>
 
                 <div class="flex flex-col gap-6">

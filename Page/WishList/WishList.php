@@ -12,7 +12,7 @@
 <body>
     <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
     <div class="max-w-7xl mx-auto px-4 py-10">
-        <h1 class="text-2xl font-semibold mb-6">My Wishlist</h1>
+        <h1 class="text-2xl font-semibold mb-6" data-aos="fade-down">My Wishlist</h1>
         <div id="productItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
     <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
@@ -30,12 +30,12 @@
             }
             products.forEach(p => {
                 const badge = p.discount > 0 ?
-                    `<div class="absolute top-3 left-3 bg-teal-600 text-white text-xs px-2 py-[2px] rounded-full font-medium">
+                    `<div  class="absolute top-3 left-3 bg-teal-600 text-white text-xs px-2 py-[2px] rounded-full font-medium">
                 -${parseInt(p.discount)}%
                  </div>` : '';
 
                 const productHTML = `
-                        <div class="rounded-2xl shadow-md bg-white relative overflow-hidden" id=${p.productid}>
+                        <div data-aos="zoom-in" class="rounded-2xl shadow-md bg-white relative overflow-hidden" id=${p.productid}>
                         ${badge}
                         <button onclick="RemoveFromWishList('${p.productid}')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
                         <span class="group text-gray-500 cursor-pointer">

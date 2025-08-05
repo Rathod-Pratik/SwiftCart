@@ -4,7 +4,7 @@ echo '
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
     <!-- Left Card -->
-    <div class="relative rounded-2xl overflow-hidden min-h-[350px] flex items-center justify-start p-8 text-white bg-cover bg-center" style="background-image: url(\'/SwiftCart/Image/offer.png \');">
+    <div data-aos="fade-right" class="relative rounded-2xl overflow-hidden min-h-[350px] flex items-center justify-start p-8 text-white bg-cover bg-center" style="background-image: url(\'/SwiftCart/Image/offer.png \');">
       <!-- Overlay -->
       <div class="absolute inset-0 bg-[url(\'/SwiftCart/Image/OfferBackGround.webp\')] "></div>
 
@@ -24,7 +24,7 @@ echo '
     </div>
 
     <!-- Right Card -->
-    <div class="bg-[#f6f6f6] rounded-2xl shadow p-8 flex flex-col justify-center font-sans">
+    <div data-aos="fade-left" class="bg-[#f6f6f6] rounded-2xl shadow p-8 flex flex-col justify-center font-sans">
       <span class="text-sm text-gray-600 font-medium tracking-wide">Regular Offer</span>
       <h3 class="text-3xl font-bold mt-2 mb-4 text-gray-900 leading-snug">10% cash-back<br>on personal care</h3>
       <p class="text-base text-gray-600 mb-6">Max cashback: $12. Code: <strong class="font-semibold">CADHL837</strong></p>

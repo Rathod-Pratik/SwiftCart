@@ -3,7 +3,7 @@
  echo '<section class="bg-white py-12 px-4 md:px-12 m-auto w-[80vw]">
   <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 items-start">
     <!-- Left Contact Info -->
-    <div>
+    <div data-aos="fade-right">
       <h2 class="text-3xl font-bold text-gray-900 mb-4">Get in touch</h2>
       <p class="text-gray-700 mb-8">
         We\'re here for you every step of the way. Whether you have questions, need order assistance, or want to share feedback, our friendly customer support team is ready to assist. Reach out to us via:
@@ -46,7 +46,7 @@ Email us at [your-email@example.com] to get started!
     </div>
 
     <!-- Right Contact Form -->
-    <div class="bg-[#2e5e5c] text-white p-8 rounded-2xl shadow-md w-full">
+    <div data-aos="fade-left" class="bg-[#2e5e5c] text-white p-8 rounded-2xl shadow-md w-full">
       <h3 class="text-2xl font-semibold mb-2">Send us a message</h3>
       <p class="text-sm text-gray-200 mb-6">Your email address will not be published. Required fields are marked</p>
       <form class="space-y-5" id="ContactForm" method="POST">

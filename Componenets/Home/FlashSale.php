@@ -3,7 +3,7 @@ echo '
 <section class="bg-gray-50 px-4 py-10 sm:px-6 md:px-20 ">
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 md:w-[65vw] lg:w-[80vw] m-auto">
 
-    <div class="lg:col-span-3 bg-[#f6f6f6] rounded-xl p-6 shadow flex flex-col justify-between min-h-[300px]">
+    <div data-aos="fade-right" class="lg:col-span-3 bg-[#f6f6f6] rounded-xl p-6 shadow flex flex-col justify-between min-h-[300px]">
 
       <!-- Header -->
       <div class="flex items-start justify-between flex-row flex-wrap gap-4">
@@ -44,7 +44,7 @@ echo '
       </div>
     </div>
 
-    <div class="lg:col-span-2 flex flex-col justify-between gap-6">
+    <div data-aos="fade-left" class="lg:col-span-2 flex flex-col justify-between gap-6">
 
       <!-- Card 1 -->
       <div class="bg-[#f6f6f6] rounded-xl p-6 shadow flex justify-between items-center">

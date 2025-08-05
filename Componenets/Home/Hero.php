@@ -3,7 +3,7 @@ echo '<section class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackg
         <div class="flex flex-col-reverse lg:flex-row w-full px-4 sm:px-6 md:px-16 items-center justify-between gap-10 md:gap-0">
 
             <!-- Left Content -->
-            <div class="basis-1/2 p-4 md:p-8 flex flex-col justify-center text-center md:text-left">
+            <div data-aos="fade-right" class="basis-1/2 p-4 md:p-8 flex flex-col justify-center text-center md:text-left">
                 <span class="text-base tracking-widest text-gray-200">SHOP ON SWIFTCART</span>
                 <h1 class="text-4xl md:text-5xl font-bold mt-2 mb-4">Discover Amazing Products & Deals</h1>
                 <p class="text-lg text-gray-200 mb-8">
@@ -31,7 +31,7 @@ echo '<section class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackg
             </div>
 
             <!-- Right Side Image -->
-            <div class="basis-1/2 flex items-center justify-center p-4 md:p-8">
+            <div data-aos="fade-left" class="basis-1/2 flex items-center justify-center p-4 md:p-8">
                 <img src="/SwiftCart/Image/Home5.jpg"
                     alt="Interior Room"
                     class="w-full rounded-2xl shadow-2xl object-cover" />
