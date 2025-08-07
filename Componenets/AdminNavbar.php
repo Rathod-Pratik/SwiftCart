@@ -30,7 +30,7 @@ echo ' <nav class="fixed top-0 z-50 w-full bg-[#f8fafd]">
             </svg>
          </button>
         <a href="/SwiftCart" class="flex ms-2 md:me-24">
-          <span class="self-center text-xl text-[#a0aec0] font-semibold sm:text-2xl whitespace-nowrap ">SwiftCart</span>
+          <span class="self-center text-xl  font-semibold sm:text-2xl whitespace-nowrap ">SwiftCart</span>
         </a>
       </div>
       <div class="flex items-center">

@@ -1,3 +1,4 @@
+<?php   require __DIR__ . '/../../Componenets/VenderAuth.php'  ?>
 <?php
 
 require __DIR__ . '/../../Database/db.php';

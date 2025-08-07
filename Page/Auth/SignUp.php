@@ -1,4 +1,20 @@
 <?php
+
+ob_start();
+
+if (isset($_COOKIE['venderToken'])) {
+    header("Location: /SwiftCart/vender/dashboard");
+    exit;
+}
+if (isset($_COOKIE['AdminToken'])) {
+    header("Location: /SwiftCart/admin/dashboard");
+    exit;
+}
+if (isset($_COOKIE['authToken'])) {
+    header("Location: /SwiftCart/");
+    exit;
+}
+
 require __DIR__ . '/../../Database/Function.php';
 require __DIR__ . '/../../Database/db.php';
 

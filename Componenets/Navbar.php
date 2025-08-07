@@ -31,7 +31,7 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
 echo '
 <nav class="bg-[#204d4f] w-full z-20 top-0 start-0 sticky">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
       <span class="self-center text-white text-2xl font-semibold whitespace-nowrap">SwiftCart</span>
     </a>
     <div class="hidden md:flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-4 relative">
@@ -86,7 +86,7 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
           <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
             <li><a href="/SwiftCart/profile" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Account</a></li>
             <li><a href="/SwiftCart/order" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Order</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Logout</a></li>
+            <li><p onclick="Logout()" class="block cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Logout</p></li>
           </ul>
         </div>
       </div>
@@ -129,7 +129,7 @@ echo '
                   <li><a href="/SwiftCart/contact" class="text-white hover:text-[#d09523]">Contact</a></li>
                   <li><a href="#" class="text-white hover:text-[#d09523]">Acount</a></li>
                   <li><a href="#" class="text-white hover:text-[#d09523]">Order</a></li>
-                  <li><a href="#" class="text-white hover:text-[#d09523]">Logout</a></li>
+                  <li class="text-white hover:text-[#d09523] w-full"><button onclick="Logout()" >Logout</button></li>
                 </ul>
                 <div class="py-3 flex justify-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-4 relative">
                 ';
@@ -242,5 +242,16 @@ echo '
       }, 300);
     }
   });
+
+  function Logout(){
+
+  fetch("/SwiftCart/AJAX/Logout.php", {
+  method: "POST"
+})
+.then(res => res.json())
+.then(data => {
+  window.location.href = "/SwiftCart/login"; // Redirect to login page
+});
+  }
 </script>
 ';

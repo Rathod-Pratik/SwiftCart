@@ -1,15 +1,8 @@
 <?php
-if (isset($_COOKIE['AdminToken'])) {
-    $userData = json_decode($_COOKIE['AdminToken'], true); 
-    $userType = $userData['userType'];
+ob_start();
 
-    // Example: Redirect if not vendor
-    if ($userType !== 'admin') {
-        header('Location: /SwiftCart/login');
-        exit();
-    }
-} else {
-    // Cookie not set — redirect to login
-    header('Location: /SwiftCart/login');
-    exit();
+if (!isset($_COOKIE['AdminToken'])) {
+    header("Location: /SwiftCart/login");
+    exit;
 }
+?>

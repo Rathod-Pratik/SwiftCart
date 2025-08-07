@@ -93,7 +93,7 @@ echo '
             </a>
          </li>
          <li>
-            <a href="/SwiftCart/admin/logout" class="flex items-center p-2 rounded-xl transition-all  '.isActive('logout.php').'">
+            <a href="javascript:void(0)" onclick="Logout()" class="text-[#a0aec0] hover:text-white flex items-center p-2 rounded-xl transition-all  cursor-pointer'.isActive('logout.php').'">
                <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                      <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"/>
@@ -105,5 +105,19 @@ echo '
       </ul>
    </div>
 </aside>
+
+<script>
+  function Logout(){
+
+  fetch("/SwiftCart/AJAX/Logout.php", {
+  method: "POST"
+})
+.then(res => res.json())
+.then(data => {
+  window.location.href = "/SwiftCart/login"; // Redirect to login page
+});
+  }
+</script>
+
 ';
 ?>
