@@ -1,8 +1,5 @@
 <?php
-echo '
-
-
-<section class="max-w-2xl mx-auto px-4 py-16">
+echo '<section class="max-w-2xl mx-auto px-4 py-16">
   <h2 class="text-3xl font-semibold text-center mb-10" data-aos="fade-down">Frequently Asked Questions</h2>
 
   <!-- FAQ Items -->
@@ -65,8 +62,5 @@ echo '
       You can contact our support via the chat widget or email us at support@swiftcart.com.
     </p>
   </div>
-</section>
-
-
-'
+</section>'
 ?>

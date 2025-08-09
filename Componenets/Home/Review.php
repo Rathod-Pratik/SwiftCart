@@ -171,5 +171,4 @@ echo '
 
     </div>
   </div>
-</section>
-';
+</section>';

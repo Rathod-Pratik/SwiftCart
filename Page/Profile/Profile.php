@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Profile</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <div class="min-h-[100vh] w-full md:w-[90%] lg:w-[80%] mt-10 mx-auto flex flex-col gap-8 p-4">
         <p data-aos="fade-left" class="flex justify-center lg:justify-end gap-2 text-[#d09523] text-lg">
             <span data-aos="fade-left" class="text-black">Welcome</span> <span id="welcome"></span>
@@ -103,7 +103,7 @@
             </form>
         </section>
     </div>
-    <!-- <?php include __DIR__ . '/../../Componenets/Footer.php'; ?> -->
+    <!-- <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?> -->
     <script>
         function fetchDetail() {
             const formData = new FormData();

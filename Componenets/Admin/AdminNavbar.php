@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . "/../Database/db.php";
+require __DIR__ . "/../../Database/db.php";
 
 $venderToken = $_COOKIE['AdminToken'] ?? null;
 

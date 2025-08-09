@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Cart</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <?php require __DIR__ . '/../../Componenets/Cart/CartHeader.php' ?>
 
     <div class="bg-gray-100 p-10">
@@ -57,12 +57,9 @@
                 </button>
 
             </div>
-
         </div>
     </div>
-
-
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         function FetchCart() {
             const formData = new FormData();

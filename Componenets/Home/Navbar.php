@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__ . '/../Database/db.php';
+require __DIR__ . '/../../Database/db.php';
 
 if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COOKIE['venderToken'])) {
   if (isset($_COOKIE['authToken'])) {

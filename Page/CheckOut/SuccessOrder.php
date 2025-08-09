@@ -5,11 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Order Success</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <div class="bg-gradient-to-br from-teal-50 to-yellow-50 min-h-screen flex flex-col items-center justify-center py-10 px-4">
         <div class="flex flex-col items-center w-full max-w-lg">
             <div class="flex justify-center mb-6">
@@ -46,7 +46,7 @@
             </div>
         </div>
     </div>
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();

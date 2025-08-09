@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
+  
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SwiftCart | About</title>
-  <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+  <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body class="bg-gray-50 font-sans leading-relaxed">
-  <?php require __DIR__ . '/../../Componenets/Navbar.php'; ?>
+  <?php require __DIR__ . '/../../Componenets/Home/Navbar.php'; ?>
 
   <!-- Hero Section -->
   <section class="max-w-6xl mx-auto px-6 py-16">
@@ -64,11 +64,11 @@
       <h2 class="text-4xl font-extrabold text-[#234445] text-center mb-14 " data-aos="fade-down">Meet Our Team</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 justify-center">
         <!-- Member Card -->
-        <div data-aos="fade-down" class="bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center text-center transition-transform hover:scale-105 hover:shadow-[#28afa2]/20 hover:border-[#28afa2] border border-transparent duration-300">
+        <div data-aos="fade-down" class="bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center text-center transition-all duration-300 hover:scale-105 hover:shadow-[#28afa2]/20 hover:border-[#28afa2] border border-transparent">
           <div class="relative w-32 h-32 mb-5">
             <div class="absolute -inset-1 bg-gradient-to-tr from-[#99ece1] to-[#fff] rounded-full blur-lg z-0"></div>
             <div class="relative w-full h-full rounded-full overflow-hidden shadow-lg border-4 border-white">
-              <!-- <img src="/SwiftCart/Image/your-image1.jpg" class="object-cover w-full h-full" alt="Pratik Rathod" /> -->
+              <img src="/SwiftCart/Image/Team2.jpg" class="object-cover w-full h-full" alt="Pratik Rathod" />
               <span class="text-gray-400 flex items-center justify-center w-full h-full text-base bg-gray-100">Image</span>
             </div>
           </div>
@@ -77,17 +77,17 @@
           <p class="text-xs text-gray-500 max-w-xs">Passionate about building seamless e-commerce experiences and empowering vendors to grow online.</p>
         </div>
         <!-- Member Card 2 -->
-        <div data-aos="fade-down" class="bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center text-center transition-transform hover:scale-105 hover:shadow-[#28afa2]/20 hover:border-[#28afa2] border border-transparent duration-300">
+        <div data-aos="fade-down" class="bg-white rounded-3xl shadow-2xl p-8 flex flex-col items-center text-center transition-all duration-300 hover:scale-105 hover:shadow-[#28afa2]/20 hover:border-[#28afa2] border border-transparent">
           <div class="relative w-32 h-32 mb-5">
             <div class="absolute -inset-1 bg-gradient-to-tr from-[#99ece1] to-[#fff] rounded-full blur-lg z-0"></div>
             <div class="relative w-full h-full rounded-full overflow-hidden shadow-lg border-4 border-white">
-              <!-- <img src="/SwiftCart/Image/your-image2.jpg" class="object-cover w-full h-full" alt="Your Name" /> -->
+              <img src="/SwiftCart/Image/Team1.jpg" class="object-cover object-top w-full h-full" alt="Your Name" />
               <span class="text-gray-400 flex items-center justify-center w-full h-full text-base bg-gray-100">Image</span>
             </div>
           </div>
-          <h4 class="text-xl font-semibold text-[#234445] mb-1">Your Name</h4>
-          <p class="text-sm text-[#28afa2] mb-2 font-medium uppercase tracking-wide">Co-Founder / Designer</p>
-          <p class="text-xs text-gray-500 max-w-xs">Add your team bio here. Share your vision and role in making SwiftCart a success.</p>
+          <h4 class="text-xl font-semibold text-[#234445] mb-1">Vaja Karan</h4>
+          <p class="text-sm text-[#28afa2] mb-2 font-medium uppercase tracking-wide">Co-Founder</p>
+          <p class="text-xs text-gray-500 max-w-xs">Driven by passion and innovation, our Co-Founder plays a pivotal role in shaping the vision</p>
         </div>
       </div>
     </div>
@@ -107,7 +107,6 @@
     </p>
   </section>
 
-  <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+  <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
 </body>
-
 </html>

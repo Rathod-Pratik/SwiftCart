@@ -29,9 +29,5 @@ echo '
       <img src=\'/SwiftCart/Image/Email.webp\' alt="Subscribe" class="bg-cover w-[572px] h-[243px] object-cover" />
     </div>
   </div>
-</section>
-
-
-
-'
+</section>'
 ?>

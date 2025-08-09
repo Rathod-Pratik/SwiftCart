@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Product</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <?php require __DIR__ . '/../../Componenets/Product/ProductHeader.php' ?>
     <?php require __DIR__ . '/../../Componenets/Product/Products.php' ?>
 
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         function filterProduct(value) {
             const formData = new FormData();

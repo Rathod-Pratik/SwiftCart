@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Product Detail</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <?php require __DIR__ . '/../../Componenets/Product/ProductDetailHeader.php' ?>
     <div class="p-6 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Product Image -->
@@ -182,7 +182,7 @@
         </div>
     </div>
 
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         document.getElementById('wishlistButton').onclick = function() {
             AddToWishList(res.product.id);

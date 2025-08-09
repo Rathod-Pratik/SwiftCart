@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Page Not Found</title>
-     <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+       <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <section class="flex items-center h-full p-16 ">
 	<div class="container flex flex-col items-center justify-center px-5 mx-auto my-8">
 		<div class="max-w-md text-center">
@@ -20,6 +20,6 @@
 		</div>
 	</div>
 </section>
-<?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+<?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
 </body>
 </html>

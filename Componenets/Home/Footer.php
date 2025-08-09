@@ -86,8 +86,5 @@ echo '
         
       </div>
     </div>
-</footer>
-
-
-'
+</footer>'
 ?>

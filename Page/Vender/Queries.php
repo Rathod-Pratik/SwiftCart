@@ -1,4 +1,4 @@
-<?php   require __DIR__ . '/../../Componenets/VenderAuth.php'  ?>
+<?php   require __DIR__ . '/../../Componenets/Vender/VenderAuth.php'  ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,12 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Query Section</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+     <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/VenderNavbar.php' ?>
-    <?php require __DIR__ . '/../../Componenets/VenderSideBar.php' ?>
+ <?php require __DIR__ . '/../../Componenets/Vender/VenderNavbar.php' ?>
+  <?php require __DIR__ . '/../../Componenets/Vender/VenderSideBar.php' ?>
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
         <div class="flex justify-evenly gap-3 mb-6">
             <input

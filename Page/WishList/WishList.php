@@ -5,17 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | WishList</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <div class="max-w-7xl mx-auto px-4 py-10">
         <h1 class="text-2xl font-semibold mb-6" data-aos="fade-down">My Wishlist</h1>
         <div id="productItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         function RenderProduct(products) {
             const container = document.getElementById('productItems');

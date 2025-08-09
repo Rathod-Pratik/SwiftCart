@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-require __DIR__ . "/../Database/db.php";
+require __DIR__ . "/../../Database/db.php";
 
 $venderToken = $_COOKIE['venderToken'] ?? null;
 

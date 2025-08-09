@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?>
+<?php include __DIR__ . '/../../Componenets/Admin/AdminAuth.php' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,56 +7,14 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Shopizo | Admin</title>
-        <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+         <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
-    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Admin/AdminNavbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Admin/AdminSideBar.php' ?>
 
     <div class="p-4 lg:ml-64 pt-20 bg-gray-100 min-h-[100vh]">
-        <!-- <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-            <div class="relative bg-gradient-to-br from-green-100 to-green-50 p-6 rounded-2xl shadow-lg text-center border border-green-200 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-green-200/60">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <p class="text-green-700 font-semibold mb-1 tracking-wide">Complete</p>
-                <h2 class="text-2xl font-bold text-green-600">200</h2>
-            </div>
-            <div class="relative bg-gradient-to-br from-blue-100 to-blue-50 p-6 rounded-2xl shadow-lg text-center border border-blue-200 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-blue-200/60">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h4v4" />
-                    </svg>
-                </div>
-                <p class="text-blue-700 font-semibold mb-1 tracking-wide">Pending</p>
-                <h2 class="text-2xl font-bold text-blue-600">50</h2>
-            </div>
-            <div class="relative bg-gradient-to-br from-purple-100 to-purple-50 p-6 rounded-2xl shadow-lg text-center border border-purple-200 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-purple-200/60">
-                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4" />
-                        <circle cx="12" cy="12" r="10" />
-                    </svg>
-                </div>
-                <p class="text-purple-700 font-semibold mb-1 tracking-wide">Delivered</p>
-                <h2 class="text-2xl font-bold text-purple-600">50</h2>
-            </div>
-            <div class="relative bg-gradient-to-br from-cyan-100 to-cyan-50 p-6 rounded-2xl shadow-lg text-center border border-cyan-200 hover:scale-105 transition-transform duration-200">
-                <div class="flex items-center justify-center w-12 h-12 mx-auto mb-3 rounded-full bg-cyan-200/60">
-                    <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3" />
-                        <circle cx="12" cy="12" r="10" />
-                    </svg>
-                </div>
-                <p class="text-cyan-700 font-semibold mb-1 tracking-wide">Process</p>
-                <h2 class="text-2xl font-bold text-cyan-600">50</h2>
-            </div>
-        </div> -->
-
         <div>
             <div class="flex justify-evenly gap-3 mb-6">
                 <input
@@ -96,15 +54,6 @@
                         </tr>
                     </thead>
                     <tbody id="order-body">
-                        <!-- <tr class="bg-white border-b border-gray-200 hover:bg-gray-50">
-                            <td class="px-6 py-4">1</td>
-                            <td class="px-6 py-4">Rathod Pratik</td>
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">Apple MacBook Pro 17</th>
-                            <td class="px-6 py-4">200</td>
-                            <td class="px-6 py-4">2</td>
-                            <td class="px-6 py-4">400</td>
-                            <td class="px-6 py-4">Demo</td>
-                        </tr> -->
                     </tbody>
                 </table>
             </div>

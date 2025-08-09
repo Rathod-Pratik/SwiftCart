@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <?php include __DIR__ . '/../../Componenets/Contact/ContactHeader.php'; ?>
     <?php include __DIR__ . '/../../Componenets/Contact/ContactForm.php'; ?>
     <?php require __DIR__ . '/../../Componenets/Home/Services.php' ?>
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
 
     <script>
         document.getElementById('ContactForm').addEventListener('submit',function(e){

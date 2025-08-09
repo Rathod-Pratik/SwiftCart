@@ -328,30 +328,6 @@ if ($action == 'create') {
             'error' => $e->getMessage()
         ]);
     }
-} elseif ($action == 'message') {
-    try {
-        $email = $_POST['SendTo'];
-        $reason = $_POST['Subject'];
-        $userMessage = $_POST['message'];
-
-        $message = $pdo->prepare('INSERT INTO contact (email,reason,message,sender)
-        VALUES(:email,:reason,:message,:sender)');
-        $success = $message->execute([
-            ':email' => $email,
-            ':reason' => $reason,
-            ':message' => $userMessage,
-            ':sender' => 'admin'
-        ]);
-        echo json_encode([
-            'success' => $success,
-            'action' => 'message'
-        ]);
-    } catch (Exception $e) {
-        echo json_encode([
-            'success' => false,
-            'error' => $e->getMessage()
-        ]);
-    }
 } elseif ($action == 'fetch') {
     try {
         $vender = $pdo->query("SELECT * FROM users WHERE userType='vender' ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);

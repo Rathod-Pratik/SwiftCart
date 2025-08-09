@@ -34,11 +34,11 @@ checkAndCreateTable($pdo, $table, $createSQL);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | Checkout</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+    <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
     <section class="px-4 py-12 max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold mb-8 text-[#234445]">Checkout</h1>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -116,7 +116,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
             </div>
         </div>
     </section>
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let cart = JSON.parse(localStorage.getItem('cart')) || {};

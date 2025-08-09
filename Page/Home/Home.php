@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home</title>
-  <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
   <style>
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
@@ -19,7 +19,7 @@
 </head>
 
 <body>
-  <?php require __DIR__ . '/../../Componenets/Navbar.php' ?>
+  <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
   <?php require __DIR__ . '/../../Componenets/Home/Hero.php' ?>
   <?php require __DIR__ . '/../../Componenets/Home/Services.php' ?>
   <?php require __DIR__ . '/../../Componenets/Home/Collection.php' ?>
@@ -30,7 +30,7 @@
   <?php require __DIR__ . '/../../Componenets/Home/Review.php' ?>
   <?php require __DIR__ . '/../../Componenets/Home/FAQ.php' ?>
   <?php require __DIR__ . '/../../Componenets/Home/SubScribe.php' ?>
-  <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+  <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
 
   <script>
     document.querySelectorAll('.faq-item').forEach(item => {

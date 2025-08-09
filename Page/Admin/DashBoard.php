@@ -1,4 +1,4 @@
-<!-- <?php include __DIR__ . '/../../Componenets/AdminAuth.php' ?> -->
+<?php include __DIR__ . '/../../Componenets/Admin/AdminAuth.php' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -7,15 +7,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopizo | Admin</title>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
+     <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-    <?php require __DIR__ . '/../../Componenets/AdminNavbar.php' ?>
-    <?php require __DIR__ . '/../../Componenets/AdminSideBar.php' ?>
+       <?php require __DIR__ . '/../../Componenets/Admin/AdminNavbar.php' ?>
+  <?php require __DIR__ . '/../../Componenets/Admin/AdminSideBar.php' ?>
 
-    <div class="p-4 lg:ml-64 pt-20  max-w-7xl mx-auto bg-gray-100">
+    <div class="p-4 lg:ml-64 pt-20   mx-auto bg-gray-100">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
             <div class="bg-white p-6 rounded-2xl shadow text-center">
                 <p class="text-gray-500 mb-2">Total Revenue</p>

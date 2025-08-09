@@ -45,19 +45,19 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwiftCart | SignUp</title>
+    <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
 <body>
-    <?php include __DIR__ . '/../../Componenets/Header.php'; ?>
-    <?php include __DIR__ . '/../../Componenets/Navbar.php'; ?>
+      <?php require __DIR__ . '/../../Componenets/Home/Navbar.php'; ?>
     <div class="min-h-[80vh] bg-[#e6f0f1] text-gray-900 flex justify-center">
         <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
-            <div class="flex-1 bg-[#b8d8da] text-center hidden lg:flex items-center justify-center">
+            <div data-aos="fade-right" class="flex-1 bg-[#b8d8da] text-center hidden lg:flex items-center justify-center">
                 <div class="m-12 xl:m-16 w-full h-[420px] bg-contain bg-center bg-no-repeat flex items-center justify-center"
                     style="background-image: url('/SwiftCart/Image/Login.webp');">
                 </div>
             </div>
-            <div class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex items-center">
+            <div data-aos="fade-left" class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex items-center">
                 <div class="w-full flex flex-col items-center">
                     <h1 class="text-2xl xl:text-3xl font-extrabold">
                         SignUp Now
@@ -104,7 +104,7 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
 
         </div>
     </div>
-    <?php include __DIR__ . '/../../Componenets/Footer.php'; ?>
+    <?php include __DIR__ . '/../../Componenets/Home/Footer.php'; ?>
     <script>
         document.getElementById('SignUp').addEventListener('submit', function(e) {
             e.preventDefault();
