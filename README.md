@@ -65,13 +65,7 @@ SwiftCart/
 5. Start your local server (e.g., XAMPP) and navigate to the project folder.
 6. Access the website via `http://localhost/SwiftCart`.
 
----
-
-## Screenshots
-
-
-
----
+----
 
 ## Limitations
 - Scalability for large catalogs may require optimization
