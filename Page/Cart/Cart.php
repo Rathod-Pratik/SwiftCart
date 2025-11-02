@@ -182,8 +182,8 @@
                     delete cart[id];
                     localStorage.setItem('cart', JSON.stringify(cart));
 
-                    const WishList = parseInt(document.getElementById('CartLength').textContent);
-                    const updatedWishList = WishList - 1;
+                    // const WishList = parseInt(document.getElementById('CartLength').textContent);
+                    // const updatedWishList = WishList - 1;
                     document.getElementById('CartLength').textContent = updatedWishList;
                     UpdateCartTotals();
                 }

@@ -88,7 +88,7 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="bg-gray-50 sm:rounded-lg">
+        <div class="bg-gray-50 sm:rounded-lg">
             <h1 class="text-2xl font-bold p-2 text-gray-800 tracking-tight mb-2">Recent Orders</h1>
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                 <table class="w-full text-[15px] text-left text-gray-700 font-sans">
@@ -143,7 +143,7 @@
                     </tbody>
                 </table>
             </div>
-        </div> -->
+        </div>
     </div>
 
     <script>

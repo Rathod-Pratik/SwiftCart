@@ -1,0 +1,7 @@
+{
+    "name": "SwiftCart",
+    "dockerFile": "../Dockerfile",
+    "workspaceFolder": "/var/www/html",
+    "appPort": [80],
+    "remoteUser": "root"
+}

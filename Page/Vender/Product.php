@@ -298,11 +298,6 @@ checkAndCreateTable($pdo, $table, $createSQL);
                 .map(p => p.trim())
                 .filter(p => p.length > 0);
 
-              formData.set('description', JSON.stringify(paragraphs));
-
-              for (const [key, value] of formData.entries()) {
-                console.log(`value of  ${key} is : ${value}`);
-              }
               fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
                 method: "POST",
                 body: formData,

@@ -64,7 +64,7 @@
                 const productPrice = p && p.price ? Number(p.price).toFixed(2) : '0.00';
 
                 const productHTML = `
-                    <div class="rounded-2xl shadow-md bg-white relative overflow-hidden" data-aos="zoom-in">
+                    <div class="rounded-2xl shadow-md bg-white relative overflow-hidden" >
                         ${badge}
                         <button onclick="AddToWishList('${productId}')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500">
                             <span class="group cursor-pointer">
