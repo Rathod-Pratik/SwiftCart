@@ -54,7 +54,7 @@ echo '
         </div>
     </div>
     <div class="px-4 py-6 bg-gray-100  md:flex md:items-center md:justify-between">
-        <span class="text-sm text-gray-500 sm:text-center">© 2025 Shopizo. All Rights Reserved.
+        <span class="text-sm text-gray-500 sm:text-center">© 2025 SwiftCart. All Rights Reserved.
         </span>
         <div class="flex mt-4 sm:justify-center md:mt-0 space-x-5 rtl:space-x-reverse">
             <a href="#" class="text-gray-400 hover:text-gray-900 ">
@@ -82,7 +82,7 @@ echo '
                   <span class="sr-only">GitHub account</span>
               </a>
         </div>
-            <img src="/SwiftCart/Image/Banking.png" alt="Banking" class="max-w-[150px] h-auto">
+            <img src="./Image/Banking.png" alt="Banking" class="max-w-[150px] h-auto">
         
       </div>
     </div>

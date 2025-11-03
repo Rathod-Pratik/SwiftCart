@@ -18,7 +18,7 @@
       <div data-aos="fade-right" class="flex-1 space-y-6">
         <h1 class="text-4xl md:text-5xl font-bold text-[#234445]">About <span class="text-[#d09523]">SwiftCart</span></h1>
         <div class="flex md:hidden justify-center">
-          <img src="/SwiftCart/Image/About1.jpg" alt="SwiftCart Logo"
+          <img src="/Image/About1.jpg" alt="SwiftCart Logo"
             class="w-[250px] rounded-2xl shadow-xl bg-white p-4 object-contain" />
         </div>
         <p class="text-gray-700 text-lg">
@@ -36,7 +36,7 @@
 
       <!-- Image -->
       <div data-aos="fade-left" class="flex-1 flex justify-center">
-        <img src="/SwiftCart/Image/About1.jpg" alt="SwiftCart Logo"
+        <img src="/Image/About1.jpg" alt="SwiftCart Logo"
           class="hidden md:block  rounded-2xl shadow-xl bg-white p-4 object-contain" />
       </div>
     </div>
@@ -68,7 +68,7 @@
           <div class="relative w-32 h-32 mb-5">
             <div class="absolute -inset-1 bg-gradient-to-tr from-[#99ece1] to-[#fff] rounded-full blur-lg z-0"></div>
             <div class="relative w-full h-full rounded-full overflow-hidden shadow-lg border-4 border-white">
-              <img src="/SwiftCart/Image/Team2.jpg" class="object-cover w-full h-full" alt="Pratik Rathod" />
+              <img src="./Image/Team2.jpg" class="object-cover w-full h-full" alt="Pratik Rathod" />
               <span class="text-gray-400 flex items-center justify-center w-full h-full text-base bg-gray-100">Image</span>
             </div>
           </div>
@@ -81,7 +81,7 @@
           <div class="relative w-32 h-32 mb-5">
             <div class="absolute -inset-1 bg-gradient-to-tr from-[#99ece1] to-[#fff] rounded-full blur-lg z-0"></div>
             <div class="relative w-full h-full rounded-full overflow-hidden shadow-lg border-4 border-white">
-              <img src="/SwiftCart/Image/Team1.jpg" class="object-cover object-top w-full h-full" alt="Your Name" />
+              <img src="./Image/Team1.jpg" class="object-cover object-top w-full h-full" alt="Your Name" />
               <span class="text-gray-400 flex items-center justify-center w-full h-full text-base bg-gray-100">Image</span>
             </div>
           </div>

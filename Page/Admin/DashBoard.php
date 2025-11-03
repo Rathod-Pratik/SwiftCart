@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopizo | Admin</title>
+    <title>SwiftCart | Admin</title>
      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -253,7 +253,7 @@
         function FetchData(){
             const formData=new FormData();
             formData.append('action','FetchAdminData')
-            fetch('/SwiftCart/AJAX/DashBoard_ajax.php',{
+            fetch('../AJAX/DashBoard_ajax.php',{
                 method:"POST",
                 body:formData
             }).then(res=>res.json()).then((res)=>{

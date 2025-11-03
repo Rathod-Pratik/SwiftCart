@@ -55,10 +55,10 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
             <div data-aos="fade-right" class="flex-1 bg-[#b8d8da] text-center hidden lg:flex">
                 <div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat"
-                    style="background-image: url('/SwiftCart/Image/Login.webp');">
+                    style="background-image: url('./Image/Login.webp');">
                 </div>
             </div>
-            <div data-aos="fade-left" class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12">
+            <div data-aos="fade-left" class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex justify-center items-center">
                 <div class="mt-12 flex flex-col items-center">
                     <h1 class="text-2xl xl:text-3xl font-extrabold">
                         Login Now
@@ -84,7 +84,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                             </button>
                             <p class="mt-6 text-xs text-gray-600 text-center">
                                 Don't have Account ?
-                                <a href="/SwiftCart/signup" class="border-b border-gray-500 border-dotted">
+                                <a href="/signup" class="border-b border-gray-500 border-dotted">
                                     Sign Up
                                 </a>
                                 now
@@ -117,7 +117,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
 
 
-            fetch('/SwiftCart/AJAX/Auth.php', {
+            fetch('./AJAX/Auth.php', {
                 method: "POST",
                 body: forData,
                 credentials: "same-origin"
@@ -135,13 +135,13 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
                     setTimeout(() => {
                         if (res.redirect == 'customer') {
-                            window.location.href = '/SwiftCart';
+                            window.location.href = '/';
                         }
                         if (res.redirect == 'admin') {
-                            window.location.href = '/SwiftCart/admin/dashboard';
+                            window.location.href = '/admin/dashboard';
                         }
                         if (res.redirect == 'vender') {
-                            window.location.href = '/SwiftCart/vender/dashboard';
+                            window.location.href = '/vender/dashboard';
                         }
                     }, 1500);
                 }

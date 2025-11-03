@@ -44,7 +44,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopizo | Admin</title>
+    <title>SwiftCart | Admin</title>
      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
@@ -140,7 +140,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             formData.append("id", id);
             formData.append("email", email);
             formData.append("action", "approved");
-            fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+            fetch('../AJAX/Admin_Product_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {
@@ -216,7 +216,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         }
 
         async function FetchRequestedProduct() {
-            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+            await fetch('../AJAX/Admin_Product_ajax.php', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -233,7 +233,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         }
 
         async function FetchApprovedProduct() {
-            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+            await fetch('../AJAX/Admin_Product_ajax.php', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -295,7 +295,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             const formData = new FormData();
             formData.append('id', id)
             formData.append('action', 'publish')
-            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+            await fetch('../AJAX/Admin_Product_ajax.php', {
                 method: "POST",
                 body: formData
 
@@ -321,7 +321,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             const formData = new FormData();
             formData.append('id', id)
             formData.append('action', 'unpublish')
-            await fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+            await fetch('../AJAX/Admin_Product_ajax.php', {
                 method: "POST",
                 body: formData
 
@@ -349,7 +349,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
             formData.append("id", id);
             formData.append("email", email);
             formData.append("action", "approved");
-            fetch('/SwiftCart/AJAX/Admin_Product_ajax.php', {
+            fetch('../AJAX/Admin_Product_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {

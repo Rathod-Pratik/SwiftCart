@@ -129,7 +129,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
     }
 
     function FetchProduct() {
-      fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+      fetch('../AJAX/Vender_Product_ajax.php', {
         method: "POST",
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -283,7 +283,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
           uploadFormData.append('action', 'upload');
           uploadFormData.append('image', file);
 
-          fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+          fetch('../AJAX/Vender_Product_ajax.php', {
               method: 'POST',
               body: uploadFormData
             })
@@ -298,7 +298,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
                 .map(p => p.trim())
                 .filter(p => p.length > 0);
 
-              fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+              fetch('../AJAX/Vender_Product_ajax.php', {
                 method: "POST",
                 body: formData,
                 credentials: 'include'
@@ -360,7 +360,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
           uploadFormData.append('action', 'upload');
           uploadFormData.append('image', file);
 
-          await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+          await fetch('../AJAX/Vender_Product_ajax.php', {
               method: 'POST',
               body: uploadFormData
             })
@@ -380,10 +380,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
 
         formData.set('description', JSON.stringify(paragraphs));
 
-        // for (const [key, value] of formData.entries()) {
-        //   console.log(`value of  ${key} is : ${value}`);
-        // }
-        fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+        fetch('../AJAX/Vender_Product_ajax.php', {
             method: "POST",
             body: formData,
             credentials: 'include'
@@ -507,7 +504,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
       formData.append('venderid', venderid);
       formData.append('action', 'delete');
 
-      fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+      fetch('../AJAX/Vender_Product_ajax.php', {
         method: 'POST',
         body: formData
       }).then(res => res.json()).then((res) => {

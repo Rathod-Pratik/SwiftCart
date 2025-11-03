@@ -21,7 +21,7 @@
             const formData=new FormData(form);
             formData.append('action','create')
 
-            fetch('/SwiftCart/AJAX/Contact_ajax.php',{
+            fetch('./AJAX/Contact_ajax.php',{
                 method:"POST",
                 body:formData
             }).then(res => res.json()).then((res)=>{

@@ -26,7 +26,7 @@ echo '
   <!-- Right Image -->
   <div data-aos="fade-left" class="md:w-1/2 hidden md:block">
     <div class="rounded-2xl overflow-hidden">
-      <img src=\'/SwiftCart/Image/Email.webp\' alt="Subscribe" class="bg-cover w-[572px] h-[243px] object-cover" />
+      <img src=\'./Image/Email.webp\' alt="Subscribe" class="bg-cover w-[572px] h-[243px] object-cover" />
     </div>
   </div>
 </section>'

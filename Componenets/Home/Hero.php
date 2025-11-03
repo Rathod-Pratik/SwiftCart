@@ -1,5 +1,5 @@
 <?php
-echo '<section class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackground.png\')] min-h-[calc(100vh-64px)] text-white flex items-center">
+echo '<section class="bg-no-repeat bg-cover bg-[url(\'./Image/HomeBackground.png\')] min-h-[calc(100vh-64px)] text-white flex items-center">
         <div class="flex flex-col-reverse lg:flex-row w-full px-4 sm:px-6 md:px-16 items-center justify-between gap-10 md:gap-0">
 
             <!-- Left Content -->
@@ -32,7 +32,7 @@ echo '<section class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackg
 
             <!-- Right Side Image -->
             <div data-aos="fade-left" class="basis-1/2 flex items-center justify-center p-4 md:p-8">
-                <img src="/SwiftCart/Image/Home5.jpg"
+                <img src="./Image/Home5.jpg"
                     alt="Interior Room"
                     class="w-full rounded-2xl shadow-2xl object-cover" />
             </div>

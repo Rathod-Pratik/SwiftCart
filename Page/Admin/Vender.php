@@ -42,7 +42,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopizo | Admin</title>
+    <title>SwiftCart | Admin</title>
      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
@@ -242,7 +242,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         }
 
         function FetchVender() {
-            fetch('/SwiftCart/AJAX/vender_ajax.php', {
+            fetch('../AJAX/vender_ajax.php', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -261,7 +261,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         function blockVender(id) {
             document.getElementById(`BlockSpin${id}`).classList.remove('hidden');
 
-            fetch('/SwiftCart/AJAX/vender_ajax.php', {
+            fetch('../AJAX/vender_ajax.php', {
                     method: 'POST',
                     body: new URLSearchParams({
                         action: 'block',
@@ -296,7 +296,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
         function unblock(id) {
             document.getElementById(`BlockSpin${id}`).classList.remove('hidden');
 
-            fetch('/SwiftCart/AJAX/vender_ajax.php', {
+            fetch('../AJAX/vender_ajax.php', {
                     method: 'POST',
                     body: new URLSearchParams({
                         action: 'active',
@@ -346,7 +346,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
 
                 const form = e.target;
                 const formData = new FormData(form);
-                fetch("/SwiftCart/AJAX/vender_ajax.php", {
+                fetch("../AJAX/vender_ajax.php", {
                         method: "POST",
                         body: formData,
                     })
@@ -421,7 +421,7 @@ checkAndCreateTable($pdo, $ContactTable, $ContactSQL);
 
                 const form = e.target;
                 const formData = new FormData(form);
-                fetch("/SwiftCart/AJAX/vender_ajax.php", {
+                fetch("../AJAX/vender_ajax.php", {
                         method: "POST",
                         body: formData,
                     })

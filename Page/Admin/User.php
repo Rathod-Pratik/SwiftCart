@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopizo | Admin</title>
+    <title>SwiftCart | Admin</title>
      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
@@ -117,7 +117,7 @@
         function ActiveUser(id) {
             document.getElementById(`row-${id}`).classList.remove('hidden')
             document.getElementById(`button-${id}`).disabled = true
-            fetch('/SwiftCart/AJAX/user_ajax.php', {
+            fetch('../AJAX/user_ajax.php', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -150,7 +150,7 @@
         function BlockUser(id) {
             document.getElementById(`row-${id}`).classList.remove('hidden')
             document.getElementById(`button-${id}`).disabled = true
-            fetch('/SwiftCart/AJAX/user_ajax.php', {
+            fetch('../AJAX/user_ajax.php', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -182,7 +182,7 @@
         }
 
         function FetchUser() {
-            fetch('/SwiftCart/AJAX/user_ajax.php', {
+            fetch('../AJAX/user_ajax.php', {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'

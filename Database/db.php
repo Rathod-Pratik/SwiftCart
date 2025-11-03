@@ -1,12 +1,9 @@
 <?php
-
-$env = parse_ini_file(__DIR__ . '/../.env');
-
-$host = $env['host'];
-$port = $env['port'];
-$dbname = $env['dbname'];
-$user = $env['user'];
-$password = $env['password'];
+$host = getenv('host');
+$port = getenv('port');
+$dbname = getenv('dbname');
+$user = getenv('user');
+$password = getenv('password');
 
 try {
     $pdo = new PDO(

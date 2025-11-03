@@ -11,7 +11,7 @@
 
 <body>
     <?php require __DIR__ . '/../../Componenets/Home/Navbar.php' ?>
-    <div class="max-w-7xl mx-auto px-4 py-10">
+    <div class="max-w-7xl mx-auto min-h-[70vh] px-4 py-10">
         <h1 class="text-2xl font-semibold mb-6" data-aos="fade-down">My Wishlist</h1>
         <div id="productItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
@@ -76,7 +76,7 @@
         function FetchWishList() {
             const formData = new FormData();
             formData.append('action', 'fetch');
-            fetch('/SwiftCart/AJAX/WishList_ajax.php', {
+            fetch('./AJAX/WishList_ajax.php', {
                     method: "POST",
                     body: formData
                 })
@@ -91,7 +91,7 @@
             formData.append("action", "REMOVE")
             formData.append("productid", id)
 
-            fetch('/SwiftCart/AJAX/WishList_ajax.php', {
+            fetch('./AJAX/WishList_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {
@@ -113,7 +113,7 @@
             const formData = new FormData();
             formData.append('action', "ADD")
             formData.append('productid', productid)
-            fetch('/SwiftCart/AJAX/Cart_ajax.php', {
+            fetch('./AJAX/Cart_ajax.php', {
                 method: "POST",
                 body: formData,
                 credentials: "include"

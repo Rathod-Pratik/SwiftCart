@@ -118,7 +118,7 @@
       const formData = new FormData();
       formData.append('action', "ADD")
       formData.append('productid', productid)
-      fetch('/SwiftCart/AJAX/WishList_ajax.php', {
+      fetch('./AJAX/WishList_ajax.php', {
         method: "POST",
         body: formData,
         credentials: "include"
@@ -144,7 +144,7 @@
       const formData = new FormData();
       formData.append('action', "ADD")
       formData.append('productid', productid)
-      fetch('/SwiftCart/AJAX/Cart_ajax.php', {
+      fetch('./AJAX/Cart_ajax.php', {
         method: "POST",
         body: formData,
         credentials: "include"

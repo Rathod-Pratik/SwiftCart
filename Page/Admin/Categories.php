@@ -26,7 +26,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shopizo | Admin</title>
+    <title>SwiftCart | Admin</title>
      <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 <script>
@@ -184,7 +184,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
 
 
         function fetchCategories() {
-            fetch('/SwiftCart/AJAX/category_ajax.php', {
+            fetch('../AJAX/category_ajax.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -242,7 +242,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
         function DeleteCategory() {
             document.getElementById('modalSpinner').classList.remove('hidden')
             document.getElementById('deleteBtn').disabled = true;
-            fetch("/SwiftCart/AJAX/category_ajax.php", {
+            fetch("../AJAX/category_ajax.php", {
                     method: "POST",
                     body: new URLSearchParams({
                         action: "delete",
@@ -292,7 +292,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     uploadFormData.append('action', 'upload');
                     uploadFormData.append('image', file);
 
-                    await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+                    await fetch('../AJAX/Vender_Product_ajax.php', {
                             method: 'POST',
                             body: uploadFormData
                         })
@@ -301,7 +301,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                             formData.set('image', res.data.secure_url)
                         })
                 }
-                fetch("/SwiftCart/AJAX/category_ajax.php", {
+                fetch("../AJAX/category_ajax.php", {
                         method: "POST",
                         body: formData,
                     })
@@ -353,7 +353,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                     uploadFormData.append('action', 'upload');
                     uploadFormData.append('image', file);
 
-                    await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+                    await fetch('../AJAX/Vender_Product_ajax.php', {
                             method: 'POST',
                             body: uploadFormData
                         })
@@ -364,7 +364,7 @@ checkAndCreateTable($pdo, $tableName, $createSQL);
                 } else {
                     formData.set('image', imagePreview.src)
                 }
-                fetch("/SwiftCart/AJAX/category_ajax.php", {
+                fetch("../AJAX/category_ajax.php", {
                         method: "POST",
                         body: formData,
                     })

@@ -108,7 +108,7 @@
         uploadFormData.append('action', 'upload');
         uploadFormData.append('image', file);
 
-        await fetch('/SwiftCart/AJAX/Vender_Product_ajax.php', {
+        await fetch('../AJAX/Vender_Product_ajax.php', {
             method: 'POST',
             body: uploadFormData
           })
@@ -119,7 +119,7 @@
 
         formData.append('action', 'updateProfile');
 
-        await fetch('/SwiftCart/AJAX/Profile_ajax.php', {
+        await fetch('../AJAX/Profile_ajax.php', {
           method: "POST",
           body: formData
         }).then(res => res.json()).then((res) => {
@@ -134,7 +134,7 @@
     function fetchDetail() {
       const formData = new FormData();
       formData.append('action', 'fetch');
-      fetch('/SwiftCart/AJAX/Profile_ajax.php', {
+      fetch('../AJAX/Profile_ajax.php', {
         method: 'POST',
         body: formData
       }).then(res => res.json()).then((res) => {

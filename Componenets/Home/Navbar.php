@@ -41,7 +41,7 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
   echo '
       <!-- Wishlist Icon with Badge -->
      <div class="relative">
-        <a href="/SwiftCart/wishlist" class="text-gray-400 cursor-pointer">
+        <a href="/wishlist" class="text-gray-400 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="#204d4f" stroke="white" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
           </svg> 
@@ -55,7 +55,7 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
         </a>
     </div>
     <div class="relative">
-        <a href="/SwiftCart/cart" class="text-gray-400 cursor-pointer">
+        <a href="/cart" class="text-gray-400 cursor-pointer">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 512 512" fill="#204d4f" stroke="white" stroke-width="32" stroke-linecap="round" stroke-linejoin="round">
             <path d="M80 160v256c0 17.7 14.3 32 32 32h288c17.7 0 32-14.3 32-32V160"/>
             <path d="M432 160H80"/>
@@ -84,8 +84,8 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
         <!-- Dropdown -->
         <div id="dropdownMenu" class="hidden absolute right-0 mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
           <ul class="py-2 text-sm text-gray-700 dark:text-gray-200">
-            <li><a href="/SwiftCart/profile" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Account</a></li>
-            <li><a href="/SwiftCart/order" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Order</a></li>
+            <li><a href="/profile" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Account</a></li>
+            <li><a href="/order" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Order</a></li>
             <li><p onclick="Logout()" class="block cursor-pointer px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Logout</p></li>
           </ul>
         </div>
@@ -95,8 +95,8 @@ if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COO
     ';
 } else {
   echo '
-      <a href="/SwiftCart/login" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">Login</a>
-      <a href="/SwiftCart/signup" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">SignUp</a>
+      <a href="/login" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">Login</a>
+      <a href="/signup" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">SignUp</a>
     ';
 }
 
@@ -109,10 +109,10 @@ echo '
           </button>
            <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1">
               <ul class="flex mt-4 font-medium border border-gray-100 rounded-lg md:space-x-8 rtl:space-x-reverse flex-row md:mt-0 md:border-0">
-                <li><a href="/SwiftCart" class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-[#d09523] md:p-0" aria-current="page">Home</a></li>
-                <li><a href="/SwiftCart/product" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#d09523] md:p-0">Products</a></li>
-                <li><a href="/SwiftCart/about" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#d09523] md:p-0">About</a></li>
-                <li><a href="/SwiftCart/contact" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#d09523] md:p-0">Contact</a></li>
+                <li><a href="/" class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-[#d09523] md:p-0" aria-current="page">Home</a></li>
+                <li><a href="/product" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#d09523] md:p-0">Products</a></li>
+                <li><a href="/about" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#d09523] md:p-0">About</a></li>
+                <li><a href="/contact" class="block py-2 px-3 text-white rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#d09523] md:p-0">Contact</a></li>
               </ul>
             </div>
              <div id="navbar-sticky"
@@ -123,12 +123,11 @@ echo '
                 </svg>
                 </button>
                 <ul class="flex flex-col items-center justify-center gap-6 text-lg font-medium mt-10">
-                  <li><a href="/SwiftCart/" class="text-white hover:text-[#d09523]">Home</a></li>
-                  <li><a href="#" class="text-white hover:text-[#d09523]">About</a></li>
-                  <li><a href="#" class="text-white hover:text-[#d09523]">Services</a></li>
-                  <li><a href="/SwiftCart/contact" class="text-white hover:text-[#d09523]">Contact</a></li>
-                  <li><a href="#" class="text-white hover:text-[#d09523]">Acount</a></li>
-                  <li><a href="#" class="text-white hover:text-[#d09523]">Order</a></li>
+                  <li><a href="/" class="text-white hover:text-[#d09523]">Home</a></li>
+                  <li><a href="/about" class="text-white hover:text-[#d09523]">About</a></li>
+                  <li><a href="/contact" class="text-white hover:text-[#d09523]">Contact</a></li>
+                  <li><a href="/profile" class="text-white hover:text-[#d09523]">Acount</a></li>
+                  <li><a href="/order" class="text-white hover:text-[#d09523]">Order</a></li>
                   <li class="text-white hover:text-[#d09523] w-full"><button onclick="Logout()" >Logout</button></li>
                 </ul>
                 <div class="py-3 flex justify-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse gap-4 relative">
@@ -186,7 +185,7 @@ echo '
                   ';
             } else {
               echo '
-                    <a href="/SwiftCart/login" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">Login</a>
+                    <a href="/login" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">Login</a>
                     <button type="button" class="text-white bg-[#d09523] hover:bg-[#f4b942] font-medium rounded-lg text-sm px-4 py-2">SignUp</button>
                     ';
             }
@@ -245,12 +244,12 @@ echo '
 
   function Logout(){
 
-  fetch("/SwiftCart/AJAX/Logout.php", {
+  fetch("./AJAX/Logout.php", {
   method: "POST"
 })
 .then(res => res.json())
 .then(data => {
-  window.location.href = "/SwiftCart/login"; // Redirect to login page
+  window.location.href = "/login"; // Redirect to login page
 });
   }
 </script>

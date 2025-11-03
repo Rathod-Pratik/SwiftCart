@@ -48,7 +48,7 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
   <div class="bg-gray-100 p-6 min-h-[60vh]" >
     <div class="max-w-7xl mx-auto">
       <h1 class="text-3xl font-bold mb-6 text-center" data-aos="zoom-in">All Orders</h1>
-      <div id="orderContainer" class="space-y-6"></div>
+      <div id="orderContainer" class="space-y-6 min-h-[70vh]"></div>
     </div>
   </div>
 
@@ -129,7 +129,7 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
     async function loadOrders() {
       const formData = new FormData();
       formData.append('action', 'FetchOrder')
-      const res = await fetch('/SwiftCart/AJAX/Checkout_ajax.php', {
+      const res = await fetch('./AJAX/Checkout_ajax.php', {
         method: "POST",
         body: formData
       });
@@ -274,7 +274,7 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
       const formData = new FormData(form);
       formData.append('action', 'Create')
 
-      fetch('/SwiftCart/AJAX/Query_ajax.php', {
+      fetch('./AJAX/Query_ajax.php', {
         method: "POST",
         body: formData
       }).then(res => res.json()).then((res) => {
@@ -296,7 +296,7 @@ checkAndCreateTable($pdo, $table1, $createSQL1);
       const formData = new FormData(form);
       formData.append('action', 'Create')
 
-      fetch('/SwiftCart/AJAX/Review_ajax.php', {
+      fetch('./AJAX/Review_ajax.php', {
         method: "POST",
         body: formData
       }).then(res => res.json()).then((res) => {

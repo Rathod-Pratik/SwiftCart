@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Shopizo | Admin</title>
+        <title>SwiftCart | Admin</title>
          <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
@@ -68,7 +68,7 @@
         function FetchReview() {
             const formData = new FormData()
             formData.append('action', 'fetchAll')
-            fetch('/SwiftCart/AJAX/Review_ajax.php', {
+            fetch('../AJAX/Review_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {

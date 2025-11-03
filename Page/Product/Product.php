@@ -19,7 +19,7 @@
             const formData = new FormData();
             formData.append('action', 'filter')
             formData.append('category', value)
-            fetch('/SwiftCart/AJAX/Product_ajax.php', {
+            fetch('./AJAX/Product_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {
@@ -31,7 +31,7 @@
         function FetchProduct() {
             const formData = new FormData();
             formData.append('action', 'fetch')
-            fetch('/SwiftCart/AJAX/Product_ajax.php', {
+            fetch('./AJAX/Product_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {
@@ -60,7 +60,7 @@
                 // Defensive: fallback values if p is missing or fields are undefined
                 const productId = p && p.id ? p.id : '';
                 const productName = p && p.product_name ? p.product_name : 'Unknown Product';
-                const productImage = p && p.image ? p.image : '/SwiftCart/Image/placeholder.png';
+                const productImage = p && p.image ? p.image : '/Image/placeholder.png';
                 const productPrice = p && p.price ? Number(p.price).toFixed(2) : '0.00';
 
                 const productHTML = `
@@ -75,7 +75,7 @@
                                 </svg>
                             </span>
                         </button>
-                        <a href='/SwiftCart/productdetails?productId=${productId}'>
+                        <a href='/productdetails?productId=${productId}'>
                             <img src="${productImage}" alt="${productName}" class="w-full h-44 object-contain mt-6 mb-4" />
                         </a>
                         <div class="bg-[#234445] text-white px-4 py-3 rounded-b-2xl flex items-center justify-between">
@@ -113,7 +113,7 @@
             const formData = new FormData();
             formData.append('action', "ADD")
             formData.append('productid', productid)
-            fetch('/SwiftCart/AJAX/WishList_ajax.php', {
+            fetch('./AJAX/WishList_ajax.php', {
                 method: "POST",
                 body: formData,
                 credentials: "include"
@@ -139,7 +139,7 @@
             const formData = new FormData();
             formData.append('action', "ADD")
             formData.append('productid', productid)
-            fetch('/SwiftCart/AJAX/Cart_ajax.php', {
+            fetch('./AJAX/Cart_ajax.php', {
                 method: "POST",
                 body: formData,
                 credentials: "include"

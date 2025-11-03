@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <button onclick="window.location.href='/SwiftCart/checkout'" class="w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded-full font-semibold transition cursor-pointer">
+                <button onclick="window.location.href='/checkout'" class="w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white py-3 rounded-full font-semibold transition cursor-pointer">
                     Proceed To Checkout
                 </button>
 
@@ -64,7 +64,7 @@
         function FetchCart() {
             const formData = new FormData();
             formData.append('action', 'fetch');
-            fetch('/SwiftCart/AJAX/Cart_ajax.php', {
+            fetch('./AJAX/Cart_ajax.php', {
                     method: "POST",
                     body: formData
                 })
@@ -169,7 +169,7 @@
             formData.append("action", "REMOVE")
             formData.append("productid", id)
 
-            fetch('/SwiftCart/AJAX/Cart_ajax.php', {
+            fetch('./AJAX/Cart_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {

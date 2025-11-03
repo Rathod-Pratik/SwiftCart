@@ -2,17 +2,12 @@
 require '../Database/db.php';
 header('Content-Type: application/json');
 
-$env = parse_ini_file(__DIR__ . '/../.env');
 $action = $_POST['action'];
 
 require '../vendor/autoload.php';
 
-use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
 
 function DeleteImage($image)
 {
@@ -28,9 +23,9 @@ function DeleteImage($image)
 
     $publicId = ltrim($publicId, '/');
 
-    $cloudName = $_ENV['name'];
-    $apiKey = $_ENV['apikey'];
-    $apiSecret = $_ENV['cloudinarySecret'];
+    $cloudName = getenv('name');
+    $apiKey = getenv('apikey');
+    $apiSecret = getenv('cloudinarySecret');
     $timestamp = time();
 
     // 3. Prepare params
@@ -68,9 +63,9 @@ function DeleteImage($image)
 }
 
 if ($action == 'upload') {
-    $cloudName = $_ENV['name'];
-    $apiKey = $_ENV['apikey'];
-    $apiSecret = $_ENV['cloudinarySecret'];
+    $cloudName = getenv('name');
+    $apiKey = getenv('apikey');
+    $apiSecret = getenv('cloudinarySecret');
 
     // Step 2: Check if image file exists
     if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
@@ -220,15 +215,15 @@ if ($action == 'upload') {
             if ($email) {
                 $mail = new PHPMailer(true);
                 $mail->isSMTP();
-                $mail->Host = $_ENV['SMTP_HOST'];
-                $mail->Port = $_ENV['SMTP_PORT'];
-                $mail->Username = $_ENV['SMTP_USER'];
-                $mail->Password = $_ENV['SMTP_PASS'];
+                $mail->Host = getenv('SMTP_HOST');
+                $mail->Port = getenv('SMTP_PORT');
+                $mail->Username = getenv('SMTP_USER');
+                $mail->Password = getenv('SMTP_PASS');
                 $mail->SMTPAuth = true;
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
                 $mail->CharSet = 'UTF-8';
-                $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+                $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
                 $mail->addAddress($email);
                 $mail->Subject = "🛒 New Product Created - " . htmlspecialchars($product_name);
                 $mail->isHTML(true);
@@ -381,14 +376,14 @@ if ($action == 'upload') {
             if ($email) {
                 $mail = new PHPMailer(true);
                 $mail->isSMTP();
-                $mail->Host = $_ENV['SMTP_HOST'];
-                $mail->Port = $_ENV['SMTP_PORT'];
-                $mail->Username = $_ENV['SMTP_USER'];
-                $mail->Password = $_ENV['SMTP_PASS'];
+                $mail->Host = getenv('SMTP_HOST');
+                $mail->Port = getenv('SMTP_PORT');
+                $mail->Username = getenv('SMTP_USER');
+                $mail->Password = getenv('SMTP_PASS');
                 $mail->SMTPAuth = true;
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-                $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+                $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
                 $mail->addAddress($email);
                 $mail->CharSet = 'UTF-8';
                 $mail->Subject = "✏️ Product Updated - " . htmlspecialchars($product_name);
@@ -487,15 +482,15 @@ if ($action == 'upload') {
 
         $mail = new PHPMailer(true);
         $mail->isSMTP();
-        $mail->Host = $_ENV['SMTP_HOST'];
-        $mail->Port = $_ENV['SMTP_PORT'];
-        $mail->Username = $_ENV['SMTP_USER'];
-        $mail->Password = $_ENV['SMTP_PASS'];
+        $mail->Host = getenv('SMTP_HOST');
+        $mail->Port = getenv('SMTP_PORT');
+        $mail->Username = getenv('SMTP_USER');
+        $mail->Password = getenv('SMTP_PASS');
         $mail->SMTPAuth = true;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
         $mail->CharSet = 'UTF-8';
-        $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+        $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
         $mail->addAddress($vender['email']);
         $mail->Subject = "🗑️ Product Deleted - " . htmlspecialchars($product['product_name']);
         $mail->isHTML(true);

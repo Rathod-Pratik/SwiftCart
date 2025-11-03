@@ -6,7 +6,7 @@ echo '
     <!-- Left Card -->
     <div data-aos="fade-right" class="relative rounded-2xl overflow-hidden min-h-[350px] flex items-center justify-start p-8 text-white bg-cover bg-center" style="background-image: url(\'/SwiftCart/Image/offer.png \');">
       <!-- Overlay -->
-      <div class="absolute inset-0 bg-[url(\'/SwiftCart/Image/OfferBackGround.webp\')] "></div>
+      <div class="absolute inset-0 bg-[url(\'./Image/OfferBackGround.webp\')] "></div>
 
       <div class="relative z-10 space-y-4 max-w-md">
         <div class="flex items-center gap-3">

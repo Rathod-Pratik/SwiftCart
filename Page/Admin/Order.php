@@ -6,7 +6,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Shopizo | Admin</title>
+        <title>SwiftCart | Admin</title>
          <?php include __DIR__ . '/../../Componenets/Other/Header.php'; ?>
 </head>
 
@@ -108,7 +108,7 @@
         async function loadOrders() {
             const formData = new FormData();
             formData.append('action', 'fetchAllOrder')
-            const res = await fetch('/SwiftCart/AJAX/Checkout_ajax.php', {
+            const res = await fetch('../AJAX/Checkout_ajax.php', {
                 method: "POST",
                 body: formData
             });

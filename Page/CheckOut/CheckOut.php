@@ -152,7 +152,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
 
             formData.append('cart', JSON.stringify(cartArray));
 
-            fetch('/SwiftCart/AJAX/Checkout_ajax.php',{
+            fetch('./AJAX/Checkout_ajax.php',{
                 method:"POST",
                 body:formData
             }).then(res=>res.json()).then((res)=>{

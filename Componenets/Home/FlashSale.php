@@ -21,7 +21,7 @@ echo '
         
         <!-- Image -->
         <div class="flex-shrink-0">
-          <img src="/SwiftCart/Image/GamingMonitor.png" alt="Gaming Monitor" class="w-48 h-40 object-contain" />
+          <img src="./Image/GamingMonitor.png" alt="Gaming Monitor" class="w-48 h-40 object-contain" />
         </div>
 
         <!-- Details -->
@@ -50,7 +50,7 @@ echo '
       <div class="bg-[#f6f6f6] rounded-xl p-6 shadow flex justify-between items-center">
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-center mb-2 w-full">
-            <img src="/SwiftCart/Image/KeyBoard.png" alt="Mechanical Keyboard" class="w-full max-w-[96px] h-24 object-contain" />
+            <img src="./Image/KeyBoard.png" alt="Mechanical Keyboard" class="w-full max-w-[96px] h-24 object-contain" />
           </div>
           <div class="flex flex-row justify-between w-full">
             <h4 class="text-lg font-medium text-gray-800">Mechanical Keyboard</h4>
@@ -67,7 +67,7 @@ echo '
       <div class="bg-[#f6f6f6] rounded-xl p-6 shadow flex justify-between items-center">
         <div class="flex flex-col w-full">
           <div class="flex items-center justify-center mb-2 w-full">
-            <img src="/SwiftCart/Image/Mouse.png" alt="Wireless Mouse" class="w-full max-w-[96px] h-24 object-contain" />
+            <img src="./Image/Mouse.png" alt="Wireless Mouse" class="w-full max-w-[96px] h-24 object-contain" />
           </div>
           <div class="flex flex-row justify-between w-full">
             <h4 class="text-lg font-medium text-gray-800">Wireless Mouse</h4>

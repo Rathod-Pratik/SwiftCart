@@ -2,7 +2,7 @@
 ob_start();
 
 if (!isset($_COOKIE['AdminToken'])) {
-    header("Location: /SwiftCart/login");
+    header("Location: /login");
     exit;
 }
 ?>

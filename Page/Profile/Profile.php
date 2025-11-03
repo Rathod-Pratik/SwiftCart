@@ -108,7 +108,7 @@
         function fetchDetail() {
             const formData = new FormData();
             formData.append('action', 'fetch');
-            fetch('/SwiftCart/AJAX/Profile_ajax.php', {
+            fetch('./AJAX/Profile_ajax.php', {
                 method: 'POST',
                 body: formData
             }).then(res => res.json()).then((res) => {
@@ -131,7 +131,7 @@
             const form=e.target;
             const formData=new FormData(form);
             formData.append('action','UpdateCustomerProfile')
-             fetch('/SwiftCart/AJAX/Profile_ajax.php', {
+             fetch('./AJAX/Profile_ajax.php', {
                 method: 'POST',
                 body: formData
             }).then(res => res.json()).then((res)=>{

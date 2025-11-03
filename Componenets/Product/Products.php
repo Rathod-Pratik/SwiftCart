@@ -41,7 +41,7 @@ echo '
       </select>
     </div>
   </div>
-  <div id="productItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-[90vw] mx-auto mt-5">
+  <div id="productItems" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-[90vw] min-h-[70vh] mx-auto mt-5">
   </div>
 </section>
 ';

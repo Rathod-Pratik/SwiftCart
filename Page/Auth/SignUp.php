@@ -54,7 +54,7 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
         <div class="max-w-screen-xl m-0 sm:m-10 bg-white shadow sm:rounded-lg flex justify-center flex-1">
             <div data-aos="fade-right" class="flex-1 bg-[#b8d8da] text-center hidden lg:flex items-center justify-center">
                 <div class="m-12 xl:m-16 w-full h-[420px] bg-contain bg-center bg-no-repeat flex items-center justify-center"
-                    style="background-image: url('/SwiftCart/Image/Login.webp');">
+                    style="background-image: url('./Image/Login.webp');">
                 </div>
             </div>
             <div data-aos="fade-left" class="lg:w-1/2 xl:w-5/12 p-6 sm:p-12 flex items-center">
@@ -92,7 +92,7 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
                             </button>
                             <p class="mt-6 text-xs text-gray-600 text-center">
                                 Already have Account ?
-                                <a href="/SwiftCart/login" class="border-b border-gray-500 border-dotted">
+                                <a href="/login" class="border-b border-gray-500 border-dotted">
                                     Login
                                 </a>
                                 now
@@ -112,7 +112,7 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
             const form = e.target;
             const forData = new FormData(form);
 
-            fetch('/SwiftCart/AJAX/Auth.php', {
+            fetch('./AJAX/Auth.php', {
                 method: "POST",
                 body: forData,
                 credentials: "same-origin"
@@ -124,7 +124,7 @@ echo checkAndCreateTable($pdo, $tableName, $createSQL);
                 if (res.success == true && res.created == true) {
                     showToast("SignUp successfully", 'success')
                     setTimeout(() => {
-                        window.location.href = '/SwiftCart';
+                        window.location.href = '/';
                     }, 1500);
                 }
             })

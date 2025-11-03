@@ -87,7 +87,7 @@
         async function loadOrders() {
             const formData = new FormData();
             formData.append('action', 'FetchVenderOrder')
-            const res = await fetch('/SwiftCart/AJAX/Checkout_ajax.php', {
+            const res = await fetch('../AJAX/Checkout_ajax.php', {
                 method: "POST",
                 body: formData
             });

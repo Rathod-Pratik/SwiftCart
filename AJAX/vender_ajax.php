@@ -4,12 +4,8 @@ header('Content-Type: application/json');
 $action = $_POST['action'] ?? '';
 require '../vendor/autoload.php';
 
-use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
 
 $mail = new PHPMailer(true);
 
@@ -89,10 +85,10 @@ if ($action == 'create') {
         $mail = new PHPMailer(true);
 
         $mail->isSMTP();
-        $mail->Host     = $_ENV['SMTP_HOST'];
-        $mail->Port     = $_ENV['SMTP_PORT'];
-        $mail->Username = $_ENV['SMTP_USER'];
-        $mail->Password = $_ENV['SMTP_PASS'];
+        $mail->Host     = getenv('SMTP_HOST');
+        $mail->Port     = getenv('SMTP_PORT');
+        $mail->Username = getenv('SMTP_USER');
+        $mail->Password = getenv('SMTP_PASS');
         $mail->SMTPAuth   = true;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
@@ -187,10 +183,10 @@ if ($action == 'create') {
 
             $mail = new PHPMailer(true);
             $mail->isSMTP();
-            $mail->Host     = $_ENV['SMTP_HOST'];
-            $mail->Port     = $_ENV['SMTP_PORT'];
-            $mail->Username = $_ENV['SMTP_USER'];
-            $mail->Password = $_ENV['SMTP_PASS'];
+            $mail->Host     = getenv('SMTP_HOST');
+            $mail->Port     = getenv('SMTP_PORT');
+            $mail->Username = getenv('SMTP_USER');
+            $mail->Password = getenv('SMTP_PASS');
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
@@ -240,10 +236,10 @@ if ($action == 'create') {
 
             $mail = new PHPMailer(true);
             $mail->isSMTP();
-            $mail->Host     = $_ENV['SMTP_HOST'];
-            $mail->Port     = $_ENV['SMTP_PORT'];
-            $mail->Username = $_ENV['SMTP_USER'];
-            $mail->Password = $_ENV['SMTP_PASS'];
+            $mail->Host     = getenv('SMTP_HOST');
+            $mail->Port     = getenv('SMTP_PORT');
+            $mail->Username = getenv('SMTP_USER');
+            $mail->Password = getenv('SMTP_PASS');
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
@@ -292,10 +288,10 @@ if ($action == 'create') {
 
             $mail = new PHPMailer(true);
             $mail->isSMTP();
-            $mail->Host     = $_ENV['SMTP_HOST'];
-            $mail->Port     = $_ENV['SMTP_PORT'];
-            $mail->Username = $_ENV['SMTP_USER'];
-            $mail->Password = $_ENV['SMTP_PASS'];
+            $mail->Host     = getenv('SMTP_HOST');
+            $mail->Port     = getenv('SMTP_PORT');
+            $mail->Username = getenv('SMTP_USER');
+            $mail->Password = getenv('SMTP_PASS');
             $mail->SMTPAuth = true;
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 

@@ -65,7 +65,7 @@
         function FetchReview() {
             const formData = new FormData()
             formData.append('action', 'fetch')
-            fetch('/SwiftCart/AJAX/Review_ajax.php', {
+            fetch('../AJAX/Review_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {

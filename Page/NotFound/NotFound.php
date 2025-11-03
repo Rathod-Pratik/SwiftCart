@@ -16,7 +16,7 @@
 			</h2>
 			<p class="text-2xl font-semibold md:text-3xl">Sorry, we couldn't find this page.</p>
 			<p class="mt-4 mb-8 ">But dont worry, you can find plenty of other things on our homepage.</p>
-			<a rel="noopener noreferrer" href="/SwiftCart" class="px-8 py-3 bg-[#d09523] hover:bg-[#f4b942] text-white font-semibold rounded ">Back to homepage</a>
+			<a rel="noopener noreferrer" href="/" class="px-8 py-3 bg-[#d09523] hover:bg-[#f4b942] text-white font-semibold rounded ">Back to homepage</a>
 		</div>
 	</div>
 </section>

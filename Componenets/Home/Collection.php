@@ -22,7 +22,7 @@ echo '
           </a>
         </div>
         <div class="w-full sm:w-1/3 flex justify-center sm:justify-end mt-4 sm:mt-0">
-          <img src="/SwiftCart/Image/Mobile.webp" alt="Center Table" class="h-40 object-contain max-w-full" />
+          <img src="./Image/Mobile.webp" alt="Center Table" class="h-40 object-contain max-w-full" />
         </div>
       </div>
 
@@ -46,12 +46,12 @@ echo '
             </a>
           </div>
           <div class="w-full sm:w-1/2 flex justify-center sm:justify-end mt-4 sm:mt-0">
-            <img src="/SwiftCart/Image/GamingHeadPhones.png" alt="Lamp" class="h-40 object-contain max-w-full" />
+            <img src="./Image/GamingHeadPhones.png" alt="Lamp" class="h-40 object-contain max-w-full" />
           </div>
         </div>
 
         <!-- Discount Offer Box -->
-        <div class="bg-no-repeat bg-cover bg-[url(\'/SwiftCart/Image/HomeBackground.png\')] text-white rounded-xl p-6 flex flex-col justify-center items-center text-center shadow flex-1 min-h-[180px]">
+        <div class="bg-no-repeat bg-cover bg-[url(\'./Image/HomeBackground.png\')] text-white rounded-xl p-6 flex flex-col justify-center items-center text-center shadow flex-1 min-h-[180px]">
           <span class="bg-[#f6b344] text-black text-xs font-bold px-4 py-1.5 rounded-full mb-2">
             GET DISCOUNT
           </span>
@@ -76,7 +76,7 @@ echo '
         </a>
       </div>
       <div class="flex justify-center ">
-        <img src="/SwiftCart/Image/GamingLaptop.png" alt="Accent Chair" class="h-56 object-contain max-w-full" />
+        <img src="./Image/GamingLaptop.png" alt="Accent Chair" class="h-56 object-contain max-w-full" />
       </div>
     </div>
 

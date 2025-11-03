@@ -3,11 +3,8 @@ require '../Database/db.php';
 header('Content-Type: application/json');
 require '../vendor/autoload.php';
 
-use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 
-$dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load();
 $action = $_POST['action'];
 
 if ($action == 'fetchRequestedProduct') {
@@ -93,15 +90,15 @@ if ($action == 'fetchRequestedProduct') {
           // Send email
           $mail = new PHPMailer(true);
           $mail->isSMTP();
-          $mail->Host = $_ENV['SMTP_HOST'];
-          $mail->Port = $_ENV['SMTP_PORT'];
-          $mail->Username = $_ENV['SMTP_USER'];
-          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->Host = getenv('SMTP_HOST');
+          $mail->Port = getenv('SMTP_PORT');
+          $mail->Username = getenv('SMTP_USER');
+          $mail->Password = getenv('SMTP_PASS');
           $mail->SMTPAuth = true;
           $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
           $mail->CharSet = 'UTF-8';
-          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
           $mail->addAddress($email);
           $mail->Subject = "✅ Product Approved - " . htmlspecialchars($name);
           $mail->isHTML(true);
@@ -168,14 +165,14 @@ if ($action == 'fetchRequestedProduct') {
           // Send email
           $mail = new PHPMailer(true);
           $mail->isSMTP();
-          $mail->Host = $_ENV['SMTP_HOST'];
-          $mail->Port = $_ENV['SMTP_PORT'];
-          $mail->Username = $_ENV['SMTP_USER'];
-          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->Host = getenv('SMTP_HOST');
+          $mail->Port = getenv('SMTP_PORT');
+          $mail->Username = getenv('SMTP_USER');
+          $mail->Password = getenv('SMTP_PASS');
           $mail->SMTPAuth = true;
           $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
-          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
           $mail->CharSet = 'UTF-8';
           $mail->addAddress($email);
           $mail->CharSet = 'UTF-8';
@@ -241,15 +238,15 @@ if ($action == 'fetchRequestedProduct') {
           // Send email to vendor
           $mail = new PHPMailer(true);
           $mail->isSMTP();
-          $mail->Host = $_ENV['SMTP_HOST'];
-          $mail->Port = $_ENV['SMTP_PORT'];
-          $mail->Username = $_ENV['SMTP_USER'];
-          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->Host = getenv('SMTP_HOST');
+          $mail->Port = getenv('SMTP_PORT');
+          $mail->Username = getenv('SMTP_USER');
+          $mail->Password = getenv('SMTP_PASS');
           $mail->SMTPAuth = true;
           $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
           $mail->CharSet = 'UTF-8';
-          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
           $mail->addAddress($email);
           $mail->Subject = "✅ Product Republished - " . htmlspecialchars($name);
           $mail->isHTML(true);
@@ -305,15 +302,15 @@ if ($action == 'fetchRequestedProduct') {
           // Send email to vendor
           $mail = new PHPMailer(true);
           $mail->isSMTP();
-          $mail->Host = $_ENV['SMTP_HOST'];
-          $mail->Port = $_ENV['SMTP_PORT'];
-          $mail->Username = $_ENV['SMTP_USER'];
-          $mail->Password = $_ENV['SMTP_PASS'];
+          $mail->Host = getenv('SMTP_HOST');
+          $mail->Port = getenv('SMTP_PORT');
+          $mail->Username = getenv('SMTP_USER');
+          $mail->Password = getenv('SMTP_PASS');
           $mail->SMTPAuth = true;
           $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 
           $mail->CharSet = 'UTF-8';
-          $mail->setFrom($_ENV['SMTP_USER'], 'SwiftCart Admin');
+          $mail->setFrom(getenv('SMTP_USER'), 'SwiftCart Admin');
           $mail->addAddress($email);
           $mail->Subject = "🚫 Product Unpublished - " . htmlspecialchars($name);
           $mail->isHTML(true);

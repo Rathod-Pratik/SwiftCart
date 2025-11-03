@@ -13,7 +13,7 @@
     <div class="bg-gradient-to-br from-teal-50 to-yellow-50 min-h-screen flex flex-col items-center justify-center py-10 px-4">
         <div class="flex flex-col items-center w-full max-w-lg">
             <div class="flex justify-center mb-6">
-                <img src="/SwiftCart/Image/Success.png" alt="Success Image" class="w-40 h-40 object-contain drop-shadow-lg rounded-full border-4 border-amber-200 bg-white" />
+                <img src="./Image/Success.png" alt="Success Image" class="w-40 h-40 object-contain drop-shadow-lg rounded-full border-4 border-amber-200 bg-white" />
             </div>
             <div class="text-center">
                 <h1 class="text-4xl font-extrabold text-[#234445] mb-2">Thank you for your purchase!</h1>

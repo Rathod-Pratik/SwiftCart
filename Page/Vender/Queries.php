@@ -75,7 +75,7 @@
         function FetchQuery() {
             const formData = new FormData()
             formData.append('action', 'fetch')
-            fetch('/SwiftCart/AJAX/Query_ajax.php', {
+            fetch('../AJAX/Query_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {
@@ -135,7 +135,7 @@
             // Show spinner
             document.getElementById(`Spinner-${productid}`).classList.remove("hidden");
 
-            fetch('/SwiftCart/AJAX/Query_ajax.php', {
+            fetch('../AJAX/Query_ajax.php', {
                 method: "POST",
                 body: formData
             }).then(res => res.json()).then((res) => {
