@@ -1,9 +1,9 @@
 <?php
-$host = getenv('host');
-$port = getenv('port');
-$dbname = getenv('dbname');
-$user = getenv('user');
-$password = getenv('password');
+$host = getenv('DB_HOST');
+$port = getenv('DB_PORT');
+$dbname = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$password = getenv('DB_PASS');
 
 try {
     $pdo = new PDO(
@@ -16,6 +16,7 @@ try {
             PDO::ATTR_EMULATE_PREPARES => true
         ]
     );
+
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
