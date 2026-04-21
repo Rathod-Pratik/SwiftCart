@@ -159,7 +159,7 @@ checkAndCreateTable($pdo, $table, $createSQL);
                 if(res.status == 'success'){
                     showToast("Order placed successfully.",'success')
                     setTimeout(()=>{
-                        window.location.href = "/SwiftCart/Completeorder";
+                        window.location.href = "/Completeorder";
                         document.getElementById('CartLength').classList.add('hidden');
                         document.getElementById('ConfirmForm').reset();
                     },2000)
