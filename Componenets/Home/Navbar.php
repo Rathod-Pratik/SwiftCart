@@ -1,33 +1,4 @@
 <?php
-
-require __DIR__ . '/../../Database/db.php';
-
-if (isset($_COOKIE['authToken']) || isset($_COOKIE['AdminToken']) || isset($_COOKIE['venderToken'])) {
-  if (isset($_COOKIE['authToken'])) {
-    $userData = json_decode($_COOKIE['authToken'], true);
-  } elseif (isset($_COOKIE['AdminToken'])) {
-    $userData = json_decode($_COOKIE['AdminToken'], true);
-  } elseif (isset($_COOKIE['venderToken'])) {
-    $userData = json_decode($_COOKIE['venderToken'], true);
-  } else {
-    echo json_encode(['status' => 'unauthorized', 'message' => 'User not logged in or cookie missing']);
-    exit;
-  }
-  $userid = $userData['id'];
-  $sql = "SELECT COUNT(*) AS total FROM wishlist WHERE userid = :userid";
-  $stmt = $pdo->prepare($sql);
-  $stmt->execute(['userid' => $userid]);
-  $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-  $wishlistCount = $row['total'];
-
-  $sql1 = "SELECT COUNT(*) AS total FROM cart WHERE userid = :userid";
-  $stmt1 = $pdo->prepare($sql1);
-  $stmt1->execute(['userid' => $userid]);
-  $row1 = $stmt1->fetch(PDO::FETCH_ASSOC);
-  $CartlistCount = $row1['total'];
-}
-
 echo '
 <nav class="bg-[#204d4f] w-full z-20 top-0 start-0 sticky">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -197,60 +168,5 @@ echo '
   </div>
 </nav>
 
-<script>
-  const userBtn = document.getElementById("userButton");
-  const dropdown = document.getElementById("dropdownMenu");
 
-  userBtn.addEventListener("click", () => {
-    dropdown.classList.toggle("hidden");
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!userBtn.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.add("hidden");
-    }
-  });
-
-  const toggleBtn = document.getElementById("menu-toggle");
-  const navbar = document.getElementById("navbar-sticky");
-  const closeBtn = document.getElementById("close-navbar");
-
-  toggleBtn.addEventListener("click", () => {
-    navbar.classList.remove("hidden");
-    setTimeout(() => {
-      navbar.classList.remove("translate-x-full");
-    }, 10);
-    document.body.style.overflow = "hidden";
-  });
-
-  closeBtn.addEventListener("click", () => {
-    navbar.classList.add("translate-x-full");
-    document.body.style.overflow = "";
-    setTimeout(() => {
-      navbar.classList.add("hidden");
-    }, 300);
-  });
-
-  // Optional: close navbar when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!navbar.contains(e.target) && !toggleBtn.contains(e.target) && !navbar.classList.contains("hidden")) {
-      navbar.classList.add("translate-x-full");
-      document.body.style.overflow = "";
-      setTimeout(() => {
-        navbar.classList.add("hidden");
-      }, 300);
-    }
-  });
-
-  function Logout(){
-
-  fetch("./AJAX/Logout.php", {
-  method: "POST"
-})
-.then(res => res.json())
-.then(data => {
-  window.location.href = "/login"; // Redirect to login page
-});
-  }
-</script>
 ';
