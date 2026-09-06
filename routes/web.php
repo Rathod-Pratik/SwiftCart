@@ -26,31 +26,30 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-route::get('/admin/dashboard', function () {
+Route::get('/admin/dashboard', function () {
     return view('admin.Dashboard');
 })->name('admin.dashboard');
 
-route::get('/admin/category', function () {
+Route::get('/admin/category', function () {
     return view('admin.Category');
 })->name('admin.category');
 
-route::get('/admin/product', function () {
+Route::get('/admin/product', function () {
     return view('admin.Product');
 })->name('admin.product');
 
-route::get('/admin/Rating', function () {
+Route::get('/admin/rating', function () {
     return view('admin.Rating');
 })->name('admin.rating');
 
-route::get('/admin/user', function () {
+Route::get('/admin/user', function () {
     return view('admin.User');
 })->name('admin.user');
 
-route::get('/admin/vendor', function () {
+Route::get('/admin/vendor', function () {
     return view('admin.Vendor');
 })->name('admin.vendor');
 
-route::get('/admin/contact', function () {
+Route::get('/admin/contact', function () {
     return view('admin.Contact');
 })->name('admin.contact');
-
