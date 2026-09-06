@@ -1,7 +1,0 @@
-.git
-node_modules
-vendor
-.env
-*.log
-tests
-.DS_Store

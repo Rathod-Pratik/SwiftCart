@@ -1,0 +1,12 @@
+@extends('layouts.app')
+@section('title', 'Home')
+@section('content')
+    @include('home.components.hero')
+    @include('home.components.categories')
+    @include('home.components.collection')
+    @include('home.components.trending')
+    @include('home.components.flash-sale')
+    @include('home.components.cashback')
+    @include('home.components.review')
+    @include('home.components.subscribe')
+@endsection
