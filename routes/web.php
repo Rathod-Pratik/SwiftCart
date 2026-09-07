@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,30 +27,32 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-Route::get('/admin/dashboard', function () {
-    return view('admin.Dashboard');
-})->name('admin.dashboard');
+Route::prefix('api')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->middleware('guest')->middleware('throttle:6,1');
+    Route::post('/signup', [AuthController::class, 'signup'])->middleware('guest');
+    Route::post('/forgot-password', [AuthController::class, 'forgetPassword'])->middleware('guest');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest');
 
-Route::get('/admin/category', function () {
-    return view('admin.Category');
-})->name('admin.category');
+    Route::middleware('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/profile', [AuthController::class, 'getProfile']);
+        Route::patch('/profile', [AuthController::class, 'updateProfile']);
+        Route::delete('/profile', [AuthController::class, 'deleteAccount']);
+        Route::post('/email/verification-notification', [AuthController::class, 'resendVerificationEmail'])
+            ->middleware('throttle:6,1');
+    });
 
-Route::get('/admin/product', function () {
-    return view('admin.Product');
-})->name('admin.product');
+    Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+        ->middleware(['auth', 'signed', 'throttle:6,1'])
+        ->name('verification.verify');
+});
 
-Route::get('/admin/rating', function () {
-    return view('admin.Rating');
-})->name('admin.rating');
-
-Route::get('/admin/user', function () {
-    return view('admin.User');
-})->name('admin.user');
-
-Route::get('/admin/vendor', function () {
-    return view('admin.Vendor');
-})->name('admin.vendor');
-
-Route::get('/admin/contact', function () {
-    return view('admin.Contact');
-})->name('admin.contact');
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(function () {
+    Route::view('/dashboard', 'admin.Dashboard')->name('admin.dashboard');
+    Route::view('/category', 'admin.Category')->name('admin.category');
+    Route::view('/product', 'admin.Product')->name('admin.product');
+    Route::view('/rating', 'admin.Rating')->name('admin.rating');
+    Route::view('/user', 'admin.User')->name('admin.user');
+    Route::view('/vendor', 'admin.Vendor')->name('admin.vendor');
+    Route::view('/contact', 'admin.Contact')->name('admin.contact');
+});
