@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'name',
     'slug',
-    'image',
+    'icon',
     'description',
     'status',
 ])]

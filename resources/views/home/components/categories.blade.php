@@ -1,12 +1,12 @@
 @props([
     'categories' => [
-        ['name' => 'Laptops', 'image' => asset('images/GamingLaptop.png')],
-        ['name' => 'Headphones', 'image' => asset('images/GamingHeadPhones.png')],
-        ['name' => 'Monitors', 'image' => asset('images/GamingMonitor.png')],
-        ['name' => 'Keyboards', 'image' => asset('images/KeyBoard.png')],
-        ['name' => 'Mice', 'image' => asset('images/Mouse.png')],
-        ['name' => 'Mobiles', 'image' => asset('images/Mobile.webp')],
-        ['name' => 'Stationary', 'image' => asset('images/stationary.jpg')],
+        ['name' => 'Laptops', 'icon' => '💻'],
+        ['name' => 'Headphones', 'icon' => '🎧'],
+        ['name' => 'Monitors', 'icon' => '🖥️'],
+        ['name' => 'Keyboards', 'icon' => '⌨️'],
+        ['name' => 'Mice', 'icon' => '🖱️'],
+        ['name' => 'Mobiles', 'icon' => '📱'],
+        ['name' => 'Stationary', 'icon' => '✏️'],
     ]
 ])
 
@@ -42,7 +42,7 @@
                 <a href="{{ route('product', ['category' => $category['name']]) }}"
                    class="min-w-55 sm:min-w-62.5 bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 group flex flex-col items-center">
                     <div class="w-32 h-32 mb-4 bg-gray-50 rounded-full flex items-center justify-center p-4 group-hover:scale-105 transition-transform duration-300">
-                        <img src="{{ $category['image'] }}" alt="{{ $category['name'] }}" class="max-w-full max-h-full object-contain" />
+                        <span class="text-6xl" role="img" aria-label="{{ $category['name'] }}">{{ $category['icon'] }}</span>
                     </div>
                     <h3 class="font-semibold text-lg text-gray-800 group-hover:text-[#d09523] transition-colors">
                         {{ $category['name'] }}

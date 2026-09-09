@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,8 +17,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'ifsc_code',
     'branch_name',
 ])]
-class VendorBankDetail extends Model
+#[Hidden(['account_number'])]
+class BankDetail extends Model
 {
+    protected $table = 'vendor_bank_details';
+
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'vendor_id');
