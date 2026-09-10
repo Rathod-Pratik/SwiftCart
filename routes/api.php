@@ -4,8 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
-
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,11 +16,19 @@ Route::middleware('web')->group(function (): void {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest');
 
     Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{product}', [ProductController::class, 'show']);
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::put('/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+    });
+
+    Route::middleware(['auth', 'role:admin,vendor'])->group(function (): void {
+        Route::post('/products', [ProductController::class, 'store']);
+        Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update']);
+        Route::delete('/products/{product}', [ProductController::class, 'destroy']);
     });
 
     Route::middleware(['auth', 'role:vendor'])->group(function (): void {

@@ -3,23 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Services\S3Service;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use \Exception;
 
 class ReviewController extends Controller
 {
+    public function __construct(protected S3Service $s3Service) {}
+
     protected array $validationRules = [
         'user_id' => 'required|exists:users,id',
         'product_id' => 'required|exists:products,id',
+        'images' => 'nullable|array|max:5',
+        'images.*' => 'image|max:2048',
         'rating' => 'required|integer|min:1|max:5',
         'comment' => 'nullable|string|max:1000',
     ];
+
     protected array $validationMessages = [
         'user_id.required' => 'User ID is required.',
         'user_id.exists' => 'User ID must exist in the users table.',
         'product_id.required' => 'Product ID is required.',
         'product_id.exists' => 'Product ID must exist in the products table.',
+        'images.array' => 'Images must be uploaded as an array.',
+        'images.max' => 'You may upload up to 5 images.',
+        'images.*.image' => 'Each file must be an image.',
+        'images.*.max' => 'Each image cannot exceed 2048 KB.',
         'rating.required' => 'Rating is required.',
         'rating.integer' => 'Rating must be an integer.',
         'rating.min' => 'Rating must be at least 1.',
@@ -27,6 +37,7 @@ class ReviewController extends Controller
         'comment.string' => 'Comment must be a string.',
         'comment.max' => 'Comment cannot exceed 1000 characters.',
     ];
+
     /**
      * Display a listing of the resource.
      */
@@ -45,12 +56,13 @@ class ReviewController extends Controller
             $Reviews = Review::find(request()->input('product_id'))
                 ->paginate($validatedData['per_page'] ?? 10);
 
-            if (!$Reviews) {
+            if (! $Reviews) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No reviews found',
                 ], 404);
             }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Reviews fetched successfully',
@@ -78,6 +90,20 @@ class ReviewController extends Controller
     {
         try {
             $validatedData = $request->validate($this->validationRules, $this->validationMessages);
+
+            if ($request->hasFile('images')) {
+                $validatedData['images'] = [];
+
+                foreach ($request->file('images') as $file) {
+                    $key = $this->s3Service->generateKey(
+                        'reviews',
+                        $validatedData['user_id'],
+                        $file->getClientOriginalName()
+                    );
+                    $this->s3Service->uploadFromServer($key, $file->getContent(), 'public');
+                    $validatedData['images'][] = $key;
+                }
+            }
 
             $review = Review::create($validatedData);
 
@@ -108,6 +134,20 @@ class ReviewController extends Controller
     {
         try {
             $validatedData = $request->validate($this->validationRules, $this->validationMessages);
+
+            if ($request->hasFile('images')) {
+                $validatedData['images'] = [];
+
+                foreach ($request->file('images') as $file) {
+                    $key = $this->s3Service->generateKey(
+                        'reviews',
+                        $validatedData['user_id'],
+                        $file->getClientOriginalName()
+                    );
+                    $this->s3Service->uploadFromServer($key, $file->getContent(), 'public');
+                    $validatedData['images'][] = $key;
+                }
+            }
 
             $review->update($validatedData);
 

@@ -13,9 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'price',
     'discount',
     'stock',
-    'image',
+    'images',
     'category_id',
-    'related_products',
     'store_link',
     'is_featured',
     'is_limited',
@@ -44,18 +43,12 @@ class Product extends Model
         return $this->hasMany(ProductInformationSection::class);
     }
 
-    public function variants(): HasMany
-    {
-        return $this->hasMany(ProductVariant::class);
-    }
-
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
             'discount' => 'decimal:2',
             'image' => 'array',
-            'related_products' => 'array',
             'is_featured' => 'boolean',
             'is_limited' => 'boolean',
             'is_trending' => 'boolean',

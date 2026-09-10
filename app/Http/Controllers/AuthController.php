@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\S3Service;
+use Exception;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +16,8 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(protected S3Service $s3Service) {}
+
     /**
      * Handle user login.
      */
@@ -201,45 +205,63 @@ class AuthController extends Controller
      */
     public function updateProfile(Request $request): JsonResponse
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            Gate::authorize('update', $user);
+
+            $validatedData = $request->validate([
+                'name' => 'sometimes|required|string|min:2|max:50',
+                'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
+                'phone' => 'sometimes|nullable|string|min:10|max:15',
+                'address' => 'sometimes|nullable|string|min:5|max:255',
+                'image' => 'required|image|max:2048',
+                'password' => 'sometimes|required|string|min:8|max:64|confirmed',
+            ], [
+                'name.required' => 'Name is required.',
+                'name.min' => 'Name must be at least 2 characters.',
+                'name.max' => 'Name cannot exceed 50 characters.',
+                'email.required' => 'Email address is required.',
+                'email.email' => 'Please enter a valid email address.',
+                'email.max' => 'Email address cannot exceed 255 characters.',
+                'email.unique' => 'This email is already in use by another account.',
+                'phone.min' => 'Phone number must be at least 10 digits.',
+                'phone.max' => 'Phone number cannot exceed 15 digits.',
+                'address.min' => 'Address must be at least 5 characters.',
+                'address.max' => 'Address cannot exceed 255 characters.',
+                'password.required' => 'Password is required.',
+                'password.min' => 'Password must be at least 8 characters long.',
+                'password.max' => 'Password cannot exceed 64 characters.',
+                'password.confirmed' => 'Password confirmation does not match.',
+            ]);
+
+            $image = $request->file('image');
+            $key = $this->s3Service->generateKey('profile-images', $user->id, $image->getClientOriginalName());
+            $uploaded = $this->s3Service->uploadFromServer(
+                $key,
+                file_get_contents($image->getRealPath())
+            );
+
+            if (! $uploaded) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload image',
+                ], 500);
+            }
+            $validatedData['image'] = $key;
+            $validatedData['password'] = $validatedData['password'] ?? $user->password;
+            $user = $user->fill($validatedData);
+            $user->save();
+
+            return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Error occurred while updating profile', 'error' => $e->getMessage()], 500);
         }
-
-        Gate::authorize('update', $user);
-
-        $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|min:2|max:50',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
-            'phone' => 'sometimes|nullable|string|min:10|max:15',
-            'address' => 'sometimes|nullable|string|min:5|max:255',
-            'image' => 'sometimes|nullable|string|max:255',
-            'password' => 'sometimes|required|string|min:8|max:64|confirmed',
-        ], [
-            'name.required' => 'Name is required.',
-            'name.min' => 'Name must be at least 2 characters.',
-            'name.max' => 'Name cannot exceed 50 characters.',
-            'email.required' => 'Email address is required.',
-            'email.email' => 'Please enter a valid email address.',
-            'email.max' => 'Email address cannot exceed 255 characters.',
-            'email.unique' => 'This email is already in use by another account.',
-            'phone.min' => 'Phone number must be at least 10 digits.',
-            'phone.max' => 'Phone number cannot exceed 15 digits.',
-            'address.min' => 'Address must be at least 5 characters.',
-            'address.max' => 'Address cannot exceed 255 characters.',
-            'password.required' => 'Password is required.',
-            'password.min' => 'Password must be at least 8 characters long.',
-            'password.max' => 'Password cannot exceed 64 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
-        ]);
-        if (isset($validatedData['email']) && $validatedData['email'] !== $user->getOriginal('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->fill($validatedData);
-        $user->save();
-
-        return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
     }
 
     /**
@@ -260,7 +282,7 @@ class AuthController extends Controller
             }
 
             return response()->json(['user' => $user]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['message' => 'Error occurred while fetching user profile'], 500);
         }
     }
@@ -332,6 +354,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'User not found'], 404);
         }
 
+        /** @var User $user */
         Gate::authorize('delete', $user);
 
         $request->validate([

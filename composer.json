@@ -10,9 +10,11 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "intervention/image": "^4.3",
         "laravel/framework": "^13.8",
         "laravel/reverb": "^1.11",
         "laravel/tinker": "^3.0",
+        "league/flysystem-aws-s3-v3": "^3.35",
         "mallardduck/blade-lucide-icons": "^2.0",
         "razorpay/razorpay": "^2.9"
     },
@@ -90,6 +92,7 @@
             "php-http/discovery": true
         }
     },
+    
     "minimum-stability": "stable",
     "prefer-stable": true
 }

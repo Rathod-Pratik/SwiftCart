@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    protected $fillable = ['product_id', 'user_id', 'rating', 'comment'];
+    protected $fillable = ['product_id', 'user_id', 'rating', 'comment', 'images'];
 
     protected $casts = [
+        'images' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

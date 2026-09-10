@@ -11,6 +11,7 @@
         "infer-conventions",
         "laravel-best-practices",
         "pest-testing",
+        "echo-development",
         "tailwindcss-development"
     ]
 }
