@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MessageController;
+
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +25,14 @@ Route::middleware('web')->group(function (): void {
 
     Route::middleware(['auth', 'role:vendor'])->group(function (): void {
         Route::patch('/vendor/bank-details', [AuthController::class, 'updateBankDetails']);
+    });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/conversations', [ConversationController::class, 'index']);
+        Route::post('/conversations', [ConversationController::class, 'store']);
+
+        Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
+        Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store']);
     });
 
     Route::middleware('auth')->group(function (): void {
