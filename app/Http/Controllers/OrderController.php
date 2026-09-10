@@ -158,7 +158,7 @@ class OrderController extends Controller
 
                 $order = Order::create([
                     'user_id' => $request->user()->id,
-                    'order_number' => 'ORD-'.strtoupper(uniqid()),
+                    'order_number' => 'ORD-' . strtoupper(uniqid()),
                     'subtotal' => $subtotal,
                     'discount' => $discount,
                     'discount_code' => $validated['discount_code'] ?? null,
@@ -193,7 +193,6 @@ class OrderController extends Controller
                 'message' => 'Order created successfully',
                 'data' => $order,
             ], 201);
-
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -253,6 +252,48 @@ class OrderController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while deleting order',
+            ], 500);
+        }
+    }
+    public function updateStatus(Request $request, Order $order)
+    {
+        try {
+            $validated = $request->validate([
+                'status' => 'required|string|in:pending,processing,completed,cancelled',
+            ], [
+                'status.required' => 'The status field is required.',
+                'status.string' => 'The status must be a string.',
+                'status.in' => 'The status must be one of the following: pending, processing, completed, cancelled.',
+            ]);
+
+            Gate::authorize('update', $order);
+            $order->update(['order_status' => $validated['status']]);
+
+            if ($validated['status'] === 'completed') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order marked as completed successfully',
+                    'data' => $order->load('items'),
+                ]);
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Order status updated successfully',
+                    'data' => $order->load('items'),
+                ]);
+            }
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (Exception $e) {
+            Log::error('Error occurred while updating order status', ['exception' => $e]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error occurred while updating order status',
             ], 500);
         }
     }

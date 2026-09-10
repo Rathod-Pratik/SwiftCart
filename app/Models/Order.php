@@ -23,4 +23,9 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function isCompleted(): bool
+    {
+        return $this->order_status === 'completed';
+    }
 }
