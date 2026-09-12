@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wishlist;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -28,8 +29,8 @@ class WishlistController extends Controller
             Gate::authorize('viewAny', Wishlist::class);
 
             $validatedData = request()->validate([
-                'page' => 'integer|min:1',
-                'per_page' => 'integer|min:1|max:100',
+                'page' => 'nullable|integer|min:1',
+                'per_page' => 'nullable|integer|min:1|max:100',
             ], [
                 'page.integer' => 'The page must be an integer.',
                 'page.min' => 'The page must be at least 1.',
@@ -37,7 +38,7 @@ class WishlistController extends Controller
                 'per_page.min' => 'The per_page must be at least 1.',
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
-            $wishlists = Wishlist::where('user_id', Auth::id())->paginate($validatedData['per_page'] ?? 10);
+            $wishlists = Wishlist::with('product')->where('user_id', Auth::id())->paginate($validatedData['per_page'] ?? 10);
 
             if ($wishlists->isEmpty()) {
                 return response()->json([
@@ -51,6 +52,17 @@ class WishlistController extends Controller
                 'message' => 'Wishlists fetched successfully',
                 'data' => $wishlists,
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to view wishlists',
+            ], 403);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -93,6 +105,11 @@ class WishlistController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to create wishlist',
+            ], 403);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -115,6 +132,11 @@ class WishlistController extends Controller
                 'success' => true,
                 'message' => 'Item removed from wishlist successfully',
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to delete this wishlist item',
+            ], 403);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

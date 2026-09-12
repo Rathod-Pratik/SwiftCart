@@ -9,10 +9,15 @@ class CategoryPolicy
 {
     public function before(User $user): ?bool
     {
-        return $user->isAdmin() ? true : false;
+        return $user->isAdmin() ? true : null;
     }
 
-    public function viewAny(User $user): bool
+    public function viewAny(?User $user): bool
+    {
+        return true;
+    }
+
+    public function view(?User $user, Category $category): bool
     {
         return true;
     }

@@ -1,11 +1,20 @@
 <?php
 
+namespace Tests\Feature;
+
 use App\Models\User;
+use App\Services\S3Service;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Mockery\MockInterface;
+use RuntimeException;
+
+use function Pest\Laravel\mock;
 
 uses(RefreshDatabase::class);
 
 test('signup returns custom validation error messages for required fields', function () {
+
     $response = $this->postJson('/api/signup', []);
 
     $response->assertStatus(422)
@@ -17,6 +26,7 @@ test('signup returns custom validation error messages for required fields', func
 });
 
 test('signup returns custom validation error messages for min/max/confirmed rules', function () {
+
     $response = $this->postJson('/api/signup', [
         'name' => 'a',
         'email' => 'invalid-email',
@@ -33,6 +43,7 @@ test('signup returns custom validation error messages for min/max/confirmed rule
 });
 
 test('signup registers a new user successfully', function () {
+
     $response = $this->postJson('/api/signup', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
@@ -51,6 +62,7 @@ test('signup registers a new user successfully', function () {
 });
 
 test('login returns custom validation errors on empty payload', function () {
+
     $response = $this->postJson('/api/login', []);
 
     $response->assertStatus(422)
@@ -61,6 +73,8 @@ test('login returns custom validation errors on empty payload', function () {
 });
 
 test('delete account requires current password and removes account successfully', function () {
+
+    /** @var User $user */
     $user = User::factory()->create([
         'password' => 'Secret123!',
     ]);
@@ -96,6 +110,8 @@ test('delete account requires current password and removes account successfully'
 });
 
 test('update profile returns custom validation messages', function () {
+
+    /** @var User $user */
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->patchJson('/api/profile', [
@@ -109,5 +125,49 @@ test('update profile returns custom validation messages', function () {
             'name' => 'Name must be at least 2 characters.',
             'email' => 'Please enter a valid email address.',
             'phone' => 'Phone number must be at least 10 digits.',
+        ]);
+});
+
+test('update profile does not require an image', function () {
+
+    /** @var User $user */
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->patchJson('/api/profile', [
+        'name' => 'Updated Name',
+    ]);
+
+    $response->assertSuccessful()
+        ->assertJson([
+            'message' => 'Profile updated successfully',
+        ]);
+
+    expect($user->fresh()->name)->toBe('Updated Name');
+});
+
+test('update profile hides upload exceptions from the client', function () {
+
+    /** @var MockInterface $s3ServiceMock */
+    $s3ServiceMock = mock(S3Service::class);
+    $s3ServiceMock
+        ->shouldReceive('generateKey')
+        ->once()
+        ->andReturn('profile-images/1/avatar.png')
+        ->shouldReceive('uploadFromServer')
+        ->once()
+        ->andThrow(new RuntimeException('private storage failure'));
+
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->patchJson('/api/profile', [
+        'image' => UploadedFile::fake()->image('avatar.png'),
+    ]);
+
+    $response->assertStatus(500)
+        ->assertJson([
+            'message' => 'Error occurred while updating profile.',
+        ])
+        ->assertJsonMissing([
+            'message' => 'private storage failure',
         ]);
 });

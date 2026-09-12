@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
@@ -15,7 +17,7 @@ class CategoryController extends Controller
         'description' => 'required|string|max:255',
         'slug' => 'required|string|max:255|unique:categories,slug',
         'icon' => 'required|string|max:100',
-        'status' => 'required|boolean',
+        'status' => 'required|in:active,inactive',
     ];
 
     private array $messages = [
@@ -39,12 +41,12 @@ class CategoryController extends Controller
     /**
      * Get all categories
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $validatedData = request()->validate([
-                'page' => 'integer|min:1',
-                'per_page' => 'integer|min:1|max:100',
+            $validatedData = $request->validate([
+                'page' => 'nullable|integer|min:1',
+                'per_page' => 'nullable|integer|min:1|max:100',
             ], [
                 'page.integer' => 'The page must be an integer.',
                 'page.min' => 'The page must be at least 1.',
@@ -53,7 +55,9 @@ class CategoryController extends Controller
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
 
-            $categories = Category::latest()->paginate(10);
+            $perPage = $validatedData['per_page'] ?? 10;
+            $categories = Category::latest()->paginate($perPage);
+
             if ($categories->isEmpty()) {
                 return response()->json([
                     'success' => false,
@@ -66,6 +70,12 @@ class CategoryController extends Controller
                 'message' => 'Categories fetched successfully',
                 'data' => $categories,
             ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -81,9 +91,7 @@ class CategoryController extends Controller
     {
         try {
             Gate::authorize('create', Category::class);
-            $validated = $request->validate($this->rules,
-                $this->messages
-            );
+            $validated = $request->validate($this->rules, $this->messages);
 
             $category = Category::create($validated);
 
@@ -98,6 +106,11 @@ class CategoryController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to create category',
+            ], 403);
         } catch (\Exception $e) {
             Log::error('Error occurred while creating category: '.$e->getMessage());
 
@@ -115,9 +128,16 @@ class CategoryController extends Controller
     {
         try {
             Gate::authorize('update', $category);
-            $validated = $request->validate($this->rules,
-                $this->messages
-            );
+
+            $rules = [
+                'name' => 'sometimes|required|string|max:255',
+                'description' => 'sometimes|required|string|max:255',
+                'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('categories', 'slug')->ignore($category->id)],
+                'icon' => 'sometimes|required|string|max:100',
+                'status' => 'sometimes|required|boolean',
+            ];
+
+            $validated = $request->validate($rules, $this->messages);
 
             $category->update($validated);
 
@@ -132,6 +152,11 @@ class CategoryController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to update category',
+            ], 403);
         } catch (\Exception $e) {
             Log::error('Error occurred while updating category: '.$e->getMessage());
 
@@ -155,6 +180,11 @@ class CategoryController extends Controller
                 'success' => true,
                 'message' => 'Category deleted successfully',
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to delete category',
+            ], 403);
         } catch (\Exception $e) {
             Log::error('Error occurred while deleting category: '.$e->getMessage());
 

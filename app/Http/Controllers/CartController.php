@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CartController extends Controller
 {
@@ -37,9 +38,9 @@ class CartController extends Controller
                 'per_page.min' => 'The per_page must be at least 1.',
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
-            $carts = Cart::where('user_id', auth()->id)->pegination($validation['per_page'] ?? 10);
+            $carts = Cart::where('user_id', auth()->id())->paginate($validation['per_page'] ?? 10);
 
-            if (! $carts) {
+            if ($carts->isEmpty()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No carts found',
@@ -57,7 +58,7 @@ class CartController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while fetching carts',
@@ -83,6 +84,7 @@ class CartController extends Controller
                     'message' => 'Item already in cart',
                 ], 409);
             }
+            $validatedData['user_id'] = $request->user()->id;
             $cart = Cart::create($validatedData);
 
             return response()->json([
@@ -96,7 +98,9 @@ class CartController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while adding item to cart',
@@ -132,7 +136,9 @@ class CartController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while updating cart item',
@@ -153,7 +159,9 @@ class CartController extends Controller
                 'success' => true,
                 'message' => 'Cart item removed successfully',
             ]);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while removing cart item',

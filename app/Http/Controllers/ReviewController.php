@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Review;
 use App\Services\S3Service;
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
 class ReviewController extends Controller
@@ -13,7 +16,7 @@ class ReviewController extends Controller
     public function __construct(protected S3Service $s3Service) {}
 
     protected array $validationRules = [
-        'user_id' => 'required|exists:users,id',
+        'user_id' => 'sometimes|required|exists:users,id',
         'product_id' => 'required|exists:products,id',
         'images' => 'nullable|array|max:5',
         'images.*' => 'image|max:2048',
@@ -41,22 +44,31 @@ class ReviewController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $validatedData = request()->validate([
-                'page' => 'integer|min:1',
-                'per_page' => 'integer|min:1|max:100',
+            $validatedData = $request->validate([
+                'product_id' => 'nullable|exists:products,id',
+                'page' => 'nullable|integer|min:1',
+                'per_page' => 'nullable|integer|min:1|max:100',
             ], [
+                'product_id.exists' => 'Product ID must exist in the products table.',
+                'page.integer' => 'Page must be an integer.',
                 'page.min' => 'Page must be at least 1.',
+                'per_page.integer' => 'Per page must be an integer.',
                 'per_page.min' => 'Per page must be at least 1.',
                 'per_page.max' => 'Per page cannot exceed 100.',
             ]);
 
-            $Reviews = Review::find(request()->input('product_id'))
-                ->paginate($validatedData['per_page'] ?? 10);
+            $query = Review::with(['user:id,name,email,image', 'product:id,name']);
 
-            if (! $Reviews) {
+            if ($request->filled('product_id')) {
+                $query->where('product_id', $request->input('product_id'));
+            }
+
+            $reviews = $query->latest()->paginate($validatedData['per_page'] ?? 10);
+
+            if ($reviews->isEmpty()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'No reviews found',
@@ -66,7 +78,7 @@ class ReviewController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Reviews fetched successfully',
-                'data' => $Reviews,
+                'data' => $reviews,
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -89,7 +101,10 @@ class ReviewController extends Controller
     public function store(Request $request)
     {
         try {
+            Gate::authorize('create', Review::class);
+
             $validatedData = $request->validate($this->validationRules, $this->validationMessages);
+            $validatedData['user_id'] = $request->input('user_id', Auth::id());
 
             if ($request->hasFile('images')) {
                 $validatedData['images'] = [];
@@ -118,6 +133,11 @@ class ReviewController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to create reviews',
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -133,7 +153,18 @@ class ReviewController extends Controller
     public function update(Request $request, Review $review)
     {
         try {
-            $validatedData = $request->validate($this->validationRules, $this->validationMessages);
+            Gate::authorize('update', $review);
+
+            $rules = [
+                'user_id' => 'sometimes|required|exists:users,id',
+                'product_id' => 'sometimes|required|exists:products,id',
+                'images' => 'nullable|array|max:5',
+                'images.*' => 'image|max:2048',
+                'rating' => 'sometimes|required|integer|min:1|max:5',
+                'comment' => 'nullable|string|max:1000',
+            ];
+
+            $validatedData = $request->validate($rules, $this->validationMessages);
 
             if ($request->hasFile('images')) {
                 $validatedData['images'] = [];
@@ -141,7 +172,7 @@ class ReviewController extends Controller
                 foreach ($request->file('images') as $file) {
                     $key = $this->s3Service->generateKey(
                         'reviews',
-                        $validatedData['user_id'],
+                        $review->user_id,
                         $file->getClientOriginalName()
                     );
                     $this->s3Service->uploadFromServer($key, $file->getContent(), 'public');
@@ -162,6 +193,11 @@ class ReviewController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to update this review',
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,
@@ -177,12 +213,19 @@ class ReviewController extends Controller
     public function destroy(Review $review)
     {
         try {
+            Gate::authorize('delete', $review);
+
             $review->delete();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Review deleted successfully',
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to delete this review',
+            ], 403);
         } catch (Exception $e) {
             return response()->json([
                 'success' => false,

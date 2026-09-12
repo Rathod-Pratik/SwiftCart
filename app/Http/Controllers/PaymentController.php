@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
+use Throwable;
 
 class PaymentController extends Controller
 {
@@ -37,7 +39,9 @@ class PaymentController extends Controller
                 'message' => 'Payments fetched successfully',
                 'data' => $payments,
             ]);
-        } catch (\Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while fetching payments', ['exception' => $e]);
 
             return response()->json([
@@ -111,7 +115,9 @@ class PaymentController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (\Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while creating Razorpay order', ['exception' => $e]);
 
             return response()->json([
@@ -180,7 +186,9 @@ class PaymentController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (\Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while verifying payment', ['exception' => $e]);
 
             return response()->json([
@@ -190,7 +198,7 @@ class PaymentController extends Controller
         }
     }
 
-    public function show(Request $request, Payment $payment)
+    public function show(Payment $payment)
     {
         try {
             Gate::authorize('view', $payment);
@@ -200,12 +208,80 @@ class PaymentController extends Controller
                 'message' => 'Payment fetched successfully',
                 'data' => $payment->load('order'),
             ]);
-        } catch (\Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while fetching payment', ['exception' => $e]);
 
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while fetching payment',
+            ], 500);
+        }
+    }
+
+    public function GetAllUserPayment(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+            ], [
+                'user_id.required' => 'The user_id field is required.',
+                'user_id.exists' => 'The specified user does not exist.',
+            ]);
+            Gate::authorize('viewAny', Payment::class);
+
+            $payments = Payment::where('user_id', $validated['user_id'])
+                ->latest()
+                ->paginate(10);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payments fetched successfully',
+                'data' => $payments,
+            ]);
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::error('Error occurred while fetching payments', ['exception' => $e]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error occurred while fetching payments',
+            ], 500);
+        }
+    }
+
+    public function GetAllPayment(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'page' => 'integer|min:1',
+                'per_page' => 'integer|min:1|max:100',
+            ], [
+                'page.integer' => 'The page must be an integer.',
+                'page.min' => 'The page must be at least 1.',
+                'per_page.integer' => 'The per_page must be an integer.',
+                'per_page.min' => 'The per_page must be at least 1.',
+                'per_page.max' => 'The per_page may not be greater than 100.',
+            ]);
+            Gate::authorize('viewAny', Payment::class);
+
+            $payments = Payment::latest()->paginate($validated['per_page'] ?? 10);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payments fetched successfully',
+                'data' => $payments,
+            ]);
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::error('Error occurred while fetching payments', ['exception' => $e]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error occurred while fetching payments',
             ], 500);
         }
     }

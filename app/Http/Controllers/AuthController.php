@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -92,16 +93,20 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json(['message' => 'Logged out successfully']);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Unable to log out.');
         }
-
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return response()->json(['message' => 'Logged out successfully']);
     }
 
     /**
@@ -218,7 +223,7 @@ class AuthController extends Controller
                 'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
                 'phone' => 'sometimes|nullable|string|min:10|max:15',
                 'address' => 'sometimes|nullable|string|min:5|max:255',
-                'image' => 'required|image|max:2048',
+                'image' => 'sometimes|nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'password' => 'sometimes|required|string|min:8|max:64|confirmed',
             ], [
                 'name.required' => 'Name is required.',
@@ -238,29 +243,36 @@ class AuthController extends Controller
                 'password.confirmed' => 'Password confirmation does not match.',
             ]);
 
-            $image = $request->file('image');
-            $key = $this->s3Service->generateKey('profile-images', $user->id, $image->getClientOriginalName());
-            $uploaded = $this->s3Service->uploadFromServer(
-                $key,
-                file_get_contents($image->getRealPath())
-            );
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $key = $this->s3Service->generateKey('profile-images', $user->id, $image->getClientOriginalName());
+                $uploaded = $this->s3Service->uploadFromServer(
+                    $key,
+                    file_get_contents($image->getRealPath())
+                );
 
-            if (! $uploaded) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to upload image',
-                ], 500);
+                if (! $uploaded) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to upload image',
+                    ], 500);
+                }
+                $validatedData['image'] = $key;
             }
-            $validatedData['image'] = $key;
-            $validatedData['password'] = $validatedData['password'] ?? $user->password;
+
+            if (isset($validatedData['password'])) {
+                $user->password = $validatedData['password'];
+                unset($validatedData['password']);
+            }
+
             $user = $user->fill($validatedData);
             $user->save();
 
             return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
         } catch (ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Error occurred while updating profile', 'error' => $e->getMessage()], 500);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while updating profile.');
         }
     }
 
@@ -292,56 +304,59 @@ class AuthController extends Controller
      */
     public function updateBankDetails(Request $request): JsonResponse
     {
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
 
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+            if (! $user->isVendor()) {
+                return response()->json(['message' => 'Only vendors can update bank details'], 403);
+            }
+
+            $validatedData = $request->validate([
+                'account_holder_name' => 'required|string|min:2|max:100',
+                'company_name' => 'sometimes|nullable|string|min:2|max:100',
+                'bank_name' => 'required|string|min:2|max:100',
+                'account_number' => 'required|string|min:8|max:30',
+                'account_type' => 'required|string|min:2|max:50',
+                'ifsc_code' => 'required|string|min:4|max:20',
+                'branch_name' => 'required|string|min:2|max:100',
+            ], [
+                'account_holder_name.required' => 'Account holder name is required.',
+                'account_holder_name.min' => 'Account holder name must be at least 2 characters.',
+                'account_holder_name.max' => 'Account holder name cannot exceed 100 characters.',
+                'company_name.min' => 'Company name must be at least 2 characters.',
+                'company_name.max' => 'Company name cannot exceed 100 characters.',
+                'bank_name.required' => 'Bank name is required.',
+                'bank_name.min' => 'Bank name must be at least 2 characters.',
+                'bank_name.max' => 'Bank name cannot exceed 100 characters.',
+                'account_number.required' => 'Account number is required.',
+                'account_number.min' => 'Account number must be at least 8 digits.',
+                'account_number.max' => 'Account number cannot exceed 30 digits.',
+                'account_type.required' => 'Account type is required.',
+                'account_type.min' => 'Account type must be at least 2 characters.',
+                'account_type.max' => 'Account type cannot exceed 50 characters.',
+                'ifsc_code.required' => 'IFSC code is required.',
+                'ifsc_code.min' => 'IFSC code must be at least 4 characters.',
+                'ifsc_code.max' => 'IFSC code cannot exceed 20 characters.',
+                'branch_name.required' => 'Branch name is required.',
+                'branch_name.min' => 'Branch name must be at least 2 characters.',
+                'branch_name.max' => 'Branch name cannot exceed 100 characters.',
+            ]);
+
+            $bankDetail = $user->bankDetail()->updateOrCreate(
+                ['vendor_id' => $user->id],
+                $validatedData
+            );
+
+            return response()->json([
+                'message' => 'Bank details updated successfully',
+                'bank_detail' => $bankDetail,
+            ]);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while updating bank details.');
         }
-
-        if (! $user->isVendor()) {
-            return response()->json(['message' => 'Only vendors can update bank details'], 403);
-        }
-
-        $validatedData = $request->validate([
-            'account_holder_name' => 'required|string|min:2|max:100',
-            'company_name' => 'sometimes|nullable|string|min:2|max:100',
-            'bank_name' => 'required|string|min:2|max:100',
-            'account_number' => 'required|string|min:8|max:30',
-            'account_type' => 'required|string|min:2|max:50',
-            'ifsc_code' => 'required|string|min:4|max:20',
-            'branch_name' => 'required|string|min:2|max:100',
-        ], [
-            'account_holder_name.required' => 'Account holder name is required.',
-            'account_holder_name.min' => 'Account holder name must be at least 2 characters.',
-            'account_holder_name.max' => 'Account holder name cannot exceed 100 characters.',
-            'company_name.min' => 'Company name must be at least 2 characters.',
-            'company_name.max' => 'Company name cannot exceed 100 characters.',
-            'bank_name.required' => 'Bank name is required.',
-            'bank_name.min' => 'Bank name must be at least 2 characters.',
-            'bank_name.max' => 'Bank name cannot exceed 100 characters.',
-            'account_number.required' => 'Account number is required.',
-            'account_number.min' => 'Account number must be at least 8 digits.',
-            'account_number.max' => 'Account number cannot exceed 30 digits.',
-            'account_type.required' => 'Account type is required.',
-            'account_type.min' => 'Account type must be at least 2 characters.',
-            'account_type.max' => 'Account type cannot exceed 50 characters.',
-            'ifsc_code.required' => 'IFSC code is required.',
-            'ifsc_code.min' => 'IFSC code must be at least 4 characters.',
-            'ifsc_code.max' => 'IFSC code cannot exceed 20 characters.',
-            'branch_name.required' => 'Branch name is required.',
-            'branch_name.min' => 'Branch name must be at least 2 characters.',
-            'branch_name.max' => 'Branch name cannot exceed 100 characters.',
-        ]);
-
-        $bankDetail = $user->bankDetail()->updateOrCreate(
-            ['vendor_id' => $user->id],
-            $validatedData
-        );
-
-        return response()->json([
-            'message' => 'Bank details updated successfully',
-            'bank_detail' => $bankDetail,
-        ]);
     }
 
     /**
@@ -349,83 +364,108 @@ class AuthController extends Controller
      */
     public function deleteAccount(Request $request): JsonResponse
     {
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            /** @var User $user */
+            Gate::authorize('delete', $user);
+
+            $request->validate([
+                'password' => 'required|string|current_password',
+            ], [
+                'password.required' => 'Password is required to delete your account.',
+                'password.current_password' => 'The provided password does not match your current password.',
+            ]);
+
+            User::query()->whereKey($user->getKey())->delete();
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json(['message' => 'Account deleted successfully']);
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while deleting account.');
         }
-
-        /** @var User $user */
-        Gate::authorize('delete', $user);
-
-        $request->validate([
-            'password' => 'required|string|current_password',
-        ], [
-            'password.required' => 'Password is required to delete your account.',
-            'password.current_password' => 'The provided password does not match your current password.',
-        ]);
-
-        $user->delete(false);
-
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return response()->json(['message' => 'Account deleted successfully']);
     }
 
     public function getUser(Request $request): JsonResponse
     {
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
 
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+            if (! $user->hasRole('user')) {
+                return response()->json(['message' => 'User is not a regular user'], 403);
+            }
+
+            return response()->json(['user' => $user]);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while fetching user.');
         }
-
-        if (! $user->hasRole('user')) {
-            return response()->json(['message' => 'User is not a regular user'], 403);
-        }
-
-        return response()->json(['user' => $user]);
     }
 
     public function getUserById(int $id): JsonResponse
     {
+        try {
+            $user = User::query()->whereKey($id)->first();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
 
-        $user = User::query()->whereKey($id)->first();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['user' => $user]);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while fetching user.');
         }
-
-        return response()->json(['user' => $user]);
     }
 
     public function getVendor(Request $request): JsonResponse
     {
+        try {
+            $user = $request->user();
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
 
-        $user = $request->user();
-        if (! $user) {
-            return response()->json(['message' => 'User not found'], 404);
+            if (! $user->isVendor()) {
+                return response()->json(['message' => 'User is not a vendor'], 403);
+            }
+
+            return response()->json(['vendor' => $user]);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while fetching vendor.');
         }
-
-        if (! $user->isVendor()) {
-            return response()->json(['message' => 'User is not a vendor'], 403);
-        }
-
-        return response()->json(['vendor' => $user]);
     }
 
     public function getVendorById(int $id): JsonResponse
     {
+        try {
+            $user = User::query()->whereKey($id)->first();
+            if (! $user) {
+                return response()->json(['message' => 'Vendor not found'], 404);
+            }
 
-        $user = User::query()->whereKey($id)->first();
-        if (! $user) {
-            return response()->json(['message' => 'Vendor not found'], 404);
+            if (! $user->isVendor()) {
+                return response()->json(['message' => 'User is not a vendor'], 403);
+            }
+
+            return response()->json(['vendor' => $user]);
+        } catch (Throwable $exception) {
+            return $this->unexpectedError($exception, 'Error occurred while fetching vendor.');
         }
+    }
 
-        if (! $user->isVendor()) {
-            return response()->json(['message' => 'User is not a vendor'], 403);
-        }
+    private function unexpectedError(Throwable $exception, string $message): JsonResponse
+    {
+        report($exception);
 
-        return response()->json(['vendor' => $user]);
+        return response()->json(['message' => $message], 500);
     }
 }

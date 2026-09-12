@@ -27,4 +27,9 @@ class OrderPolicy
         return $user->id === $order->user_id
             && $order->payment_status !== 'paid';
     }
+
+    public function update(User $user, Order $order): bool
+    {
+        return $user->id === $order->user_id;
+    }
 }

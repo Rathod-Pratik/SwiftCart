@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -89,7 +90,7 @@ class OrderController extends Controller
     {
         try {
             Gate::authorize('viewAny', Order::class);
-            $ValidationData = request()->validate([
+            $validationData = request()->validate([
                 'page' => 'integer|min:1',
                 'per_page' => 'integer|min:1|max:100',
             ], [
@@ -100,7 +101,7 @@ class OrderController extends Controller
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
 
-            $orders = Order::where('user_id', auth()->id)->paginate($ValidationData['per_page'] ?? 10);
+            $orders = Order::where('user_id', auth()->id())->paginate($validationData['per_page'] ?? 10);
 
             if ($orders->isEmpty()) {
                 return response()->json([
@@ -114,7 +115,17 @@ class OrderController extends Controller
                 'message' => 'Orders fetched successfully',
                 'data' => $orders,
             ]);
-        } catch (Exception $e) {
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            Log::error('Error occurred while fetching orders', ['exception' => $e]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while fetching orders',
@@ -158,7 +169,7 @@ class OrderController extends Controller
 
                 $order = Order::create([
                     'user_id' => $request->user()->id,
-                    'order_number' => 'ORD-' . strtoupper(uniqid()),
+                    'order_number' => 'ORD-'.strtoupper(uniqid()),
                     'subtotal' => $subtotal,
                     'discount' => $discount,
                     'discount_code' => $validated['discount_code'] ?? null,
@@ -199,7 +210,9 @@ class OrderController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while creating order', ['exception' => $e]);
 
             return response()->json([
@@ -222,7 +235,9 @@ class OrderController extends Controller
                 'message' => 'Order fetched successfully',
                 'data' => $order->load('items'),
             ]);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while fetching order', ['exception' => $e]);
 
             return response()->json([
@@ -246,7 +261,9 @@ class OrderController extends Controller
                 'success' => true,
                 'message' => 'Order deleted successfully',
             ]);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while deleting order', ['exception' => $e]);
 
             return response()->json([
@@ -255,6 +272,7 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
     public function updateStatus(Request $request, Order $order)
     {
         try {
@@ -275,20 +293,22 @@ class OrderController extends Controller
                     'message' => 'Order marked as completed successfully',
                     'data' => $order->load('items'),
                 ]);
-            } else {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Order status updated successfully',
-                    'data' => $order->load('items'),
-                ]);
             }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order status updated successfully',
+                'data' => $order->load('items'),
+            ]);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $e->errors(),
             ], 422);
-        } catch (Exception $e) {
+        } catch (AuthorizationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             Log::error('Error occurred while updating order status', ['exception' => $e]);
 
             return response()->json([
