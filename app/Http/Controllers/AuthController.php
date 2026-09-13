@@ -9,8 +9,8 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -35,23 +35,21 @@ class AuthController extends Controller
             'password.min' => 'Password must be at least 8 characters long.',
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        $user = User::query()->where('email', $credentials['email'])->first();
+
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $request->session()->regenerate();
-        /** @var User $user */
-        $user = $request->user();
-
         if (! $user->hasVerifiedEmail()) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
             return response()->json(['message' => 'Email not verified'], 403);
         }
 
-        return response()->json(['message' => 'Login successful', 'user' => $user]);
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => $user,
+            'token' => $user->createToken('api-token')->plainTextToken,
+        ]);
     }
 
     /**
@@ -99,9 +97,7 @@ class AuthController extends Controller
                 return response()->json(['message' => 'User not found'], 404);
             }
 
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            $user->currentAccessToken()?->delete();
 
             return response()->json(['message' => 'Logged out successfully']);
         } catch (Throwable $exception) {
@@ -382,9 +378,7 @@ class AuthController extends Controller
 
             User::query()->whereKey($user->getKey())->delete();
 
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            $user->currentAccessToken()?->delete();
 
             return response()->json(['message' => 'Account deleted successfully']);
         } catch (ValidationException $exception) {
