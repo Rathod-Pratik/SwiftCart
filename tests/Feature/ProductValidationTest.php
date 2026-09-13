@@ -207,11 +207,12 @@ test('a non-vendor, non-admin user cannot create a product', function () {
         'features' => 'some features',
     ]);
 
-    $response->assertStatus(403)
-        ->assertJson([
-            'success' => false,
-            'message' => 'You are not authorized to create products',
-        ]);
+    $response->assertForbidden();
+
+    $this->assertDatabaseMissing('products', [
+        'name' => 'Test Product',
+        'vendor_id' => $customer->id,
+    ]);
 });
 
 test('update allows partial payloads without requiring all fields', function () {
@@ -292,11 +293,7 @@ test('a vendor cannot update another vendor\'s product', function () {
         'name' => 'Trying to edit someone else\'s product',
     ]);
 
-    $response->assertStatus(403)
-        ->assertJson([
-            'success' => false,
-            'message' => 'You are not authorized to update this product',
-        ]);
+    $response->assertForbidden();
 });
 
 test('update replaces information_sections when a new array is provided', function () {

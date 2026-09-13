@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use Throwable;
@@ -38,7 +39,17 @@ class CartController extends Controller
                 'per_page.min' => 'The per_page must be at least 1.',
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
-            $carts = Cart::where('user_id', auth()->id())->paginate($validation['per_page'] ?? 10);
+
+            $userId = auth()->id();
+            $page = $validation['page'] ?? 1;
+            $perPage = $validation['per_page'] ?? 10;
+
+            $cacheKey = "carts:user:{$userId}:page:{$page}:per_page:{$perPage}";
+
+            $carts = Cache::tags(["carts:user:{$userId}"])
+                ->remember($cacheKey, now()->addMinutes(10), function () use ($userId, $perPage) {
+                    return Cart::where('user_id', $userId)->paginate($perPage);
+                });
 
             if ($carts->isEmpty()) {
                 return response()->json([
@@ -78,14 +89,17 @@ class CartController extends Controller
             $exists = Cart::where('user_id', $request->user()->id)
                 ->where('product_id', $request->input('product_id'))
                 ->exists();
+
             if ($exists) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Item already in cart',
                 ], 409);
             }
+
             $validatedData['user_id'] = $request->user()->id;
             $cart = Cart::create($validatedData);
+            // No manual Cache::flush() needed — CartObserver::created() handles it
 
             return response()->json([
                 'success' => true,
@@ -124,6 +138,7 @@ class CartController extends Controller
             ]);
 
             $cart->update($validatedData);
+            // No manual Cache::flush() needed — CartObserver::updated() handles it
 
             return response()->json([
                 'success' => true,
@@ -154,6 +169,7 @@ class CartController extends Controller
         try {
             Gate::authorize('delete', $cart);
             $cart->delete();
+            // No manual Cache::flush() needed — CartObserver::deleted() handles it
 
             return response()->json([
                 'success' => true,

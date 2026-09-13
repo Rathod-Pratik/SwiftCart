@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -23,13 +24,13 @@ Route::middleware('web')->group(function (): void {
     Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::get('/reviews', [ReviewController::class, 'index']);
 
-    Route::middleware('auth')->group(function (): void {
+    Route::middleware(['auth', 'role:admin'])->group(function (): void {
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::match(['put', 'patch'], '/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
 
-    Route::middleware('auth')->group(function (): void {
+    Route::middleware(['auth', 'role:vendor'])->group(function (): void {
         Route::post('/products', [ProductController::class, 'store']);
         Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
@@ -39,7 +40,14 @@ Route::middleware('web')->group(function (): void {
         Route::patch('/vendor/bank-details', [AuthController::class, 'updateBankDetails']);
     });
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth', 'role:admin'])->group(function (): void {
+        Route::get('/coupons', [CouponController::class, 'index']);
+        Route::post('/coupons', [CouponController::class, 'store']);
+        Route::match(['put', 'patch'], '/coupons/{coupon}', [CouponController::class, 'update']);
+        Route::delete('/coupons/{coupon}', [CouponController::class, 'destroy']);
+    });
+
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/conversations', [ConversationController::class, 'index']);
         Route::post('/conversations', [ConversationController::class, 'store']);
 
@@ -47,15 +55,17 @@ Route::middleware('web')->group(function (): void {
         Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store']);
     });
 
-    Route::middleware('auth')->group(function (): void {
+    Route::middleware(['auth'])->group(function (): void {
         Route::get('/profile', [AuthController::class, 'getProfile']);
         Route::patch('/profile', [AuthController::class, 'updateProfile']);
         Route::delete('/profile', [AuthController::class, 'deleteAccount']);
         Route::post('/logout', [AuthController::class, 'logout']);
 
+        Route::get('/verify-coupon', [CouponController::class, 'VerifyCoupon']);
         Route::prefix('wishlists')->group(function (): void {
             Route::get('/', [WishlistController::class, 'index']);
             Route::post('/', [WishlistController::class, 'store']);
+            Route::get('/{wishlist}', [WishlistController::class, 'show']);
             Route::delete('/{wishlist}', [WishlistController::class, 'destroy']);
         });
         Route::prefix('reviews')->group(function (): void {

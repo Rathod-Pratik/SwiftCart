@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -64,6 +65,9 @@ test('store creates order with items successfully', function () {
     /** @var Product $product2 */
     $product2 = Product::factory()->create(['price' => 500]);
 
+    /** @var Coupon $coupon */
+    $coupon = Coupon::factory()->create(['discount_amount' => 100, 'discount_type' => 'fixed']);
+
     $response = $this->actingAs($user)->postJson('/api/orders', [
         'payment_method' => 'credit_card',
         'shipping_name' => 'John Doe',
@@ -74,6 +78,8 @@ test('store creates order with items successfully', function () {
         'shipping_postal_code' => '10001',
         'shipping_country' => 'USA',
         'discount' => 100,
+        'discount_code' => 'SUMMER21',
+        'discount_id' => $coupon->id,
         'shipping_cost' => 50,
         'tax' => 150,
         'items' => [

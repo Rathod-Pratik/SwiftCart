@@ -7,6 +7,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -101,7 +102,16 @@ class OrderController extends Controller
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
 
-            $orders = Order::where('user_id', auth()->id())->paginate($validationData['per_page'] ?? 10);
+            $userId = auth()->id();
+            $page = $validationData['page'] ?? 1;
+            $perPage = $validationData['per_page'] ?? 10;
+
+            $cacheKey = "orders:user:{$userId}:page:{$page}:per_page:{$perPage}";
+
+            $orders = Cache::tags(["orders:user:{$userId}"])
+                ->remember($cacheKey, now()->addMinutes(10), function () use ($userId, $perPage) {
+                    return Order::where('user_id', $userId)->paginate($perPage);
+                });
 
             if ($orders->isEmpty()) {
                 return response()->json([
@@ -171,8 +181,9 @@ class OrderController extends Controller
                     'user_id' => $request->user()->id,
                     'order_number' => 'ORD-'.strtoupper(uniqid()),
                     'subtotal' => $subtotal,
-                    'discount' => $discount,
+                    'discount' => $discount ?? 0,
                     'discount_code' => $validated['discount_code'] ?? null,
+                    'discount_id' => $validated['discount_id'] ?? null,
                     'shipping_cost' => $shippingCost,
                     'tax' => $tax,
                     'total_amount' => $subtotal - $discount + $shippingCost + $tax,

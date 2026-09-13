@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
@@ -60,13 +61,24 @@ class ReviewController extends Controller
                 'per_page.max' => 'Per page cannot exceed 100.',
             ]);
 
-            $query = Review::with(['user:id,name,email,image', 'product:id,name']);
+            $productId = $validatedData['product_id'] ?? 'all';
+            $page = $validatedData['page'] ?? 1;
+            $perPage = $validatedData['per_page'] ?? 10;
 
-            if ($request->filled('product_id')) {
-                $query->where('product_id', $request->input('product_id'));
-            }
+            $cacheKey = "reviews:product:{$productId}:page:{$page}:per_page:{$perPage}";
 
-            $reviews = $query->latest()->paginate($validatedData['per_page'] ?? 10);
+            // Tag by specific product when filtered, otherwise fall back to a general tag
+            $tag = $productId !== 'all' ? "reviews:product:{$productId}" : 'reviews:all';
+
+            $reviews = Cache::tags([$tag])->remember($cacheKey, now()->addMinutes(15), function () use ($request, $productId) {
+                $query = Review::with(['user:id,name,email,image', 'product:id,name']);
+
+                if ($productId !== 'all') {
+                    $query->where('product_id', $productId);
+                }
+
+                return $query->latest()->paginate($request->input('per_page', 10));
+            });
 
             if ($reviews->isEmpty()) {
                 return response()->json([

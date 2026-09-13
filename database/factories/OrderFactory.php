@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,6 +21,8 @@ class OrderFactory extends Factory
     {
         $subtotal = fake()->numberBetween(1000, 10000);
         $discount = fake()->numberBetween(0, 1000);
+        $coupon = Coupon::factory()->create();
+        $discountCode = $coupon->code;
         $shippingCost = fake()->numberBetween(0, 500);
         $tax = fake()->numberBetween(0, 1000);
 
@@ -43,6 +46,7 @@ class OrderFactory extends Factory
             'shipping_postal_code' => fake()->postcode(),
             'shipping_country' => fake()->country(),
             'notes' => fake()->optional()->sentence(),
+            'discount_code' => $discountCode,
         ];
     }
 

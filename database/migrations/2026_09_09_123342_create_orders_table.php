@@ -28,6 +28,7 @@ return new class extends Migration
 
             $table->decimal('discount', 12, 2)
                 ->default(0);
+            $table->string('discount_code')->nullable();
 
             $table->decimal('shipping_cost', 12, 2)
                 ->default(0);

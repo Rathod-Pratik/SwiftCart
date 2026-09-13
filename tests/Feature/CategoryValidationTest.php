@@ -150,11 +150,10 @@ test('a non-admin user cannot create a category', function () {
         'status' => 'active',
     ]);
 
-    $response->assertStatus(403)
-        ->assertJson([
-            'success' => false,
-            'message' => 'You are not authorized to create category',
-        ]);
+    $response->assertStatus(403);
+    $this->assertDatabaseMissing('categories', [
+        'slug' => 'electronics',
+    ]);
 });
 
 // ---------------- UPDATE ----------------
@@ -229,12 +228,11 @@ test('a non-admin user cannot update a category', function () {
     $response = $this->actingAs($user)->patchJson("/api/categories/{$category->id}", [
         'name' => 'Attempted Update',
     ]);
-
-    $response->assertStatus(403)
-        ->assertJson([
-            'success' => false,
-            'message' => 'You are not authorized to update category',
-        ]);
+    $response->assertForbidden();
+    $this->assertDatabaseMissing('categories', [
+        'success' => false,
+        'message' => 'You are not authorized to update category',
+    ]);
 });
 
 // ---------------- DESTROY ----------------
@@ -264,9 +262,7 @@ test('a non-admin user cannot delete a category', function () {
 
     $response = $this->actingAs($user)->deleteJson("/api/categories/{$category->id}");
 
-    $response->assertStatus(403)
-        ->assertJson([
-            'success' => false,
-            'message' => 'You are not authorized to delete category',
-        ]);
+    $response->assertForbidden();
+
+    $this->assertDatabaseHas('categories', ['id' => $category->id]);
 });

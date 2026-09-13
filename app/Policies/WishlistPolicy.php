@@ -12,6 +12,11 @@ class WishlistPolicy
         return true;
     }
 
+    public function view(User $user, Wishlist $wishlist): bool
+    {
+        return $user->id === $wishlist->user_id;
+    }
+
     public function create(User $user): bool
     {
         return true;

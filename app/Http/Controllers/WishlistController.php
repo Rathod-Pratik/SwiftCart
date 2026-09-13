@@ -6,6 +6,7 @@ use App\Models\Wishlist;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
@@ -38,7 +39,17 @@ class WishlistController extends Controller
                 'per_page.min' => 'The per_page must be at least 1.',
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
-            $wishlists = Wishlist::with('product')->where('user_id', Auth::id())->paginate($validatedData['per_page'] ?? 10);
+
+            $userId = auth()->id();
+            $page = $validation['page'] ?? 1;
+            $perPage = $validation['per_page'] ?? 10;
+
+            $cacheKey = "wishlists:user:{$userId}:page:{$page}:per_page:{$perPage}";
+
+            $wishlists = Cache::tags(["wishlists:user:{$userId}"])
+                ->remember($cacheKey, now()->addMinutes(10), function () use ($userId, $perPage) {
+                    return Wishlist::where('user_id', $userId)->paginate($perPage);
+                });
 
             if ($wishlists->isEmpty()) {
                 return response()->json([
@@ -115,6 +126,27 @@ class WishlistController extends Controller
                 'success' => false,
                 'message' => 'Error occurred while creating wishlist',
             ], 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Wishlist $wishlist)
+    {
+        try {
+            Gate::authorize('view', $wishlist);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Wishlist fetched successfully',
+                'data' => $wishlist->load('product'),
+            ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to view this wishlist',
+            ], 403);
         }
     }
 

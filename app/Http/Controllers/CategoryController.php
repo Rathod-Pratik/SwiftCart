@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -55,8 +56,15 @@ class CategoryController extends Controller
                 'per_page.max' => 'The per_page may not be greater than 100.',
             ]);
 
-            $perPage = $validatedData['per_page'] ?? 10;
-            $categories = Category::latest()->paginate($perPage);
+            $page = $validatedData['page'] ?? 1;
+            $per_page = $validatedData['per_page'] ?? 10;
+
+            $cacheKey = "categories:page:{$page}:per_page:{$per_page}";
+
+            $categories = Cache::tags(['categories'])
+                ->remember($cacheKey, now()->addMinutes(30), function () use ($per_page) {
+                    return Category::latest()->paginate($per_page);
+                });
 
             if ($categories->isEmpty()) {
                 return response()->json([
