@@ -34,6 +34,7 @@ class MessageController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $messages,
+                'current_user_id' => $request->user()->id,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching messages', ['exception' => $e]);
@@ -96,5 +97,4 @@ class MessageController extends Controller
             ], 500);
         }
     }
-
 }

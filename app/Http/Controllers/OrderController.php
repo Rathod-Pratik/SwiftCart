@@ -328,4 +328,86 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    public function vendorIndex(Request $request)
+    {
+        $validated = $request->validate([
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'search' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $vendorId = $request->user()->id;
+        $perPage = $validated['per_page'] ?? 10;
+        $search = $validated['search'] ?? '';
+
+        $orders = Order::query()
+            ->whereHas('items.product', fn ($query) => $query->where('vendor_id', $vendorId))
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('order_number', 'like', "%{$search}%")
+                        ->orWhere('shipping_name', 'like', "%{$search}%")
+                        ->orWhere('shipping_phone', 'like', "%{$search}%");
+                });
+            })
+            ->with(['user:id,name,email', 'items' => function ($query) use ($vendorId): void {
+                $query->whereHas('product', fn ($productQuery) => $productQuery->where('vendor_id', $vendorId))
+                    ->with('product:id,name,vendor_id');
+            }])
+            ->latest()
+            ->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders,
+        ]);
+    }
+
+    public function vendorShow(Request $request, Order $order)
+    {
+        $vendorId = $request->user()->id;
+        $order->load(['user:id,name,email', 'items' => function ($query) use ($vendorId): void {
+            $query->whereHas('product', fn ($productQuery) => $productQuery->where('vendor_id', $vendorId))
+                ->with('product:id,name,vendor_id');
+        }]);
+
+        if ($order->items->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $order,
+        ]);
+    }
+
+    public function vendorUpdateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:pending,confirmed,processing,shipped,delivered,cancelled,returned'],
+        ]);
+
+        $vendorId = $request->user()->id;
+        $hasVendorItems = $order->items()
+            ->whereHas('product', fn ($query) => $query->where('vendor_id', $vendorId))
+            ->exists();
+
+        if (! $hasVendorItems) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found',
+            ], 404);
+        }
+
+        $order->update(['order_status' => $validated['status']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order status updated successfully',
+            'data' => $order->fresh(),
+        ]);
+    }
 }

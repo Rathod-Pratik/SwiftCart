@@ -25,7 +25,12 @@ Route::middleware('web')->group(function (): void {
     Route::get('/reviews', [ReviewController::class, 'index']);
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {
+        Route::get('/users', [AuthController::class, 'indexUsers']);
+        Route::get('/users/{id}', [AuthController::class, 'getUserById']);
+        Route::get('/vendors', [AuthController::class, 'indexVendors']);
+        Route::get('/vendors/{id}', [AuthController::class, 'getVendorById']);
         Route::post('/categories', [CategoryController::class, 'store']);
+        Route::get('/categories/{category}', [CategoryController::class, 'show']);
         Route::match(['put', 'patch'], '/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
@@ -34,6 +39,15 @@ Route::middleware('web')->group(function (): void {
         Route::post('/products', [ProductController::class, 'store']);
         Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
+        Route::get('/vendor/orders', [OrderController::class, 'vendorIndex']);
+        Route::get('/vendor/orders/{order}', [OrderController::class, 'vendorShow']);
+        Route::patch('/vendor/orders/{order}/status', [OrderController::class, 'vendorUpdateStatus']);
+        Route::get('/vendor/ratings/products', [ReviewController::class, 'vendorProducts']);
+        Route::get('/vendor/ratings/products/{product}', [ReviewController::class, 'vendorProductReviews']);
+        Route::get('/vendor/queries', [ConversationController::class, 'vendorIndex']);
+        Route::get('/vendor/queries/{conversation}', [ConversationController::class, 'vendorShow']);
+        Route::get('/vendor/queries/{conversation}/messages', [MessageController::class, 'index']);
+        Route::post('/vendor/queries/{conversation}/messages', [MessageController::class, 'store']);
     });
 
     Route::middleware(['auth', 'role:vendor'])->group(function (): void {

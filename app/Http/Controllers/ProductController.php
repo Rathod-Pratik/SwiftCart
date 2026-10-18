@@ -238,6 +238,11 @@ class ProductController extends Controller
                 $validated['images'] = $imageKeys; // store as JSON array in DB, or handle relation
             }
 
+            if (array_key_exists('image', $validated)) {
+                $validated['images'] = $validated['image'];
+                unset($validated['image']);
+            }
+
             $product = DB::transaction(function () use ($validated) {
                 $informationSections = $validated['information_sections'] ?? null;
                 unset($validated['information_sections']);
@@ -319,6 +324,11 @@ class ProductController extends Controller
             ]);
 
             $user = $request->user();
+
+            if (array_key_exists('image', $validated)) {
+                $validated['images'] = $validated['image'];
+                unset($validated['image']);
+            }
 
             // Prevent vendor from changing vendor_id
             if (! $user->isAdmin()) {

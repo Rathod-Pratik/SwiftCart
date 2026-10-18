@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Services\S3Service;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 use Mockery\MockInterface;
 use RuntimeException;
 
@@ -44,6 +46,8 @@ test('signup returns custom validation error messages for min/max/confirmed rule
 
 test('signup registers a new user successfully', function () {
 
+    Notification::fake();
+
     $response = $this->postJson('/api/signup', [
         'name' => 'John Doe',
         'email' => 'john@example.com',
@@ -59,6 +63,22 @@ test('signup registers a new user successfully', function () {
     $this->assertDatabaseHas('users', [
         'email' => 'john@example.com',
     ]);
+
+    $user = User::where('email', 'john@example.com')->firstOrFail();
+
+    Notification::assertSentTo($user, VerifyEmail::class);
+});
+
+test('web signup redirects with validation errors', function () {
+
+    $response = $this->from('/register')->post('/register', []);
+
+    $response->assertRedirect('/register')
+        ->assertSessionHasErrors([
+            'name' => 'Name is required.',
+            'email' => 'Email address is required.',
+            'password' => 'Password is required.',
+        ]);
 });
 
 test('login returns custom validation errors on empty payload', function () {
@@ -67,6 +87,28 @@ test('login returns custom validation errors on empty payload', function () {
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors([
+            'email' => 'Email address is required.',
+            'password' => 'Password is required.',
+        ]);
+});
+
+test('web login endpoint accepts post requests', function () {
+
+    $response = $this->postJson('/login', []);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors([
+            'email' => 'Email address is required.',
+            'password' => 'Password is required.',
+        ]);
+});
+
+test('web login redirects with validation errors', function () {
+
+    $response = $this->from('/login')->post('/login', []);
+
+    $response->assertRedirect('/login')
+        ->assertSessionHasErrors([
             'email' => 'Email address is required.',
             'password' => 'Password is required.',
         ]);

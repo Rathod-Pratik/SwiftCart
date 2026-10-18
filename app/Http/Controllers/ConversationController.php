@@ -44,6 +44,74 @@ class ConversationController extends Controller
     }
 
     /**
+     * List customer conversations assigned to the authenticated vendor.
+     */
+    public function vendorIndex(Request $request)
+    {
+        $vendorId = (int) $request->user()->id;
+        $search = trim((string) $request->query('search', ''));
+
+        $conversations = Conversation::query()
+            ->where('type', 'customer_vendor')
+            ->where('vendor_id', $vendorId)
+            ->with([
+                'customer:id,name,email,phone',
+                'product:id,name',
+                'latestMessage.sender:id,name',
+            ])
+            ->withCount([
+                'messages as unread_messages_count' => fn ($query) => $query
+                    ->whereNull('read_at')
+                    ->where('sender_id', '!=', $vendorId),
+            ])
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->whereHas('customer', function ($query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhereHas('product', function ($query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%");
+                    })->orWhereHas('latestMessage', function ($query) use ($search): void {
+                        $query->where('body', 'like', "%{$search}%");
+                    });
+                });
+            })
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
+            ->paginate((int) $request->query('per_page', 10));
+
+        return response()->json([
+            'success' => true,
+            'data' => $conversations,
+        ]);
+    }
+
+    /**
+     * Show one conversation only when it belongs to the authenticated vendor.
+     */
+    public function vendorShow(Request $request, Conversation $conversation)
+    {
+        abort_unless(
+            $conversation->type === 'customer_vendor'
+                && (int) $conversation->vendor_id === (int) $request->user()->id,
+            404
+        );
+
+        $conversation->load([
+            'customer:id,name,email,phone,address',
+            'vendor:id,name,email',
+            'product:id,name,price',
+            'order:id,order_number,order_status',
+            'latestMessage.sender:id,name',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $conversation,
+        ]);
+    }
+
+    /**
      * Start (or resume) a conversation. If one already exists between
      * these two parties for this product/order, reuse it instead of
      * creating duplicates.
@@ -68,7 +136,7 @@ class ConversationController extends Controller
             if ($validated['type'] === 'customer_vendor') {
                 // Derive vendor from the product — never trust a client-sent vendor_id directly
                 $product = Product::findOrFail($validated['product_id']);
-                $vendorId = $product->user_id; // assuming products belong to a vendor via user_id
+                $vendorId = $product->vendor_id;
 
                 if ($vendorId === $customerId) {
                     return response()->json([

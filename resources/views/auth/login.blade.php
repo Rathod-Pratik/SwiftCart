@@ -1,4 +1,3 @@
-
 @extends('layouts.app')
 @section('title', 'Login')
 @section('content')
@@ -15,25 +14,33 @@
                         Login Now
                     </h1>
                     <div class="w-full flex-1 mt-8">
-                        <form class="mx-auto my-auto max-w-xs" method="POST" id="login">
-                            <input type="hidden" value="login" name="action">
-                            <x-input
-                                name="email"
-                                type="email"
-                                placeholder="Email" />
-                            <x-input
-                                name="password"
-                                type="password"
-                                placeholder="Password"
-                                class="mt-5" />
-                            <x-button
-                                type="submit"
-                                class="mt-5 w-full py-4">
+                        <form class="mx-auto my-auto max-w-xs" method="POST" action="{{ route('login') }}" id="login">
+                            @csrf
+                            <div class="w-full">
+                                <x-input id="email" autocomplete="email" name="email" type="email"
+                                    placeholder="Email" aria-describedby="email-error" />
+                                @error('email')
+                                    <p id="email-error" class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @else
+                                    <p id="email-error" class="hidden mt-2 text-sm text-red-600"></p>
+                                @enderror
+                            </div>
+                            <div class="w-full">
+                                <x-input autocomplete="current-password" name="password" type="password"
+                                    placeholder="Password" class="mt-5" aria-describedby="password-error" />
+                                @error('password')
+                                    <p id="password-error" class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @else
+                                    <p id="password-error" class="hidden mt-2 text-sm text-red-600"></p>
+                                @enderror
+                            </div>
+                            <p id="login-error" class="hidden mt-4 text-sm text-red-600" role="alert"></p>
+                            <x-button type="submit" class="mt-5 w-full py-4">
                                 Login
                             </x-button>
                             <p class="mt-6 text-xs text-gray-600 text-center">
                                 Don't have Account ?
-                                <a href="/signup" class="border-b border-gray-500 border-dotted">
+                                <a href="/register" class="border-b border-gray-500 border-dotted">
                                     Sign Up
                                 </a>
                                 now
@@ -44,4 +51,118 @@
             </div>
         </div>
     </div>
+    <script>
+        const form = document.querySelector('#login');
+
+        form?.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            const errorMessage = form.querySelector('#login-error');
+
+            const fields = {
+                email: form.querySelector('[name="email"]'),
+                password: form.querySelector('[name="password"]'),
+            };
+
+            const clearFieldError = (name) => {
+                const input = fields[name];
+                const error = form.querySelector(`#${name}-error`);
+
+                if (error) {
+                    error.textContent = '';
+                    error.classList.add('hidden');
+                }
+
+                input?.classList.remove('border-red-500', 'focus:border-red-500');
+                input?.removeAttribute('aria-invalid');
+            };
+
+            const showFieldError = (name, message) => {
+                const input = fields[name];
+                const error = form.querySelector(`#${name}-error`);
+
+                if (!input || !error) return;
+
+                error.textContent = message;
+                error.classList.remove('hidden');
+
+                input.classList.add('border-red-500', 'focus:border-red-500');
+                input.setAttribute('aria-invalid', 'true');
+            };
+
+            const showLoginError = (message) => {
+                errorMessage.textContent = message;
+                errorMessage.classList.remove('hidden');
+            };
+
+            Object.keys(fields).forEach(clearFieldError);
+            errorMessage.textContent = '';
+            errorMessage.classList.add('hidden');
+
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-60', 'cursor-not-allowed');
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: new FormData(form),
+                    credentials: 'same-origin',
+                });
+
+                const payload = await response.json();
+
+                if (!response.ok) {
+                    if (payload.errors) {
+                        Object.entries(payload.errors).forEach(([field, messages]) => {
+                            if (fields[field]) {
+                                showFieldError(field, messages[0]);
+                            }
+                        });
+
+                        if (!Object.keys(payload.errors).some((field) => fields[field])) {
+                            showLoginError(payload.message || 'Please check your input and try again.');
+                        }
+
+                        return;
+                    }
+
+                    showLoginError(payload.message || 'Unable to log in. Please try again.');
+                    return;
+                }
+
+                window.location.assign(
+                    payload.user?.role === 'admin'
+                        ? @json(route('admin.dashboard'))
+                        : payload.user?.role === 'vendor'
+                            ? @json(route('vendor.dashboard'))
+                            : @json(route('home'))
+                );
+            } catch {
+                showLoginError('Something went wrong. Please try again.');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-60', 'cursor-not-allowed');
+            }
+        });
+
+        ['email', 'password'].forEach((name) => {
+            const input = form?.querySelector(`[name="${name}"]`);
+
+            input?.addEventListener('input', () => {
+                const error = form.querySelector(`#${name}-error`);
+
+                if (error && !error.classList.contains('hidden')) {
+                    error.textContent = '';
+                    error.classList.add('hidden');
+                    input.classList.remove('border-red-500', 'focus:border-red-500');
+                    input.removeAttribute('aria-invalid');
+                }
+            });
+        });
+    </script>
 @endsection

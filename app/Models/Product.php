@@ -48,6 +48,11 @@ class Product extends Model
         return $this->hasMany(ProductInformationSection::class);
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
     protected function casts(): array
     {
         return [

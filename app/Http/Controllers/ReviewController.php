@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Review;
 use App\Services\S3Service;
 use Exception;
@@ -41,6 +42,67 @@ class ReviewController extends Controller
         'comment.string' => 'Comment must be a string.',
         'comment.max' => 'Comment cannot exceed 1000 characters.',
     ];
+
+    /**
+     * List rating summaries for products owned by the authenticated vendor.
+     */
+    public function vendorProducts(Request $request)
+    {
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+        $search = trim($validated['search'] ?? '');
+
+        $products = Product::query()
+            ->whereBelongsTo($request->user(), 'vendor')
+            ->select(['id', 'name', 'description', 'price', 'discount', 'stock', 'status', 'image', 'created_at'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($validated['per_page'] ?? 10);
+
+        return response()->json([
+            'success' => true,
+            'data' => $products,
+        ]);
+    }
+
+    /**
+     * Show a vendor product and its ratings.
+     */
+    public function vendorProductReviews(Request $request, Product $product)
+    {
+        abort_unless((int) $product->vendor_id === (int) $request->user()->id, 404);
+
+        $validated = $request->validate([
+            'page' => 'nullable|integer|min:1',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+
+        $product->loadCount('reviews');
+        $product->loadAvg('reviews', 'rating');
+
+        $reviews = $product->reviews()
+            ->with('user:id,name,email,image')
+            ->latest()
+            ->paginate($validated['per_page'] ?? 10);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'product' => $product,
+                'reviews' => $reviews,
+            ],
+        ]);
+    }
 
     /**
      * Display a listing of the resource.

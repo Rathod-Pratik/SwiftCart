@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -22,7 +23,7 @@ class AuthController extends Controller
     /**
      * Handle user login.
      */
-    public function login(Request $request): JsonResponse
+    public function login(Request $request): JsonResponse|RedirectResponse
     {
         $credentials = $request->validate([
             'email' => 'required|string|email|max:255',
@@ -36,6 +37,12 @@ class AuthController extends Controller
         ]);
 
         if (! Auth::attempt($credentials)) {
+            if (! $request->expectsJson()) {
+                return back()->withErrors([
+                    'email' => 'Invalid credentials.',
+                ])->withInput();
+            }
+
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
@@ -48,7 +55,17 @@ class AuthController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
+            if (! $request->expectsJson()) {
+                return back()->withErrors([
+                    'email' => 'Email not verified.',
+                ])->withInput();
+            }
+
             return response()->json(['message' => 'Email not verified'], 403);
+        }
+
+        if (! $request->expectsJson()) {
+            return redirect()->intended('/');
         }
 
         return response()->json(['message' => 'Login successful', 'user' => $user]);
@@ -57,7 +74,7 @@ class AuthController extends Controller
     /**
      * Handle user registration.
      */
-    public function signup(Request $request): JsonResponse
+    public function signup(Request $request): JsonResponse|RedirectResponse
     {
         $validatedData = $request->validate([
             'name' => 'required|string|min:2|max:50',
@@ -84,6 +101,11 @@ class AuthController extends Controller
         ]);
 
         $user->sendEmailVerificationNotification();
+
+        if (! $request->expectsJson()) {
+            return redirect()->route('login')
+                ->with('status', 'Registration successful. Please verify your email.');
+        }
 
         return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
     }
@@ -426,6 +448,35 @@ class AuthController extends Controller
         }
     }
 
+    public function indexUsers(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'search' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $perPage = $validatedData['per_page'] ?? 10;
+        $search = $validatedData['search'] ?? '';
+
+        $users = User::query()
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('role', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $users,
+        ]);
+    }
+
     public function getVendor(Request $request): JsonResponse
     {
         try {
@@ -447,19 +498,53 @@ class AuthController extends Controller
     public function getVendorById(int $id): JsonResponse
     {
         try {
-            $user = User::query()->whereKey($id)->first();
+            $user = User::query()
+                ->with('bankDetail')
+                ->whereKey($id)
+                ->where('role', 'vendor')
+                ->first();
             if (! $user) {
                 return response()->json(['message' => 'Vendor not found'], 404);
-            }
-
-            if (! $user->isVendor()) {
-                return response()->json(['message' => 'User is not a vendor'], 403);
             }
 
             return response()->json(['vendor' => $user]);
         } catch (Throwable $exception) {
             return $this->unexpectedError($exception, 'Error occurred while fetching vendor.');
         }
+    }
+
+    public function indexVendors(Request $request): JsonResponse
+    {
+        $validatedData = $request->validate([
+            'page' => ['nullable', 'integer', 'min:1'],
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'search' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $perPage = $validatedData['per_page'] ?? 10;
+        $search = $validatedData['search'] ?? '';
+
+        $vendors = User::query()
+            ->where('role', 'vendor')
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhereHas('bankDetail', function ($query) use ($search): void {
+                            $query->where('company_name', 'like', "%{$search}%")
+                                ->orWhere('account_holder_name', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->with('bankDetail')
+            ->latest()
+            ->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $vendors,
+        ]);
     }
 
     private function unexpectedError(Throwable $exception, string $message): JsonResponse

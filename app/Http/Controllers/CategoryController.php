@@ -48,22 +48,35 @@ class CategoryController extends Controller
             $validatedData = $request->validate([
                 'page' => 'nullable|integer|min:1',
                 'per_page' => 'nullable|integer|min:1|max:100',
+                'search' => 'nullable|string|max:255',
             ], [
                 'page.integer' => 'The page must be an integer.',
                 'page.min' => 'The page must be at least 1.',
                 'per_page.integer' => 'The per_page must be an integer.',
                 'per_page.min' => 'The per_page must be at least 1.',
                 'per_page.max' => 'The per_page may not be greater than 100.',
+                'search.string' => 'The search must be a string.',
+                'search.max' => 'The search may not be greater than 255 characters.',
             ]);
 
             $page = $validatedData['page'] ?? 1;
             $per_page = $validatedData['per_page'] ?? 10;
+            $search = $validatedData['search'] ?? '';
 
-            $cacheKey = "categories:page:{$page}:per_page:{$per_page}";
+            $cacheKey = 'categories:page:'.$page.':per_page:'.$per_page.':search:'.md5($search);
 
             $categories = Cache::tags(['categories'])
-                ->remember($cacheKey, now()->addMinutes(30), function () use ($per_page) {
-                    return Category::latest()->paginate($per_page);
+                ->remember($cacheKey, now()->addMinutes(30), function () use ($per_page, $search) {
+                    return Category::query()
+                        ->when($search !== '', function ($query) use ($search) {
+                            $query->where(function ($query) use ($search) {
+                                $query->where('name', 'like', "%{$search}%")
+                                    ->orWhere('slug', 'like', "%{$search}%")
+                                    ->orWhere('description', 'like', "%{$search}%");
+                            });
+                        })
+                        ->latest()
+                        ->paginate($per_page);
                 });
 
             if ($categories->isEmpty()) {
@@ -93,7 +106,18 @@ class CategoryController extends Controller
     }
 
     /**
-     * Create a category
+     * Get a category.
+     */
+    public function show(Category $category)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $category,
+        ]);
+    }
+
+    /**
+     * Create a category.
      */
     public function store(Request $request)
     {
@@ -102,6 +126,7 @@ class CategoryController extends Controller
             $validated = $request->validate($this->rules, $this->messages);
 
             $category = Category::create($validated);
+            Cache::tags(['categories'])->flush();
 
             return response()->json([
                 'success' => true,
@@ -142,12 +167,13 @@ class CategoryController extends Controller
                 'description' => 'sometimes|required|string|max:255',
                 'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('categories', 'slug')->ignore($category->id)],
                 'icon' => 'sometimes|required|string|max:100',
-                'status' => 'sometimes|required|boolean',
+                'status' => 'sometimes|required|in:active,inactive',
             ];
 
             $validated = $request->validate($rules, $this->messages);
 
             $category->update($validated);
+            Cache::tags(['categories'])->flush();
 
             return response()->json([
                 'success' => true,
@@ -183,6 +209,7 @@ class CategoryController extends Controller
         try {
             Gate::authorize('delete', $category);
             $category->delete();
+            Cache::tags(['categories'])->flush();
 
             return response()->json([
                 'success' => true,
