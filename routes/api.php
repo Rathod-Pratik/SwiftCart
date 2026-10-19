@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\VendorRegistrationController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,13 +30,18 @@ Route::middleware('web')->group(function (): void {
         Route::get('/users/{id}', [AuthController::class, 'getUserById']);
         Route::get('/vendors', [AuthController::class, 'indexVendors']);
         Route::get('/vendors/{id}', [AuthController::class, 'getVendorById']);
+        Route::get('/vendor-applications', [VendorRegistrationController::class, 'indexApplications']);
+        Route::get('/vendor-applications/{vendor}', [VendorRegistrationController::class, 'showApplication']);
+        Route::patch('/vendor-applications/{vendor}/status', [VendorRegistrationController::class, 'updateStatus']);
+        Route::get('/admin/queries', [ConversationController::class, 'adminIndex']);
+        Route::get('/admin/queries/{conversation}', [ConversationController::class, 'adminShow']);
         Route::post('/categories', [CategoryController::class, 'store']);
         Route::get('/categories/{category}', [CategoryController::class, 'show']);
         Route::match(['put', 'patch'], '/categories/{category}', [CategoryController::class, 'update']);
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
     });
 
-    Route::middleware(['auth', 'role:vendor'])->group(function (): void {
+    Route::middleware(['auth', 'role:vendor', 'vendor.approved'])->group(function (): void {
         Route::post('/products', [ProductController::class, 'store']);
         Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
@@ -70,6 +76,10 @@ Route::middleware('web')->group(function (): void {
     });
 
     Route::middleware(['auth'])->group(function (): void {
+        Route::post('/vendor-register', [VendorRegistrationController::class, 'store']);
+        Route::post('/vendors/register', [VendorRegistrationController::class, 'store']);
+        Route::get('/vendor-application', [VendorRegistrationController::class, 'currentApplication']);
+        Route::get('/vendors/{vendor}/verification-document', [VendorRegistrationController::class, 'downloadDocument']);
         Route::get('/profile', [AuthController::class, 'getProfile']);
         Route::patch('/profile', [AuthController::class, 'updateProfile']);
         Route::delete('/profile', [AuthController::class, 'deleteAccount']);

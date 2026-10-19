@@ -94,7 +94,7 @@
                         setText('#vendor-id', vendor.id);
                         setText('#vendor-phone', vendor.phone);
                         setText('#vendor-address', vendor.address);
-                        setText('#vendor-company', bank.company_name);
+                        setText('#vendor-company', vendor.vendor?.store_name || bank.company_name);
                         setText('#vendor-account-holder', bank.account_holder_name);
                         setText('#vendor-bank', bank.bank_name);
                         setText('#vendor-branch', [bank.branch_name, bank.ifsc_code].filter(Boolean).join(' / ') || null);

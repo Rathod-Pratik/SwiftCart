@@ -34,6 +34,13 @@
           >Contact</a
         >
       </li>
+      <li>
+        <a
+          href="{{ route('vendor.register') }}"
+          class="{{ request()->routeIs('vendor.register') ? 'text-[#d09523] font-bold' : 'hover:text-[#d09523]' }}"
+          >Become a Seller</a
+        >
+      </li>
     </ul>
 
     {{-- Login Buttons --}}
@@ -75,6 +82,13 @@
           href="{{ route('contact') }}"
           class="{{ request()->routeIs('contact') ? 'text-[#d09523] font-bold' : 'hover:text-[#d09523]' }}"
           >Contact</a
+        >
+      </li>
+      <li>
+        <a
+          href="{{ route('vendor.register') }}"
+          class="{{ request()->routeIs('vendor.register') ? 'text-[#d09523] font-bold' : 'hover:text-[#d09523]' }}"
+          >Become a Seller</a
         >
       </li>
 

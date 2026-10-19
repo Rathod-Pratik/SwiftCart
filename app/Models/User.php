@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'phone', 'address', 'image'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'address', 'image', 'role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -21,7 +21,19 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function hasRole(string ...$roles): bool
     {
-        return in_array($this->role, $roles, true);
+        $currentRole = $this->role ?? 'customer';
+
+        foreach ($roles as $role) {
+            if ($role === $currentRole) {
+                return true;
+            }
+
+            if (($role === 'customer' || $role === 'user') && ($currentRole === 'customer' || $currentRole === 'user')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isAdmin(): bool
@@ -32,6 +44,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isVendor(): bool
     {
         return $this->hasRole('vendor');
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->hasRole('customer', 'user');
+    }
+
+    public function isApprovedVendor(): bool
+    {
+        return $this->isVendor() && $this->vendor?->status === 'approved';
+    }
+
+    public function vendor(): HasOne
+    {
+        return $this->hasOne(Vendor::class, 'user_id');
     }
 
     public function products(): HasMany

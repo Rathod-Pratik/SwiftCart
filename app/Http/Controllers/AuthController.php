@@ -499,9 +499,12 @@ class AuthController extends Controller
     {
         try {
             $user = User::query()
-                ->with('bankDetail')
+                ->with(['bankDetail', 'vendor'])
                 ->whereKey($id)
-                ->where('role', 'vendor')
+                ->where(function ($query): void {
+                    $query->where('role', 'vendor')
+                        ->orWhereHas('vendor');
+                })
                 ->first();
             if (! $user) {
                 return response()->json(['message' => 'Vendor not found'], 404);
@@ -525,19 +528,25 @@ class AuthController extends Controller
         $search = $validatedData['search'] ?? '';
 
         $vendors = User::query()
-            ->where('role', 'vendor')
+            ->where(function ($query): void {
+                $query->where('role', 'vendor')
+                    ->orWhereHas('vendor');
+            })
             ->when($search !== '', function ($query) use ($search): void {
                 $query->where(function ($query) use ($search): void {
                     $query->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhereHas('vendor', function ($query) use ($search): void {
+                            $query->where('store_name', 'like', "%{$search}%");
+                        })
                         ->orWhereHas('bankDetail', function ($query) use ($search): void {
                             $query->where('company_name', 'like', "%{$search}%")
                                 ->orWhere('account_holder_name', 'like', "%{$search}%");
                         });
                 });
             })
-            ->with('bankDetail')
+            ->with(['bankDetail', 'vendor'])
             ->latest()
             ->paginate($perPage);
 

@@ -1,7 +1,7 @@
 <footer class="bg-white">
     <div class="mx-auto w-full">
         <p class="py-5 border-t border-b border-gray-200 text-2xl font-semibold whitespace-nowrap text-center text-gray-900">SwiftCart</p>
-      <div class="grid grid-cols-1  gap-8 px-4 py-6 lg:py-8 md:grid-cols-3">
+      <div class="grid grid-cols-1 gap-8 px-4 py-6 lg:py-8 md:grid-cols-4">
         <div class="mx-auto">
             <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase text-start">About</h2>
             <ul class="text-gray-500 text-start font-medium">
@@ -47,6 +47,14 @@
                 </li>
                 <li class="mb-4">
                     <a href="#" class="hover:underline">CheckOut</a>
+                </li>
+            </ul>
+        </div>
+        <div class="m-auto">
+            <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase text-start">Partner with us</h2>
+            <ul class="text-gray-500 text-start font-medium">
+                <li class="mb-4">
+                    <a href="{{ route('vendor.register') }}" class="hover:underline">Become a Seller</a>
                 </li>
             </ul>
         </div>

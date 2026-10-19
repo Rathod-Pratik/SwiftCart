@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('image')->nullable();
-            $table->enum('role', ['user', 'vendor', 'admin'])->default('user');
+            $table->string('role')->default('customer');
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active')->notNullable();

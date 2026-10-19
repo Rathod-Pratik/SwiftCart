@@ -9,29 +9,29 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up(): void
-{
-    Schema::create('reviews', function (Blueprint $table) {
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('user_id')
-            ->constrained()
-            ->cascadeOnDelete();
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-        $table->foreignId('product_id')
-            ->constrained()
-            ->cascadeOnDelete();
+            $table->foreignId('product_id')
+                ->constrained()
+                ->cascadeOnDelete();
 
-        $table->unsignedTinyInteger('rating');
+            $table->unsignedTinyInteger('rating');
 
-        $table->text('comment')->nullable();
+            $table->text('comment')->nullable();
 
-        // Store multiple image paths
-        $table->json('images')->nullable();
+            // Store multiple image paths
+            $table->json('images')->nullable();
 
-        $table->timestamps();
-    });
-}
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

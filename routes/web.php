@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\VendorRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,6 +34,15 @@ Route::get('/register', function () {
 Route::post('/register', [AuthController::class, 'signup'])
     ->middleware(['guest', 'throttle:6,1']);
 
+// Vendor Registration Flow
+Route::get('/become-seller', [VendorRegistrationController::class, 'create'])->name('vendor.register');
+Route::get('/become-vendor', fn () => redirect()->route('vendor.register'));
+Route::post('/become-seller', [VendorRegistrationController::class, 'store'])
+    ->middleware(['auth', 'throttle:6,1'])
+    ->name('vendor.register.post');
+Route::post('/become-vendor', [VendorRegistrationController::class, 'store'])
+    ->middleware(['auth', 'throttle:6,1']);
+
 Route::view('/admin/category/create', 'admin.Category.Create')
     ->middleware(['auth', 'verified', 'role:admin'])
     ->name('admin.category.create');
@@ -48,7 +58,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
     Route::view('/user/details', 'admin.User.Details')->name('admin.user.details');
     Route::view('/vendor', 'admin.Vendor.Vendor')->name('admin.vendor');
     Route::view('/vendor/details', 'admin.Vendor.Details')->name('admin.vendor.details');
-    // Route::view('/contact', 'admin.Contact')->name('admin.contact');
+    Route::view('/query', 'admin.Query.Query')->name('admin.query');
+    Route::view('/query/details', 'admin.Query.Details')->name('admin.query.details');
+    Route::redirect('/contact', '/admin/query')->name('admin.contact');
 });
 
 Route::middleware(['auth', 'verified', 'role:vendor'])->prefix('vendor')->group(function () {

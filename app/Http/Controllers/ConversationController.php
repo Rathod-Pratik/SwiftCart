@@ -181,4 +181,69 @@ class ConversationController extends Controller
             return response()->json(['success' => false, 'message' => 'Error occurred while starting conversation'], 500);
         }
     }
+
+    /**
+     * Admin: List all user and vendor queries with product details.
+     */
+    public function adminIndex(Request $request)
+    {
+        $search = trim((string) $request->query('search', ''));
+        $type = $request->query('type');
+
+        $conversations = Conversation::query()
+            ->when($type, fn ($query) => $query->where('type', $type))
+            ->with([
+                'customer:id,name,email,phone',
+                'vendor:id,name,email,phone',
+                'vendor.vendor:id,user_id,store_name',
+                'product:id,name,price,stock,category_id,image',
+                'product.category:id,name',
+                'latestMessage.sender:id,name',
+            ])
+            ->when($search !== '', function ($query) use ($search): void {
+                $query->where(function ($query) use ($search): void {
+                    $query->whereHas('customer', function ($query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhereHas('vendor', function ($query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })->orWhereHas('product', function ($query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%");
+                    })->orWhereHas('latestMessage', function ($query) use ($search): void {
+                        $query->where('body', 'like', "%{$search}%");
+                    });
+                });
+            })
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
+            ->paginate((int) $request->query('per_page', 10));
+
+        return response()->json([
+            'success' => true,
+            'data' => $conversations,
+        ]);
+    }
+
+    /**
+     * Admin: Show query details with user, vendor, product, and message history.
+     */
+    public function adminShow(Conversation $conversation)
+    {
+        $conversation->load([
+            'customer:id,name,email,phone,address',
+            'vendor:id,name,email,phone',
+            'vendor.vendor:id,user_id,store_name',
+            'product:id,name,price,stock,category_id,image,description',
+            'product.category:id,name',
+            'order:id,order_number,order_status,total_amount',
+            'messages.sender:id,name,email',
+            'latestMessage.sender:id,name',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $conversation,
+        ]);
+    }
 }

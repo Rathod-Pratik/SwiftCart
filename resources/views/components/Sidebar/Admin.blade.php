@@ -104,18 +104,18 @@
                 </a>
             </li>
 
-            {{-- Contact --}}
+            {{-- Queries --}}
             <li>
-                <a href="{{ route('admin.contact') }}"
+                <a href="{{ route('admin.query') }}"
                    class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.contact') ? $active : $inactive }}">
+                   {{ request()->routeIs('admin.query*') ? $active : $inactive }}">
 
-                    <x-lucide-mail class="w-5 h-5"/>
+                    <x-lucide-message-square class="w-5 h-5"/>
 
-                    <span>Contact</span>
+                    <span>Queries</span>
 
-                    @if(request()->routeIs('admin.contact'))
-                        <div class="absolute -left-5   w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
+                    @if(request()->routeIs('admin.query*'))
+                        <div class="absolute -left-5 w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
                     @endif
                 </a>
             </li>

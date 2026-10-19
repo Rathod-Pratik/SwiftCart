@@ -92,7 +92,7 @@
                                 <p class="font-semibold text-gray-900">${escapeHtml(vendor.name)}</p>
                                 <p class="text-xs text-gray-500">ID: ${escapeHtml(vendor.id)}</p>
                             </td>
-                            <td class="px-4 py-4">${escapeHtml(vendor.bank_detail?.company_name || 'Not provided')}</td>
+                            <td class="px-4 py-4">${escapeHtml(vendor.vendor?.store_name || vendor.bank_detail?.company_name || 'Not provided')}</td>
                             <td class="px-4 py-4">${escapeHtml(vendor.email)}</td>
                             <td class="px-4 py-4">
                                 <span class="rounded-full px-3 py-1 text-xs font-semibold ${vendor.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
