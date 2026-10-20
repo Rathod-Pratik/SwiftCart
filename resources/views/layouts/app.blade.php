@@ -16,5 +16,6 @@
         @yield('content')
     </main>
     @include('components.Footer')
+    <x-toast />
 </body>
 </html>

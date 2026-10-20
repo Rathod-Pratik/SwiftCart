@@ -4,12 +4,6 @@
     <x-slot name="title">Queries</x-slot>
 
     <div class="p-4 sm:p-6">
-        <div class="mb-6">
-            <p class="text-sm font-medium text-[#3d6f6d]">Customer & Vendor Support</p>
-            <h1 class="text-2xl font-bold text-gray-900">Queries & Conversations</h1>
-            <p class="mt-1 text-sm text-gray-600">Monitor user inquiries, vendor communications, and associated product details.</p>
-        </div>
-
         <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex flex-1 flex-col sm:flex-row gap-3">

@@ -1,26 +1,26 @@
-<nav class="fixed top-0 z-50 w-full bg-white">
-    <div class="px-10 py-3">
+<nav class="fixed top-0 z-50 w-full bg-[#224e51] text-[#64883e] shadow-lg">
+    <div class="px-4 py-3 sm:px-8">
         <div class="flex items-center justify-between">
 
-            <a href="/" class="text-2xl font-semibold text-black">
+            <a href="/" class="text-2xl font-semibold tracking-tight text-[#FFFFFF] transition-colors duration-300 hover:text-[#F5F7F4]">
                 SwiftCart
             </a>
 
             <div class="flex items-center gap-5">
 
-                <div class="relative">
+                <div class="relative hidden sm:block">
                     <x-lucide-search
-                        class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[#344054]" />
 
                     <input
                         type="text"
                         placeholder="Search..."
-                        class="w-72 h-10 pl-10 pr-4 py-2 bg-[#f5f5f5] rounded-lg focus:outline-none focus:ring-0 focus:border-transparent" />
+                        class="h-10 w-72 rounded-xl border border-[#FFFFFF] bg-white py-2 pl-10 pr-4 text-sm text-[#000000] placeholder:text-[#000000] transition focus:border-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#FFFFFF]" />
                 </div>
 
-                <button class="relative p-2 rounded-full hover:bg-gray-100 transition cursor-pointer">
+                <button class="relative cursor-pointer rounded-xl p-2 transition duration-300 hover:bg-white/15 hover:text-[#d9e4e4]" aria-label="Notifications">
 
-                    <x-lucide-bell class="w-6 h-6 text-gray-700" />
+                    <x-lucide-bell class="h-6 w-6 text-[#FFFFFF]" />
 
                     <span
                         class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-semibold text-white bg-red-500 rounded-full">
@@ -31,7 +31,7 @@
 
                 <img
                     src="{{ asset('images/Review4.jpg') }}"
-                    class="w-10 h-10 rounded-full object-cover border border-gray-300 cursor-pointer"
+                    class="h-10 w-10 cursor-pointer rounded-full border-2 border-[#FFFFFF] object-cover transition duration-300 hover:scale-105"
                     alt="Profile Image">
 
             </div>

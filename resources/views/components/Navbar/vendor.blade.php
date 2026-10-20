@@ -1,27 +1,16 @@
-<nav class="fixed top-0 z-50 w-full bg-[#f8fafd]">
-  <div class="px-3 py-3 lg:px-5 lg:pl-3">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center justify-start rtl:justify-end">
-        <a href="/" class="flex ms-2 md:me-24">
-          <span
-            class="self-center text-xl text-gray-500 font-semibold sm:text-2xl whitespace-nowrap ml-4"
-            >SwiftCart</span
-          >
-        </a>
-      </div>
-      <div class="flex items-center">
-        <div class="flex items-center ms-3 gap-3">
-          <p class="text-[#a0aec0]">Welcome Vendor</p>
-          <div>
-            <img
-              id="venderPhoto"
-              class="w-8 h-8 rounded-full object-cover border-2 border-white"
-              src="{{ asset('images/favicon.png') }}"
-              alt="User Photo"
-            />';
-          </div>
+<nav class="fixed top-0 z-50 w-full border-b border-[#8cb920]/30 bg-[#8cb920]/15 text-[#64883e] shadow-lg">
+    <div class="px-4 py-3 sm:px-8">
+        <div class="flex items-center justify-between">
+            <a href="/" class="text-2xl font-semibold tracking-tight transition-colors duration-300 hover:text-[#8cb920]">
+                SwiftCart
+            </a>
+            <div class="flex items-center gap-3">
+                <p class="hidden text-sm text-[#64883e] sm:block">Welcome, Vendor</p>
+                <img
+                    class="h-10 w-10 cursor-pointer rounded-full border-2 border-[#fee21f] object-cover transition duration-300 hover:scale-105"
+                    src="{{ asset('images/favicon.png') }}"
+                    alt="Vendor profile">
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </nav>

@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -17,7 +17,7 @@ class CategoryController extends Controller
         'name' => 'required|string|max:255',
         'description' => 'required|string|max:255',
         'slug' => 'required|string|max:255|unique:categories,slug',
-        'icon' => 'required|string|max:100',
+        'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         'status' => 'required|in:active,inactive',
     ];
 
@@ -32,9 +32,10 @@ class CategoryController extends Controller
         'slug.string' => 'The slug must be a string.',
         'slug.max' => 'The slug may not be greater than 255 characters.',
         'slug.unique' => 'The slug has already been taken.',
-        'icon.required' => 'The icon field is required.',
-        'icon.string' => 'The icon must be a string.',
-        'icon.max' => 'The icon may not be greater than 100 characters.',
+        'image.required' => 'A category image is required.',
+        'image.image' => 'The category image must be a valid image.',
+        'image.mimes' => 'The category image must be a JPEG, PNG, JPG, or WEBP file.',
+        'image.max' => 'The category image may not be greater than 5 MB.',
         'status.required' => 'The status field is required.',
         'status.boolean' => 'The status field must be true or false.',
     ];
@@ -63,21 +64,16 @@ class CategoryController extends Controller
             $per_page = $validatedData['per_page'] ?? 10;
             $search = $validatedData['search'] ?? '';
 
-            $cacheKey = 'categories:page:'.$page.':per_page:'.$per_page.':search:'.md5($search);
-
-            $categories = Cache::tags(['categories'])
-                ->remember($cacheKey, now()->addMinutes(30), function () use ($per_page, $search) {
-                    return Category::query()
-                        ->when($search !== '', function ($query) use ($search) {
-                            $query->where(function ($query) use ($search) {
-                                $query->where('name', 'like', "%{$search}%")
-                                    ->orWhere('slug', 'like', "%{$search}%")
-                                    ->orWhere('description', 'like', "%{$search}%");
-                            });
-                        })
-                        ->latest()
-                        ->paginate($per_page);
-                });
+            $categories = Category::query()
+                ->when($search !== '', function ($query) use ($search) {
+                    $query->where(function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('slug', 'like', "%{$search}%")
+                            ->orWhere('description', 'like', "%{$search}%");
+                    });
+                })
+                ->latest()
+                ->paginate($per_page);
 
             if ($categories->isEmpty()) {
                 return response()->json([
@@ -124,9 +120,10 @@ class CategoryController extends Controller
         try {
             Gate::authorize('create', Category::class);
             $validated = $request->validate($this->rules, $this->messages);
+            $validated['icon'] = $request->file('image')->store('categories', 'public');
+            unset($validated['image']);
 
             $category = Category::create($validated);
-            Cache::tags(['categories'])->flush();
 
             return response()->json([
                 'success' => true,
@@ -166,14 +163,22 @@ class CategoryController extends Controller
                 'name' => 'sometimes|required|string|max:255',
                 'description' => 'sometimes|required|string|max:255',
                 'slug' => ['sometimes', 'required', 'string', 'max:255', Rule::unique('categories', 'slug')->ignore($category->id)],
-                'icon' => 'sometimes|required|string|max:100',
+                'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
                 'status' => 'sometimes|required|in:active,inactive',
             ];
 
             $validated = $request->validate($rules, $this->messages);
 
+            if ($request->hasFile('image')) {
+                if ($category->icon && Storage::disk('public')->exists($category->icon)) {
+                    Storage::disk('public')->delete($category->icon);
+                }
+
+                $validated['icon'] = $request->file('image')->store('categories', 'public');
+            }
+            unset($validated['image']);
+
             $category->update($validated);
-            Cache::tags(['categories'])->flush();
 
             return response()->json([
                 'success' => true,
@@ -209,7 +214,6 @@ class CategoryController extends Controller
         try {
             Gate::authorize('delete', $category);
             $category->delete();
-            Cache::tags(['categories'])->flush();
 
             return response()->json([
                 'success' => true,

@@ -9,13 +9,13 @@
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-[#edf2f7] antialiased">
+<body class="min-h-screen bg-[#f7fbe9] antialiased">
     <x-navbar variant="vendor" />
     <x-sidebar variant="vendor" />
 
     <main class="min-h-screen pt-20 lg:ml-64">
         <div class="min-h-screen p-3 sm:p-5">
-            <div class="min-h-[calc(100vh-7rem)] rounded-lg bg-white">
+            <div class="min-h-[calc(100vh-7rem)] rounded-2xl border border-[#8cb920]/20 bg-white shadow-sm">
                 @yield('content')
             </div>
         </div>

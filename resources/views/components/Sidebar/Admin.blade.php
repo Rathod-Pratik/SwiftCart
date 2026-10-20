@@ -1,140 +1,55 @@
+```blade
 @php
-    $active = 'font-semibold';
-    $inactive = 'text-gray-500';
+    $active = 'bg-[#F4C95D]/15 text-[#F4C95D] shadow-lg shadow-black/10';
+    $inactive = 'text-[#E1EBE8] hover:bg-[#F5F7F4]/10 hover:text-[#F4C95D] hover:translate-x-1';
 @endphp
 
 <aside
-    class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white overflow-visible">
-    <div class="px-5 py-6">
-
+    class="fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full bg-[#224e51] pt-20 text-[#E1EBE8] shadow-xl transition-transform duration-300 lg:translate-x-0"
+    aria-label="Admin sidebar">
+    <div class="px-4 py-6">
         <ul class="space-y-2">
-            {{-- Dashboard --}}
-            <li>
-                <a href="{{ route('admin.dashboard') }}"
-                   class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.dashboard') ? $active : $inactive }}">
+            @php
+                $items = [
+                    ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
+                    ['route' => 'admin.category', 'label' => 'Categories', 'icon' => 'layout-grid'],
+                    ['route' => 'admin.product', 'label' => 'Products', 'icon' => 'package'],
+                    ['route' => 'admin.user', 'label' => 'Users', 'icon' => 'users'],
+                    ['route' => 'admin.vendor', 'label' => 'Vendors', 'icon' => 'store'],
+                    ['route' => 'admin.rating', 'label' => 'Ratings', 'icon' => 'star'],
+                    ['route' => 'admin.query*', 'label' => 'Queries', 'icon' => 'message-square'],
+                ];
+            @endphp
 
-                    <x-lucide-layout-dashboard class="w-5 h-5"/>
+            @foreach ($items as $item)
+                @php($isActive = request()->routeIs($item['route']))
+                <li>
+                    <a href="{{ route(str_replace('*', '', $item['route'])) }}"
+                        class="group relative flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-300 {{ $isActive ? $active : $inactive }}">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-all duration-300 {{ $isActive ? 'bg-[#F4C95D] text-[#224E51]' : 'bg-white/10 text-[#E1EBE8] group-hover:bg-[#F4C95D] group-hover:text-[#224E51] group-hover:scale-105' }}">
+                            <x-dynamic-component :component="'lucide-' . $item['icon']" class="h-5 w-5" />
+                        </span>
 
-                    <span>Dashboard</span>
+                        <span>{{ $item['label'] }}</span>
 
-                    @if(request()->routeIs('admin.dashboard'))
-                        <div class="absolute -left-5 w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
+                        @if ($isActive)
+                            <span class="absolute -right-4 h-8 w-1 rounded-l-full bg-[#F4C95D]"></span>
+                        @endif
+                    </a>
+                </li>
+            @endforeach
 
-            {{-- Categories --}}
-            <li>
-                <a href="{{ route('admin.category') }}"
-                   class="relative flex items-center gap-3 px-2  py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.category') ? $active : $inactive }}">
-
-                    <x-lucide-layout-grid class="w-5 h-5"/>
-
-                    <span>Categories</span>
-
-                    @if(request()->routeIs('admin.category'))
-                        <div class="absolute -left-5 w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
-
-            {{-- Products --}}
-            <li>
-                <a href="{{ route('admin.product') }}"
-                   class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.product') ? $active : $inactive }}">
-
-                    <x-lucide-package class="w-5 h-5"/>
-
-                    <span>Products</span>
-
-                    @if(request()->routeIs('admin.product'))
-                        <div class="absolute -left-5   w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
-
-            {{-- Users --}}
-            <li>
-                <a href="{{ route('admin.user') }}"
-                   class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.user') ? $active : $inactive }}">
-
-                    <x-lucide-users class="w-5 h-5"/>
-
-                    <span>Users</span>
-
-                    @if(request()->routeIs('admin.user'))
-                        <div class="absolute -left-5   w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
-
-            {{-- Vendors --}}
-            <li>
-                <a href="{{ route('admin.vendor') }}"
-                   class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.vendor') ? $active : $inactive }}">
-
-                    <x-lucide-store class="w-5 h-5"/>
-
-                    <span>Vendors</span>
-
-                    @if(request()->routeIs('admin.vendor'))
-                        <div class="absolute -left-5   w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
-
-            {{-- Ratings --}}
-            <li>
-                <a href="{{ route('admin.rating') }}"
-                   class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.rating') ? $active : $inactive }}">
-
-                    <x-lucide-star class="w-5 h-5"/>
-
-                    <span>Ratings</span>
-
-                    @if(request()->routeIs('admin.rating'))
-                        <div class="absolute -left-5   w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
-
-            {{-- Queries --}}
-            <li>
-                <a href="{{ route('admin.query') }}"
-                   class="relative flex items-center gap-3 px-2 py-3 rounded-2xl transition-all duration-300
-                   {{ request()->routeIs('admin.query*') ? $active : $inactive }}">
-
-                    <x-lucide-message-square class="w-5 h-5"/>
-
-                    <span>Queries</span>
-
-                    @if(request()->routeIs('admin.query*'))
-                        <div class="absolute -left-5 w-1.5 h-9 bg-[#7ED957] rounded-r-2xl"></div>
-                    @endif
-                </a>
-            </li>
-
-            {{-- Logout --}}
             <li class="pt-6">
-                <button
-                    onclick="Logout()"
-                    class="flex items-center gap-3 w-full px-2 py-3 rounded-2xl text-red-500 hover:bg-red-50 transition">
-
-                    <x-lucide-log-out class="w-5 h-5"/>
+                <button onclick="Logout()" type="button"
+                    class="group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#F6CACA] transition-all duration-300 hover:translate-x-1 hover:bg-[#DC2626]/15 hover:text-white">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#DC2626]/15 text-[#F6CACA] transition-all duration-300 group-hover:bg-[#DC2626] group-hover:text-white">
+                        <x-lucide-log-out class="h-5 w-5" />
+                    </span>
 
                     <span>Logout</span>
-
                 </button>
             </li>
-
         </ul>
-
     </div>
-
 </aside>
+```

@@ -8,27 +8,14 @@
     <div class="p-4 sm:p-6">
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <p class="text-sm font-medium text-[#3d6f6d]">Category management</p>
                 <h1 class="text-2xl font-bold text-gray-900">Category Details</h1>
-                <p class="mt-1 text-sm text-gray-600">Review and manage this category.</p>
             </div>
 
-            <div class="flex flex-wrap gap-3">
+            <div>
                 <a href="{{ route('admin.category') }}"
                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
-                    Back to Categories
+                    Back
                 </a>
-                <a id="edit-category-link"
-                   href="#"
-                   class="pointer-events-none inline-flex items-center justify-center rounded-lg bg-[#3d6f6d] px-4 py-2.5 text-sm font-semibold text-white opacity-50 transition hover:bg-[#315b59]">
-                    Update Category
-                </a>
-                <button id="delete-category-button"
-                        type="button"
-                        disabled
-                        class="rounded-lg border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-600 opacity-50 transition hover:bg-red-50 disabled:cursor-not-allowed">
-                    Delete Category
-                </button>
             </div>
         </div>
 
@@ -38,38 +25,62 @@
             Loading category details...
         </div>
 
-        <section id="category-details" class="hidden max-w-4xl rounded-xl bg-white p-5 shadow-sm sm:p-8">
-            <div class="mb-8 flex flex-col gap-4 border-b border-gray-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
+        <section id="category-details" class="hidden max-w-4xl overflow-hidden rounded-2xl bg-white shadow-sm">
+            <div class="flex flex-col gap-5 border-b border-gray-100 bg-[#f7faf9] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-8">
                 <div>
-                    <p class="text-sm text-gray-500">Category name</p>
-                    <h2 id="category-name" class="mt-1 text-3xl font-bold text-gray-900"></h2>
-                    <p id="category-slug" class="mt-2 text-sm text-gray-500"></p>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[#3d6f6d]">Category details</p>
+                    <h2 id="category-name" class="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl"></h2>
                 </div>
                 <span id="category-status-badge" class="w-fit rounded-full px-3 py-1 text-xs font-semibold"></span>
             </div>
 
-            <dl class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div class="rounded-lg bg-gray-50 p-4">
+            <div class="p-5 sm:p-8">
+                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
                     <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Category ID</dt>
                     <dd id="category-id" class="mt-2 text-sm font-medium text-gray-900"></dd>
                 </div>
-                <div class="rounded-lg bg-gray-50 p-4">
-                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Icon</dt>
-                    <dd id="category-icon" class="mt-2 text-sm font-medium text-gray-900"></dd>
+                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Slug</dt>
+                    <dd id="category-slug-detail" class="mt-2 break-all text-sm font-medium text-gray-900"></dd>
                 </div>
-                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
+                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                    <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Category image</dt>
+                    <dd class="mt-2">
+                        <img id="category-image"
+                             class="hidden h-28 w-28 rounded-xl border border-gray-200 object-cover shadow-sm"
+                             alt="Category image">
+                        <span id="category-image-empty" class="text-sm text-gray-500">No image available</span>
+                    </dd>
+                </div>
+                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 sm:col-span-2">
                     <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Description</dt>
                     <dd id="category-description" class="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-700"></dd>
                 </div>
-                <div class="rounded-lg bg-gray-50 p-4">
+                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
                     <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Created</dt>
                     <dd id="category-created-at" class="mt-2 text-sm text-gray-700"></dd>
                 </div>
-                <div class="rounded-lg bg-gray-50 p-4">
+                <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
                     <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Last updated</dt>
                     <dd id="category-updated-at" class="mt-2 text-sm text-gray-700"></dd>
                 </div>
-            </dl>
+                </dl>
+
+                <div class="mt-8 flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end">
+                    <button id="delete-category-button"
+                            type="button"
+                            disabled
+                            class="inline-flex items-center justify-center rounded-lg border border-red-200 px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50">
+                        Delete
+                    </button>
+                    <a id="edit-category-link"
+                       href="#"
+                       class="pointer-events-none inline-flex items-center justify-center rounded-lg bg-[#3d6f6d] px-5 py-2.5 text-sm font-semibold text-white opacity-50 transition hover:bg-[#315b59]">
+                        Edit
+                    </a>
+                </div>
+            </div>
         </section>
     </div>
 
@@ -78,6 +89,7 @@
             (() => {
                 const categoryId = @json($categoryId);
                 const apiUrl = @json(url('/api/categories'));
+                const storageUrl = @json(asset('storage'));
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? @json(csrf_token());
                 const loading = document.querySelector('#category-loading');
                 const details = document.querySelector('#category-details');
@@ -116,12 +128,29 @@
 
                         const category = payload.data;
                         setText('#category-name', category.name);
-                        setText('#category-slug', `/${category.slug}`);
                         setText('#category-id', category.id);
-                        setText('#category-icon', category.icon);
+                        setText('#category-slug-detail', category.slug);
                         setText('#category-description', category.description);
                         setText('#category-created-at', formatDate(category.created_at));
                         setText('#category-updated-at', formatDate(category.updated_at));
+
+                        const categoryImage = document.querySelector('#category-image');
+                        const categoryImageEmpty = document.querySelector('#category-image-empty');
+                        categoryImage.onerror = () => {
+                            categoryImage.classList.add('hidden');
+                            categoryImageEmpty.classList.remove('hidden');
+                        };
+                        if (category.icon) {
+                            categoryImage.src = category.icon.startsWith('http')
+                                ? category.icon
+                                : `${storageUrl}/${category.icon}`;
+                            categoryImage.alt = `${category.name} category image`;
+                            categoryImage.classList.remove('hidden');
+                            categoryImageEmpty.classList.add('hidden');
+                        } else {
+                            categoryImage.classList.add('hidden');
+                            categoryImageEmpty.classList.remove('hidden');
+                        }
 
                         const badge = document.querySelector('#category-status-badge');
                         badge.textContent = category.status;

@@ -1,80 +1,46 @@
-<aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-[#f8fafd] border-r border-gray-200 lg:translate-x-0 transition-transform -translate-x-full" aria-label="Sidebar">
-   <div class="h-full px-3 pb-4 overflow-y-auto">
-      <ul class="space-y-2 font-medium text-sm">
-         <li>
-            <a href="{{ route('vendor.dashboard') }}" class="flex items-center p-2 rounded-xl transition-all {{ request()->routeIs('vendor.dashboard') ? 'bg-[#e6f7f5] text-[#2f7770]' : 'text-[#a0aec0] hover:bg-[#e6f7f5]' }}">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Dashboard</span>
-            </a>
-         </li>
-         <li>
-            <a href="/vender/product" class="flex items-center p-2 rounded-xl transition-all ' . isActive('Product.php') . '">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <rect x="3" y="3" width="7" height="7"/>
-                     <rect x="14" y="3" width="7" height="7"/>
-                     <rect x="14" y="14" width="7" height="7"/>
-                     <rect x="3" y="14" width="7" height="7"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Product</span>
-            </a>
-         </li>
-         <li>
-            <a href="/vender/order" class="flex items-center p-2 rounded-xl transition-all ' . isActive('Order.php') . '">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <path d="M12 2l9 4.5v11L12 22l-9-4.5v-11L12 2z"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Order</span>
-            </a>
-         </li>
-         <li>
-            <a href="{{ route('vendor.rating') }}" class="flex items-center p-2 rounded-xl transition-all {{ request()->routeIs('vendor.rating*') ? 'bg-[#e6f7f5] text-[#2f7770]' : 'text-[#a0aec0] hover:bg-[#e6f7f5]' }}">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <path d="M3 7h18M3 12h18M3 17h18"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Rating</span>
-            </a>
-         </li>
-         <li>
-            <a href="{{ route('vendor.query') }}" class="flex items-center p-2 rounded-xl transition-all {{ request()->routeIs('vendor.query*') ? 'bg-[#e6f7f5] text-[#2f7770]' : 'text-[#a0aec0] hover:bg-[#e6f7f5]' }}">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 000 7.75"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Queries</span>
-            </a>
-         </li>
-         <li>
-            <a href="{{ route('vendor.profile') }}" class="flex items-center p-2 rounded-xl transition-all {{ request()->routeIs('vendor.profile') ? 'bg-[#e6f7f5] text-[#2f7770]' : 'text-[#a0aec0] hover:bg-[#e6f7f5]' }}">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <circle cx="12" cy="12" r="10"/>
-                     <path d="M12 6v6l4 2"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Profile</span>
-            </a>
-         </li>
-         <li>
-            <a href="javascript:void(0)" onclick="Logout()" class="flex items-center p-2 rounded-xl transition-all cursor-pointer text-[#a0aec0] hover:text-white hover:bg-[#4fd1c5]">
-               <div class="w-6 h-6 flex items-center justify-center rounded-md bg-[#4fd1c5]">
-                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                     <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"/>
-                  </svg>
-               </div>
-               <span class="ml-3">Logout</span>
-            </a>
-         </li>
-      </ul>
-   </div>
+@php
+    $active = 'bg-[#fee21f]/60 text-[#64883e] shadow-lg shadow-[#64883e]/10';
+    $inactive = 'text-[#64883e] hover:bg-[#8cb920]/15 hover:text-[#64883e] hover:translate-x-1';
+    $items = [
+        ['route' => 'vendor.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
+        ['route' => 'vendor.product', 'label' => 'Products', 'icon' => 'package'],
+        ['route' => 'vendor.order', 'label' => 'Orders', 'icon' => 'shopping-bag'],
+        ['route' => 'vendor.rating*', 'label' => 'Ratings', 'icon' => 'star'],
+        ['route' => 'vendor.query*', 'label' => 'Queries', 'icon' => 'message-square'],
+        ['route' => 'vendor.profile', 'label' => 'Profile', 'icon' => 'user-round'],
+    ];
+@endphp
+
+<aside id="sidebar"
+    class="fixed left-0 top-0 z-40 h-screen w-64 -translate-x-full border-r border-[#8cb920]/20 bg-[#f7fbe9] pt-20 text-[#64883e] shadow-xl transition-transform duration-300 lg:translate-x-0"
+    aria-label="Vendor sidebar">
+    <div class="px-4 py-6">
+        <p class="mb-4 px-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#64883e]">Seller workspace</p>
+        <ul class="space-y-2 text-sm font-medium">
+            @foreach ($items as $item)
+                @php($isActive = request()->routeIs($item['route']))
+                <li>
+                    <a href="{{ route(str_replace('*', '', $item['route'])) }}"
+                        class="group relative flex items-center gap-3 rounded-xl px-3 py-3 transition duration-300 {{ $isActive ? $active : $inactive }}">
+                        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition duration-300 {{ $isActive ? 'bg-[#64883e] text-[#fee21f]' : 'bg-[#8cb920]/15 text-[#64883e] group-hover:bg-[#fee21f] group-hover:text-[#64883e] group-hover:scale-105' }}">
+                            <x-dynamic-component :component="'lucide-' . $item['icon']" class="h-5 w-5" />
+                        </span>
+                        <span>{{ $item['label'] }}</span>
+                        @if ($isActive)
+                            <span class="absolute -right-4 h-8 w-1 rounded-l-full bg-[#fee21f]"></span>
+                        @endif
+                    </a>
+                </li>
+            @endforeach
+            <li class="pt-6">
+                <button onclick="Logout()" type="button"
+                    class="group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#f6caca] transition duration-300 hover:translate-x-1 hover:bg-red-400/15 hover:text-white">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-red-400/15 text-[#f6caca] transition duration-300 group-hover:bg-red-400 group-hover:text-white">
+                        <x-lucide-log-out class="h-5 w-5" />
+                    </span>
+                    <span>Logout</span>
+                </button>
+            </li>
+        </ul>
+    </div>
 </aside>

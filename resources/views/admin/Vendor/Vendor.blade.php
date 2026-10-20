@@ -4,22 +4,20 @@
     <x-slot name="title">Vendors</x-slot>
 
     <div class="p-4 sm:p-6">
-        <div class="mb-6">
-            <p class="text-sm font-medium text-[#3d6f6d]">Vendor management</p>
-            <h1 class="text-2xl font-bold text-gray-900">Vendors</h1>
-            <p class="mt-1 text-sm text-gray-600">Search and view registered vendors.</p>
-        </div>
-
-        <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6">
+        <div class=" rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <label class="block w-full sm:max-w-sm" for="vendor-search">
+                <label class="relative block w-full sm:max-w-sm" for="vendor-search">
                     <span class="sr-only">Search vendors</span>
                     <input id="vendor-search"
                            type="search"
                            placeholder="Search by name, email, or company..."
                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
                 </label>
-                <p id="vendor-count" class="text-sm text-gray-500" aria-live="polite"></p>
+                   <a href="{{ route('admin.category.create') }}"
+                        class="inline-flex items-center justify-center rounded-lg bg-[#3d6f6d] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#315b59]">
+                        Request
+                    </a>
+               
             </div>
 
             <div id="vendor-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>

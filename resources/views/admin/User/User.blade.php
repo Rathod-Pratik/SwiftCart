@@ -4,11 +4,6 @@
     <x-slot name="title">Users</x-slot>
 
     <div class="p-4 sm:p-6">
-        <div class="mb-6">
-            <p class="text-sm font-medium text-[#3d6f6d]">User management</p>
-            <h1 class="text-2xl font-bold text-gray-900">Users</h1>
-            <p class="mt-1 text-sm text-gray-600">Search and view registered users.</p>
-        </div>
 
         <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

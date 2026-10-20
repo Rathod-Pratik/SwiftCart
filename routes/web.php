@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
     Route::view('/category/details', 'admin.Category.Details')->name('admin.category.details');
     Route::view('/product', 'admin.Product.Product')->name('admin.product');
     Route::view('/product/details', 'admin.Product.Details')->name('admin.product.details');
-    Route::view('/rating', 'admin.Rating')->name('admin.rating');
+    Route::view('/rating', 'admin.Rating.Rating')->name('admin.rating');
     Route::view('/user', 'admin.User.User')->name('admin.user');
     Route::view('/user/details', 'admin.User.Details')->name('admin.user.details');
     Route::view('/vendor', 'admin.Vendor.Vendor')->name('admin.vendor');

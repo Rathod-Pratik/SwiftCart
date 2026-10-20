@@ -5,9 +5,15 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    Storage::fake('public');
+});
 
 // ---------------- INDEX ----------------
 
@@ -56,7 +62,7 @@ test('store returns validation errors when required fields are missing', functio
             'name',
             'description',
             'slug',
-            'icon',
+            'image',
             'status',
         ]);
 });
@@ -71,7 +77,7 @@ test('store rejects a duplicate slug', function () {
         'name' => 'New Electronics',
         'description' => 'A category',
         'slug' => 'electronics', // already taken
-        'icon' => 'icon-electronics',
+        'image' => UploadedFile::fake()->image('electronics.jpg'),
         'status' => 'active',
     ]);
 
@@ -88,7 +94,7 @@ test('store rejects an invalid status value', function () {
         'name' => 'Test Category',
         'description' => 'A category',
         'slug' => 'test-category',
-        'icon' => 'icon-test',
+        'image' => UploadedFile::fake()->image('test.jpg'),
         'status' => 'archived', // not in allowed list
     ]);
 
@@ -105,12 +111,12 @@ test('store rejects fields exceeding max length', function () {
         'name' => str_repeat('a', 256),
         'description' => str_repeat('b', 256),
         'slug' => 'valid-slug',
-        'icon' => str_repeat('c', 101),
+        'image' => UploadedFile::fake()->image('test.jpg'),
         'status' => 'active',
     ]);
 
     $response->assertStatus(422)
-        ->assertJsonValidationErrors(['name', 'description', 'icon']);
+        ->assertJsonValidationErrors(['name', 'description']);
 });
 
 test('store succeeds with valid data', function () {
@@ -122,7 +128,7 @@ test('store succeeds with valid data', function () {
         'name' => 'Electronics',
         'description' => 'Gadgets and devices',
         'slug' => 'electronics',
-        'icon' => 'icon-electronics',
+        'image' => UploadedFile::fake()->image('electronics.jpg'),
         'status' => 'active',
     ]);
 
@@ -146,7 +152,7 @@ test('a non-admin user cannot create a category', function () {
         'name' => 'Electronics',
         'description' => 'Gadgets and devices',
         'slug' => 'electronics',
-        'icon' => 'icon-electronics',
+        'image' => UploadedFile::fake()->image('electronics.jpg'),
         'status' => 'active',
     ]);
 

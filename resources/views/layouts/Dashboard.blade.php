@@ -9,15 +9,17 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
-<body class="bg-white">
+<body class="min-h-screen bg-[#F5F7F4] antialiased">
 
     <x-navbar variant="admin" />
 
     <x-Sidebar variant="admin" />
 
-    <main class="lg:ml-64 pt-20  p-3">
-        <div class="rounded-lg bg-[#edf2f7] min-h-screen">
+    <main class="min-h-screen pt-20 lg:ml-64">
+        <div class="min-h-[calc(100vh-5rem)] p-3 sm:p-5">
+            <div class="min-h-[calc(100vh-7rem)] rounded-2xl border border-[#8cb920]/20 bg-white shadow-sm">
             @yield('content')
+            </div>
         </div>
     </main>
 

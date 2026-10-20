@@ -4,17 +4,12 @@
     <x-slot name="title">Products</x-slot>
 
     <div class="p-4 sm:p-6">
-        <div class="mb-6">
-            <p class="text-sm font-medium text-[#3d6f6d]">Catalog management</p>
-            <h1 class="text-2xl font-bold text-gray-900">Products</h1>
-            <p class="mt-1 text-sm text-gray-600">Browse and inspect every product in the catalog.</p>
-        </div>
-
         <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <label class="block w-full sm:max-w-sm" for="product-search">
                     <span class="sr-only">Search products</span>
-                    <input id="product-search" type="search" placeholder="Search name or description..." class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
+                    <input id="product-search" type="search" placeholder="Search name or description..."
+                        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
                 </label>
                 <p id="product-count" class="text-sm text-gray-500"></p>
             </div>
@@ -33,11 +28,18 @@
                             <th class="px-4 py-3 text-right font-semibold">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="product-list" class="divide-y divide-gray-100"></tbody>
+                    <tbody id="product-list" class="divide-y divide-gray-100">
+                        <tr id="product-loading">
+                            <td colspan="7" class="px-4 py-12 text-center">
+                                <x-Loading />
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <div id="product-empty" class="hidden py-12 text-center text-sm text-gray-500">No products found.</div>
-            <div class="mt-5 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div
+                class="mt-5 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <p id="pagination-summary" class="text-sm text-gray-500"></p>
                 <div id="pagination" class="flex flex-wrap gap-2"></div>
             </div>
@@ -51,6 +53,7 @@
                 const detailsUrl = @json(route('admin.product.details'));
                 const list = document.querySelector('#product-list');
                 const empty = document.querySelector('#product-empty');
+                const loading = document.querySelector('#product-loading');
                 const status = document.querySelector('#product-status-message');
                 const search = document.querySelector('#product-search');
                 const count = document.querySelector('#product-count');
@@ -59,8 +62,12 @@
                 let timer;
 
                 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
-                }[character]));
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;',
+                } [character]));
                 const money = (value) => `₹${Number(value ?? 0).toFixed(2)}`;
                 const showError = (text) => {
                     status.textContent = text;
@@ -73,7 +80,8 @@
                         button.type = 'button';
                         button.textContent = page;
                         button.disabled = page === meta.current_page;
-                        button.className = `rounded-lg px-3 py-2 text-sm font-semibold ${button.disabled ? 'bg-[#3d6f6d] text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`;
+                        button.className =
+                            `rounded-lg px-3 py-2 text-sm font-semibold ${button.disabled ? 'bg-[#3d6f6d] text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`;
                         button.addEventListener('click', () => loadProducts(page));
                         pagination.append(button);
                     }
@@ -97,13 +105,24 @@
                 };
                 const loadProducts = async (page = 1) => {
                     status.classList.add('hidden');
-                    list.innerHTML = '<tr><td colspan="7" class="px-4 py-12 text-center text-sm text-gray-500">Loading products...</td></tr>';
-                    const params = new URLSearchParams({ page, per_page: 10 });
+                    empty.classList.add('hidden');
+                    loading.classList.remove('hidden');
+
+                    list.querySelectorAll('tr:not(#product-loading)').forEach((row) => row.remove());
+                    const params = new URLSearchParams({
+                        page,
+                        per_page: 10
+                    });
                     if (search.value.trim()) params.set('search', search.value.trim());
                     try {
-                        const response = await fetch(`${apiUrl}?${params}`, { headers: { Accept: 'application/json' } });
+                        const response = await fetch(`${apiUrl}?${params}`, {
+                            headers: {
+                                Accept: 'application/json'
+                            }
+                        });
                         const payload = await response.json();
-                        if (!response.ok || !payload.success) throw new Error(payload.message || 'Unable to load products.');
+                        if (!response.ok || !payload.success) throw new Error(payload.message ||
+                            'Unable to load products.');
                         renderProducts(payload.data.data, payload.data);
                     } catch (error) {
                         list.innerHTML = '';
