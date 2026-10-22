@@ -5,30 +5,70 @@ use App\Http\Controllers\VendorRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('home.index');
+    return view('customer.home.index');
 })->name('home');
 
 Route::get('/product', function () {
-    return view('product.index');
+    return view('customer.product.index');
 })->name('product');
 
 Route::get('/about', function () {
-    return view('about.index');
+    return view('customer.about.index');
 })->name('about');
 
 Route::get('/contact', function () {
-    return view('contact.index');
+    return view('customer.contact.index');
 })->name('contact');
 
 Route::get('/login', function () {
-    return view('auth.login');
+    return view('customer.auth.login');
 })->name('login');
+
+Route::get('/cart', function () {
+    return view('customer.cart.index');
+})->name('cart');
+
+Route::get('/wishlist', function () {
+    return view('customer.wishlist.index');
+})->name('wishlist');
+
+Route::get('/profile', function () {
+    /** @var \App\Models\User $user */
+    $user = auth()->user();
+
+    if ($user->isAdmin()) {
+        return redirect()->route('admin.profile');
+    }
+
+    if ($user->isVendor()) {
+        return redirect()->route('vendor.profile');
+    }
+
+    $orders = \App\Models\Order::query()
+        ->where('user_id', $user->id)
+        ->with('items.product')
+        ->latest()
+        ->get();
+
+    $stats = [
+        'orders_count' => $orders->count(),
+        'wishlist_count' => \App\Models\Wishlist::where('user_id', $user->id)->count(),
+        'cart_count' => \App\Models\Cart::where('user_id', $user->id)->count(),
+        'reviews_count' => \App\Models\Review::where('user_id', $user->id)->count(),
+    ];
+
+    return view('customer.profile.index', compact('user', 'orders', 'stats'));
+})->middleware(['auth'])->name('profile');
+
+Route::get('/logout', [AuthController::class, 'logout'])
+    ->middleware(['auth'])
+    ->name('logout');
 
 Route::post('/login', [AuthController::class, 'login'])
     ->middleware(['guest', 'throttle:6,1']);
 
 Route::get('/register', function () {
-    return view('auth.register');
+    return view('customer.auth.register');
 })->name('register');
 
 Route::post('/register', [AuthController::class, 'signup'])
@@ -58,8 +98,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
     Route::view('/user/details', 'admin.User.Details')->name('admin.user.details');
     Route::view('/vendor', 'admin.Vendor.Vendor')->name('admin.vendor');
     Route::view('/vendor/details', 'admin.Vendor.Details')->name('admin.vendor.details');
+    Route::view('/vendor/request', 'admin.Vendor.Request')->name('admin.vendor.request');
+    Route::view('/vendor/request/details', 'admin.Vendor.RequestDetails')->name('admin.vendor.request.details');
     Route::view('/query', 'admin.Query.Query')->name('admin.query');
     Route::view('/query/details', 'admin.Query.Details')->name('admin.query.details');
+    Route::view('/profile', 'admin.Profile.Profile')->name('admin.profile');
+    Route::view('/notification', 'admin.Notification.Notification')->name('admin.notification');
     Route::redirect('/contact', '/admin/query')->name('admin.contact');
 });
 

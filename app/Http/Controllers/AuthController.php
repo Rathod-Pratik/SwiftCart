@@ -25,9 +25,10 @@ class AuthController extends Controller
      */
     public function login(Request $request): JsonResponse|RedirectResponse
     {
-        $credentials = $request->validate([
+        $validatedData = $request->validate([
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
+            'remember' => 'nullable|boolean',
         ], [
             'email.required' => 'Email address is required.',
             'email.email' => 'Please enter a valid email address.',
@@ -36,7 +37,14 @@ class AuthController extends Controller
             'password.min' => 'Password must be at least 8 characters long.',
         ]);
 
-        if (! Auth::attempt($credentials)) {
+        $credentials = [
+            'email' => $validatedData['email'],
+            'password' => $validatedData['password'],
+        ];
+
+        $remember = $request->boolean('remember');
+
+        if (! Auth::attempt($credentials, $remember)) {
             if (! $request->expectsJson()) {
                 return back()->withErrors([
                     'email' => 'Invalid credentials.',

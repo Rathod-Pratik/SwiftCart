@@ -1,4 +1,3 @@
-```blade
 @php
     $active = 'bg-[#F4C95D]/15 text-[#F4C95D] shadow-lg shadow-black/10';
     $inactive = 'text-[#E1EBE8] hover:bg-[#F5F7F4]/10 hover:text-[#F4C95D] hover:translate-x-1';
@@ -18,6 +17,8 @@
                     ['route' => 'admin.vendor', 'label' => 'Vendors', 'icon' => 'store'],
                     ['route' => 'admin.rating', 'label' => 'Ratings', 'icon' => 'star'],
                     ['route' => 'admin.query*', 'label' => 'Queries', 'icon' => 'message-square'],
+                    // ['route' => 'admin.notification', 'label' => 'Notifications', 'icon' => 'bell'],
+                    // ['route' => 'admin.profile', 'label' => 'Profile', 'icon' => 'user-round'],
                 ];
             @endphp
 
@@ -52,4 +53,3 @@
         </ul>
     </div>
 </aside>
-```

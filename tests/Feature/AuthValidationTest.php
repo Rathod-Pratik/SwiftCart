@@ -213,3 +213,21 @@ test('update profile hides upload exceptions from the client', function () {
             'message' => 'private storage failure',
         ]);
 });
+
+test('login with remember me sets remember token and authenticates', function () {
+    $user = User::factory()->create([
+        'email' => 'rememberme@example.com',
+        'password' => 'Password123!',
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => 'rememberme@example.com',
+        'password' => 'Password123!',
+        'remember' => '1',
+    ]);
+
+    $this->assertAuthenticatedAs($user);
+    $response->assertCookie(\Illuminate\Support\Facades\Auth::guard()->getRecallerName());
+});
+

@@ -1,4 +1,3 @@
-```blade
 @if (session('success') || session('error') || session('warning') || session('info'))
     @php
         $type = collect(['success', 'error', 'warning', 'info'])
@@ -55,4 +54,3 @@
         });
     </script>
 @endif
-```

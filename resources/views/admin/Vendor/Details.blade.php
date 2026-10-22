@@ -17,8 +17,6 @@
                 Back to Vendors
             </a>
         </div>
-
-        <div id="vendor-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
         <div id="vendor-loading" class="rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">Loading vendor details...</div>
 
         <section id="vendor-details" class="hidden max-w-5xl rounded-xl bg-white p-5 shadow-sm sm:p-8">

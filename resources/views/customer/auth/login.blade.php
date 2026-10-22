@@ -34,6 +34,13 @@
                                     <p id="password-error" class="hidden mt-2 text-sm text-red-600"></p>
                                 @enderror
                             </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <label for="remember" class="flex items-center gap-2 cursor-pointer select-none text-xs text-gray-600 hover:text-gray-900">
+                                    <input id="remember" name="remember" type="checkbox" value="1" {{ old('remember') ? 'checked' : '' }}
+                                        class="h-4 w-4 rounded border-gray-300 text-[#d09523] focus:ring-[#d09523] cursor-pointer">
+                                    <span class="font-medium">Remember me</span>
+                                </label>
+                            </div>
                             <p id="login-error" class="hidden mt-4 text-sm text-red-600" role="alert"></p>
                             <x-button type="submit" class="mt-5 w-full py-4">
                                 Login

@@ -13,7 +13,7 @@
                            placeholder="Search by name, email, or company..."
                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
                 </label>
-                   <a href="{{ route('admin.category.create') }}"
+                   <a href="{{ route('admin.vendor.request') }}"
                         class="inline-flex items-center justify-center rounded-lg bg-[#3d6f6d] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#315b59]">
                         Request
                     </a>

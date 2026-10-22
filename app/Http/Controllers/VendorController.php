@@ -22,7 +22,7 @@ class VendorRegistrationController extends Controller
         $user = $request->user();
         $vendor = $user ? $user->vendor : null;
 
-        return view('auth.become-vendor', [
+        return view('customer.auth.become-vendor', [
             'vendor' => $vendor,
         ]);
     }
@@ -59,11 +59,9 @@ class VendorRegistrationController extends Controller
 
         $documentPath = null;
         if ($request->hasFile('verification_document')) {
-            // Store sensitive verification documents securely on local private disk
             $documentPath = $request->file('verification_document')->store('verification_documents', 'local');
         }
 
-        // Always save with status 'pending' by default. Users cannot set status or self-promote to admin.
         $vendor = Vendor::create([
             'user_id' => $user->id,
             'store_name' => $validated['store_name'],
@@ -92,7 +90,7 @@ class VendorRegistrationController extends Controller
     /**
      * Get the current user's vendor application.
      */
-    public function currentApplication(Request $request): JsonResponse
+    public function myApplication(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -115,7 +113,7 @@ class VendorRegistrationController extends Controller
     /**
      * Admin: List vendor applications with filtering and pagination.
      */
-    public function indexApplications(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'page' => ['nullable', 'integer', 'min:1'],
@@ -154,7 +152,7 @@ class VendorRegistrationController extends Controller
     /**
      * Admin: Show a vendor application.
      */
-    public function showApplication(Vendor $vendor): JsonResponse
+    public function show(Vendor $vendor): JsonResponse
     {
         $vendor->load('user');
 
@@ -196,7 +194,7 @@ class VendorRegistrationController extends Controller
     /**
      * Securely download or view the vendor verification document.
      */
-    public function downloadDocument(Vendor $vendor): StreamedResponse|JsonResponse
+    public function downloadVerificationDocument(Vendor $vendor): StreamedResponse|JsonResponse
     {
         Gate::authorize('downloadDocument', $vendor);
 
@@ -207,3 +205,4 @@ class VendorRegistrationController extends Controller
         return Storage::disk('local')->download($vendor->verification_document);
     }
 }
+ 
