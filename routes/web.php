@@ -1,7 +1,13 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\VendorRegistrationController;
+use App\Http\Controllers\VendorController;
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\Review;
+use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -33,18 +39,18 @@ Route::get('/wishlist', function () {
 })->name('wishlist');
 
 Route::get('/profile', function () {
-    /** @var \App\Models\User $user */
+    /** @var User $user */
     $user = auth()->user();
 
     if ($user->isAdmin()) {
-        return redirect()->route('admin.profile');
+        return redirect()->route('admin.Profile.Profile');
     }
 
     if ($user->isVendor()) {
         return redirect()->route('vendor.profile');
     }
 
-    $orders = \App\Models\Order::query()
+    $orders = Order::query()
         ->where('user_id', $user->id)
         ->with('items.product')
         ->latest()
@@ -52,9 +58,9 @@ Route::get('/profile', function () {
 
     $stats = [
         'orders_count' => $orders->count(),
-        'wishlist_count' => \App\Models\Wishlist::where('user_id', $user->id)->count(),
-        'cart_count' => \App\Models\Cart::where('user_id', $user->id)->count(),
-        'reviews_count' => \App\Models\Review::where('user_id', $user->id)->count(),
+        'wishlist_count' => Wishlist::where('user_id', $user->id)->count(),
+        'cart_count' => Cart::where('user_id', $user->id)->count(),
+        'reviews_count' => Review::where('user_id', $user->id)->count(),
     ];
 
     return view('customer.profile.index', compact('user', 'orders', 'stats'));
@@ -75,12 +81,12 @@ Route::post('/register', [AuthController::class, 'signup'])
     ->middleware(['guest', 'throttle:6,1']);
 
 // Vendor Registration Flow
-Route::get('/become-seller', [VendorRegistrationController::class, 'create'])->name('vendor.register');
+Route::get('/become-seller', [VendorController::class, 'create'])->name('vendor.register');
 Route::get('/become-vendor', fn () => redirect()->route('vendor.register'));
-Route::post('/become-seller', [VendorRegistrationController::class, 'store'])
+Route::post('/become-seller', [VendorController::class, 'store'])
     ->middleware(['auth', 'throttle:6,1'])
     ->name('vendor.register.post');
-Route::post('/become-vendor', [VendorRegistrationController::class, 'store'])
+Route::post('/become-vendor', [VendorController::class, 'store'])
     ->middleware(['auth', 'throttle:6,1']);
 
 Route::view('/admin/category/create', 'admin.Category.Create')
@@ -88,7 +94,7 @@ Route::view('/admin/category/create', 'admin.Category.Create')
     ->name('admin.category.create');
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(function () {
-    Route::view('/dashboard', 'admin.Dashboard.Dashboard')->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::view('/category', 'admin.Category.Category')->name('admin.category');
     Route::view('/category/details', 'admin.Category.Details')->name('admin.category.details');
     Route::view('/product', 'admin.Product.Product')->name('admin.product');

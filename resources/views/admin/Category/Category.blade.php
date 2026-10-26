@@ -124,10 +124,13 @@
                     renderPagination(meta);
                 };
 
+                const showLoading = () => {
+                    list.innerHTML = '<tr id="category-loading"><td colspan="5" class="px-4 py-12 text-center"><div class="flex items-center justify-center py-4"><div class="w-12 h-12 border-[3px] border-[#64883e] border-t-transparent rounded-full animate-spin"></div></div></td></tr>';
+                };
+
                 const loadCategories = async (page = 1) => {
                     hideStatus();
-                    loading.classList.remove('hidden');
-                     list.querySelectorAll('tr:not(#category-loading)').forEach((row) => row.remove());
+                    showLoading();
                     currentPage = page;
                     
                     const params = new URLSearchParams({

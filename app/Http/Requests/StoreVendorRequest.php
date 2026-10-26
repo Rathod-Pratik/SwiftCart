@@ -16,6 +16,19 @@ class StoreVendorRequest extends FormRequest
     }
 
     /**
+     * Prepare inputs for validation to handle backward compatibility.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('business_name') && ! $this->has('store_name')) {
+            $this->merge(['store_name' => $this->input('business_name')]);
+        }
+        if ($this->has('address') && ! $this->has('business_address')) {
+            $this->merge(['business_address' => $this->input('address')]);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -32,6 +45,20 @@ class StoreVendorRequest extends FormRequest
             'tax_identification_number' => ['nullable', 'string', 'max:100'],
             'logo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'verification_document' => ['nullable', 'file', 'mimes:pdf,jpeg,png,jpg', 'max:5120'],
+
+            // 3. Identity Verification & KYC
+            'id_document_type' => ['nullable', 'string', 'max:100'],
+            'id_number' => ['nullable', 'string', 'max:100'],
+            'id_document_image' => ['nullable', 'file', 'mimes:pdf,jpeg,png,jpg,webp', 'max:5120'],
+            'business_certificate_document' => ['nullable', 'file', 'mimes:pdf,jpeg,png,jpg,webp', 'max:5120'],
+
+            // 4. Shipping & Warehouse Logistics
+            'pickup_address' => ['nullable', 'string', 'max:500'],
+            'pickup_city' => ['nullable', 'string', 'max:100'],
+            'pickup_state' => ['nullable', 'string', 'max:100'],
+            'pickup_pincode' => ['nullable', 'string', 'max:20'],
+            'support_email' => ['nullable', 'email', 'max:150'],
+            'alternate_phone' => ['nullable', 'string', 'max:20'],
         ];
     }
 

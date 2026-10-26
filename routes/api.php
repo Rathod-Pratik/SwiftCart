@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
@@ -26,10 +27,11 @@ Route::middleware('web')->group(function (): void {
     Route::get('/reviews', [ReviewController::class, 'index']);
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {
+        Route::get('/admin/dashboard/stats', [AdminDashboardController::class, 'stats']);
         Route::get('/users', [AuthController::class, 'indexUsers']);
         Route::get('/users/{id}', [AuthController::class, 'getUserById']);
-        Route::get('/vendors', [VendorController::class, 'indexVendors']);
-        Route::get('/vendors/{id}', [VendorController::class, 'getVendorById']);
+        Route::get('/vendors', [AuthController::class, 'indexVendors']);
+        Route::get('/vendors/{id}', [AuthController::class, 'getVendorById']);
         Route::get('/vendor-applications', [VendorController::class, 'index']);
         Route::get('/vendor-applications/{vendor}', [VendorController::class, 'show']);
         Route::patch('/vendor-applications/{vendor}/status', [VendorController::class, 'updateStatus']);
@@ -80,6 +82,7 @@ Route::middleware('web')->group(function (): void {
         Route::post('/vendors/register', [VendorController::class, 'store']);
         Route::get('/vendor-application', [VendorController::class, 'myApplication']);
         Route::get('/vendors/{vendor}/verification-document', [VendorController::class, 'downloadVerificationDocument']);
+        Route::get('/vendors/{vendor}/kyc-document/{type}', [VendorController::class, 'downloadKycDocument']);
         Route::get('/profile', [AuthController::class, 'getProfile']);
         Route::patch('/profile', [AuthController::class, 'updateProfile']);
         Route::delete('/profile', [AuthController::class, 'deleteAccount']);

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable([
     'user_id',
     'store_name',
+    'business_name',
     'phone',
     'business_address',
     'business_type',
@@ -21,6 +22,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'business_registration_number',
     'tax_identification_number',
     'verification_document',
+    'id_document_type',
+    'id_number',
+    'id_document_image',
+    'business_certificate_document',
+    'pickup_address',
+    'pickup_city',
+    'pickup_state',
+    'pickup_pincode',
+    'support_email',
+    'alternate_phone',
 ])]
 class Vendor extends Model
 {
@@ -50,5 +61,25 @@ class Vendor extends Model
     public function isRejected(): bool
     {
         return $this->status === 'rejected';
+    }
+
+    public function getBusinessNameAttribute(): ?string
+    {
+        return $this->attributes['store_name'] ?? null;
+    }
+
+    public function setBusinessNameAttribute(?string $value): void
+    {
+        $this->attributes['store_name'] = $value;
+    }
+
+    public function getAddressAttribute(): ?string
+    {
+        return $this->attributes['business_address'] ?? null;
+    }
+
+    public function setAddressAttribute(?string $value): void
+    {
+        $this->attributes['business_address'] = $value;
     }
 }

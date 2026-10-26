@@ -30,7 +30,13 @@
                             <th class="px-4 py-3 text-right font-semibold">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="user-list" class="divide-y divide-gray-100"></tbody>
+                    <tbody id="user-list" class="divide-y divide-gray-100">
+                        <tr id="user-loading">
+                            <td colspan="5" class="px-4 py-12 text-center">
+                                <x-Loading />
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -109,7 +115,7 @@
 
                 const loadUsers = async (page = 1) => {
                     status.classList.add('hidden');
-                    list.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">Loading users...</td></tr>';
+                    list.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center"><div class="flex items-center justify-center py-4"><div class="w-10 h-10 border-[3px] border-[#64883e] border-t-transparent rounded-full animate-spin"></div></div></td></tr>';
                     const params = new URLSearchParams({ page, per_page: 10 });
                     if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
 

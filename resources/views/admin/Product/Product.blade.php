@@ -103,12 +103,14 @@
                     count.textContent = `${meta.total} product${meta.total === 1 ? '' : 's'}`;
                     renderPagination(meta);
                 };
+                const showLoading = () => {
+                    list.innerHTML = '<tr id="product-loading"><td colspan="7" class="px-4 py-12 text-center"><div class="flex items-center justify-center py-4"><div class="w-12 h-12 border-[3px] border-[#64883e] border-t-transparent rounded-full animate-spin"></div></div></td></tr>';
+                };
                 const loadProducts = async (page = 1) => {
                     status.classList.add('hidden');
                     empty.classList.add('hidden');
-                    loading.classList.remove('hidden');
+                    showLoading();
 
-                    list.querySelectorAll('tr:not(#product-loading)').forEach((row) => row.remove());
                     const params = new URLSearchParams({
                         page,
                         per_page: 10
@@ -123,7 +125,9 @@
                         const payload = await response.json();
                         if (!response.ok || !payload.success) throw new Error(payload.message ||
                             'Unable to load products.');
-                        renderProducts(payload.data.data, payload.data);
+                        const items = payload.data?.data ?? [];
+                        const meta = payload.data ?? { total: items.length, current_page: 1, last_page: 1 };
+                        renderProducts(items, meta);
                     } catch (error) {
                         list.innerHTML = '';
                         empty.classList.add('hidden');

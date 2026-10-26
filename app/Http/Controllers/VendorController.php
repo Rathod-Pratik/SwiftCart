@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class VendorRegistrationController extends Controller
+class VendorController extends Controller
 {
     /**
      * Show the vendor registration form or current status.
@@ -46,34 +46,53 @@ class VendorRegistrationController extends Controller
             }
 
             return back()->withErrors([
-                'store_name' => 'You have already submitted a vendor application.',
+                'business_name' => 'You have already submitted a vendor application.',
             ]);
         }
 
         $validated = $request->validated();
 
-        $logoPath = null;
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('vendor-logos', 'public');
-        }
+        $logoPath = $request->hasFile('logo')
+            ? $request->file('logo')->store('vendor-logos', 'public')
+            : null;
 
-        $documentPath = null;
-        if ($request->hasFile('verification_document')) {
-            $documentPath = $request->file('verification_document')->store('verification_documents', 'local');
-        }
+        $verificationDocPath = $request->hasFile('verification_document')
+            ? $request->file('verification_document')->store('verification_documents', 'local')
+            : null;
+
+        $idDocImagePath = $request->hasFile('id_document_image')
+            ? $request->file('id_document_image')->store('vendor-kyc-documents', 'local')
+            : null;
+
+        $bizCertDocPath = $request->hasFile('business_certificate_document')
+            ? $request->file('business_certificate_document')->store('vendor-kyc-documents', 'local')
+            : null;
+
+        $storeName = $validated['store_name'] ?? $validated['business_name'] ?? 'My Store';
+        $businessAddress = $validated['business_address'] ?? $validated['address'] ?? '';
 
         $vendor = Vendor::create([
             'user_id' => $user->id,
-            'store_name' => $validated['store_name'],
+            'store_name' => $storeName,
             'phone' => $validated['phone'],
-            'business_address' => $validated['business_address'],
+            'business_address' => $businessAddress,
             'business_type' => $validated['business_type'],
             'status' => 'pending',
             'description' => $validated['description'] ?? null,
-            'logo' => $logoPath,
             'business_registration_number' => $validated['business_registration_number'] ?? null,
             'tax_identification_number' => $validated['tax_identification_number'] ?? null,
-            'verification_document' => $documentPath,
+            'logo' => $logoPath,
+            'verification_document' => $verificationDocPath,
+            'id_document_type' => $validated['id_document_type'] ?? null,
+            'id_number' => $validated['id_number'] ?? null,
+            'id_document_image' => $idDocImagePath,
+            'business_certificate_document' => $bizCertDocPath,
+            'pickup_address' => $validated['pickup_address'] ?? null,
+            'pickup_city' => $validated['pickup_city'] ?? null,
+            'pickup_state' => $validated['pickup_state'] ?? null,
+            'pickup_pincode' => $validated['pickup_pincode'] ?? null,
+            'support_email' => $validated['support_email'] ?? null,
+            'alternate_phone' => $validated['alternate_phone'] ?? null,
         ]);
 
         if ($request->expectsJson()) {
@@ -134,6 +153,9 @@ class VendorRegistrationController extends Controller
                     $subQuery->where('store_name', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
                         ->orWhere('business_type', 'like', "%{$search}%")
+                        ->orWhere('id_document_type', 'like', "%{$search}%")
+                        ->orWhere('id_number', 'like', "%{$search}%")
+                        ->orWhere('pickup_city', 'like', "%{$search}%")
                         ->orWhereHas('user', function ($userQuery) use ($search) {
                             $userQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
@@ -204,5 +226,25 @@ class VendorRegistrationController extends Controller
 
         return Storage::disk('local')->download($vendor->verification_document);
     }
+
+    /**
+     * Securely download or view any vendor KYC / registration document.
+     */
+    public function downloadKycDocument(Vendor $vendor, string $type): StreamedResponse|JsonResponse
+    {
+        Gate::authorize('downloadDocument', $vendor);
+
+        $path = match ($type) {
+            'id_document' => $vendor->id_document_image,
+            'business_certificate' => $vendor->business_certificate_document,
+            'verification_document' => $vendor->verification_document,
+            default => null,
+        };
+
+        if (! $path || ! Storage::disk('local')->exists($path)) {
+            return response()->json(['message' => 'Document file not found.'], 404);
+        }
+
+        return Storage::disk('local')->download($path);
+    }
 }
- 

@@ -33,7 +33,13 @@
                             <th class="px-4 py-3 text-right font-semibold">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="vendor-list" class="divide-y divide-gray-100"></tbody>
+                    <tbody id="vendor-list" class="divide-y divide-gray-100">
+                        <tr id="vendor-loading">
+                            <td colspan="5" class="px-4 py-12 text-center">
+                                <x-Loading class="!static !inset-auto !bg-transparent py-2" />
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -55,9 +61,9 @@
                 const emptyState = document.querySelector('#vendor-empty');
                 const pagination = document.querySelector('#pagination');
                 const status = document.querySelector('#vendor-status');
-                const count = document.querySelector('#vendor-count');
                 const summary = document.querySelector('#pagination-summary');
                 const searchInput = document.querySelector('#vendor-search');
+                const loadingRow = document.getElementById('vendor-loading');
                 let searchTimer;
 
                 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -69,6 +75,10 @@
                     status.className = 'mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700';
                 };
 
+                const clearDataRows = () => {
+                    list.querySelectorAll('tr:not(#vendor-loading)').forEach((row) => row.remove());
+                };
+
                 const renderPagination = (meta) => {
                     pagination.innerHTML = '';
                     for (let page = 1; page <= meta.last_page; page += 1) {
@@ -76,7 +86,7 @@
                         button.type = 'button';
                         button.textContent = page;
                         button.disabled = page === meta.current_page;
-                        button.className = `rounded-lg px-3 py-2 text-sm font-semibold ${button.disabled ? 'bg-[#3d6f6d] text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50'}`;
+                        button.className = `rounded-lg px-3 py-2 text-sm font-semibold ${button.disabled ? 'bg-[#3d6f6d] text-white' : 'border border-gray-300 text-gray-700 hover:bg-gray-50 transition'}`;
                         button.addEventListener('click', () => loadVendors(page));
                         pagination.append(button);
                     }
@@ -84,7 +94,18 @@
                 };
 
                 const renderVendors = (vendors, meta) => {
-                    list.innerHTML = vendors.map((vendor) => `
+                    clearDataRows();
+                    loadingRow.classList.add('hidden');
+
+                    if (!vendors.length) {
+                        emptyState.classList.remove('hidden');
+                        renderPagination(meta);
+                        return;
+                    }
+
+                    emptyState.classList.add('hidden');
+
+                    const rowsHtml = vendors.map((vendor) => `
                         <tr class="text-gray-700">
                             <td class="px-4 py-4">
                                 <p class="font-semibold text-gray-900">${escapeHtml(vendor.name)}</p>
@@ -99,21 +120,27 @@
                             </td>
                             <td class="px-4 py-4 text-right">
                                 <a href="${detailsUrl}?_id=${encodeURIComponent(vendor.id)}"
-                                   class="inline-flex rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">
+                                   class="inline-flex rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white transition">
                                     Details
                                 </a>
                             </td>
                         </tr>
                     `).join('');
-                    emptyState.classList.toggle('hidden', vendors.length > 0);
-                    count.textContent = `${meta.total} vendor${meta.total === 1 ? '' : 's'}`;
+
+                    list.insertAdjacentHTML('beforeend', rowsHtml);
                     renderPagination(meta);
                 };
 
                 const loadVendors = async (page = 1) => {
                     status.classList.add('hidden');
-                    list.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">Loading vendors...</td></tr>';
-                    const params = new URLSearchParams({ page, per_page: 10 });
+                    emptyState.classList.add('hidden');
+                    clearDataRows();
+                    loadingRow.classList.remove('hidden');
+
+                    const params = new URLSearchParams({
+                        page: String(page),
+                        per_page: '10',
+                    });
                     if (searchInput.value.trim()) params.set('search', searchInput.value.trim());
 
                     try {
@@ -122,7 +149,8 @@
                         if (!response.ok || !payload.success) throw new Error(payload.message || 'Unable to load vendors.');
                         renderVendors(payload.data.data, payload.data);
                     } catch (error) {
-                        list.innerHTML = '';
+                        clearDataRows();
+                        loadingRow.classList.add('hidden');
                         emptyState.classList.add('hidden');
                         showError(error.message);
                     }

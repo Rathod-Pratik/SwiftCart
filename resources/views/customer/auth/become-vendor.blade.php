@@ -158,8 +158,57 @@
                         </div>
 
                         <div class="border-b border-gray-100 pt-4 pb-2">
-                            <h2 class="text-lg font-semibold text-gray-900">Legal & Verification</h2>
-                            <p class="text-xs text-gray-500">Provide legal numbers and documents when applicable.</p>
+                            <h2 class="text-lg font-semibold text-gray-900">Identity Verification & KYC (Compliance & Fraud Prevention)</h2>
+                            <p class="text-xs text-gray-500">Submit your government identity proof and registration certificate for quick verification.</p>
+                        </div>
+
+                        {{-- ID Document Type & ID/PAN Number --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="id_document_type" class="block text-sm font-medium text-gray-700">Identity Document Type <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <select id="id_document_type" name="id_document_type"
+                                        class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none bg-white">
+                                    <option value="">Select ID Type</option>
+                                    <option value="Aadhaar Card" {{ old('id_document_type') === 'Aadhaar Card' ? 'selected' : '' }}>Aadhaar Card</option>
+                                    <option value="PAN Card" {{ old('id_document_type') === 'PAN Card' ? 'selected' : '' }}>PAN Card</option>
+                                    <option value="Passport" {{ old('id_document_type') === 'Passport' ? 'selected' : '' }}>Passport</option>
+                                    <option value="Voter ID" {{ old('id_document_type') === 'Voter ID' ? 'selected' : '' }}>Voter ID</option>
+                                    <option value="Driving License" {{ old('id_document_type') === 'Driving License' ? 'selected' : '' }}>Driving License</option>
+                                </select>
+                                @error('id_document_type')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="id_number" class="block text-sm font-medium text-gray-700">ID / PAN Number <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <input type="text" id="id_number" name="id_number" value="{{ old('id_number') }}" placeholder="e.g. ABCDE1234F or 12-digit Aadhaar"
+                                       class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                                @error('id_number')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- ID Document Upload & Business Certificate Document --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="id_document_image" class="block text-sm font-medium text-gray-700">ID Document Upload <span class="text-gray-400 font-normal">(Photo/PDF, max 5MB)</span></label>
+                                <input type="file" id="id_document_image" name="id_document_image" accept=".pdf,image/jpeg,image/png,image/webp"
+                                       class="mt-1 block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#204d4f]/10 file:text-[#204d4f] hover:file:bg-[#204d4f]/20">
+                                @error('id_document_image')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="business_certificate_document" class="block text-sm font-medium text-gray-700">GST / Business Certificate Document <span class="text-gray-400 font-normal">(PDF/Image)</span></label>
+                                <input type="file" id="business_certificate_document" name="business_certificate_document" accept=".pdf,image/jpeg,image/png,image/webp"
+                                       class="mt-1 block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#204d4f]/10 file:text-[#204d4f] hover:file:bg-[#204d4f]/20">
+                                @error('business_certificate_document')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
 
                         {{-- Registration & Tax numbers --}}
@@ -195,10 +244,74 @@
                             </div>
 
                             <div>
-                                <label for="verification_document" class="block text-sm font-medium text-gray-700">Verification Document <span class="text-gray-400 font-normal">(PDF, JPG, PNG, max 5MB)</span></label>
+                                <label for="verification_document" class="block text-sm font-medium text-gray-700">Other Verification Document <span class="text-gray-400 font-normal">(PDF, JPG, PNG, max 5MB)</span></label>
                                 <input type="file" id="verification_document" name="verification_document" accept=".pdf,image/jpeg,image/png"
                                        class="mt-1 block w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#204d4f]/10 file:text-[#204d4f] hover:file:bg-[#204d4f]/20">
                                 @error('verification_document')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Shipping & Warehouse Logistics Section --}}
+                        <div class="border-b border-gray-100 pt-4 pb-2">
+                            <h2 class="text-lg font-semibold text-gray-900">Shipping & Warehouse Logistics</h2>
+                            <p class="text-xs text-gray-500">Pickup address for delivery couriers and dedicated customer service contacts.</p>
+                        </div>
+
+                        <div>
+                            <label for="pickup_address" class="block text-sm font-medium text-gray-700">Pickup / Warehouse Address <span class="text-gray-400 font-normal">(Optional, if different from business address)</span></label>
+                            <input type="text" id="pickup_address" name="pickup_address" value="{{ old('pickup_address') }}" placeholder="Warehouse street address, building or unit"
+                                   class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                            @error('pickup_address')
+                                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="pickup_city" class="block text-sm font-medium text-gray-700">Pickup City <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <input type="text" id="pickup_city" name="pickup_city" value="{{ old('pickup_city') }}" placeholder="e.g. Mumbai"
+                                       class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                                @error('pickup_city')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="pickup_state" class="block text-sm font-medium text-gray-700">Pickup State <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <input type="text" id="pickup_state" name="pickup_state" value="{{ old('pickup_state') }}" placeholder="e.g. Maharashtra"
+                                       class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                                @error('pickup_state')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="pickup_pincode" class="block text-sm font-medium text-gray-700">Postal / Pincode <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <input type="text" id="pickup_pincode" name="pickup_pincode" value="{{ old('pickup_pincode') }}" placeholder="e.g. 400001"
+                                       class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                                @error('pickup_pincode')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="support_email" class="block text-sm font-medium text-gray-700">Customer Support Email <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <input type="email" id="support_email" name="support_email" value="{{ old('support_email') }}" placeholder="support@yourbrand.com"
+                                       class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                                @error('support_email')
+                                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="alternate_phone" class="block text-sm font-medium text-gray-700">Alternate Contact Number <span class="text-gray-400 font-normal">(Optional)</span></label>
+                                <input type="text" id="alternate_phone" name="alternate_phone" value="{{ old('alternate_phone') }}" placeholder="Secondary mobile or helpline"
+                                       class="mt-1 block w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-[#204d4f] focus:ring-1 focus:ring-[#204d4f] outline-none">
+                                @error('alternate_phone')
                                     <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                                 @enderror
                             </div>

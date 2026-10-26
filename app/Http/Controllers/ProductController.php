@@ -22,33 +22,82 @@ class ProductController extends Controller
         try {
             $user = $request->user('sanctum') ?? $request->user();
 
-            // Build a stable cache key from every filter + who's asking
-            $cacheKeyParts = [
-                'user_role' => $user ? ($user->isAdmin() ? 'admin' : ($user->isVendor() ? 'vendor:' . $user->id : 'user:' . $user->id)) : 'guest',
-                'my_products' => $request->boolean('my_products'),
-                'search' => $request->query('search'),
-                'category_id' => $request->query('category_id'),
-                'vendor_id' => $request->query('vendor_id'),
-                'is_featured' => $request->query('is_featured'),
-                'is_trending' => $request->query('is_trending'),
-                'is_limited' => $request->query('is_limited'),
-                'min_price' => $request->query('min_price'),
-                'max_price' => $request->query('max_price'),
-                'status' => $request->query('status'),
-                'visibility' => $request->query('visibility'),
-                'sort_by' => $request->query('sort_by', 'latest'),
-                'per_page' => $request->query('per_page', 10),
-                'page' => $request->query('page', 1),
-            ];
-
-            $cacheKey = 'products:index:' . md5(json_encode($cacheKeyParts));
-
-            $products = Product::with([
+            $query = Product::with([
                 'category',
                 'vendor:id,name,email,image',
                 'informationSections',
             ]);
 
+            if (! $user || (! $user->isAdmin() && ! $user->isVendor())) {
+                $query->where('status', 'active')->where('visibility', 'public');
+            } elseif ($user->isVendor() && ! $user->isAdmin()) {
+                if ($request->boolean('my_products')) {
+                    $query->where('vendor_id', $user->id);
+                } else {
+                    $query->where(function ($q) use ($user) {
+                        $q->where(function ($sub) {
+                            $sub->where('status', 'active')->where('visibility', 'public');
+                        })->orWhere('vendor_id', $user->id);
+                    });
+                }
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->query('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('features', 'like', "%{$search}%");
+                });
+            }
+
+            if ($request->filled('category_id')) {
+                $query->where('category_id', $request->query('category_id'));
+            }
+
+            if ($request->filled('vendor_id')) {
+                $query->where('vendor_id', $request->query('vendor_id'));
+            }
+
+            if ($request->has('is_featured')) {
+                $query->where('is_featured', $request->boolean('is_featured'));
+            }
+
+            if ($request->has('is_trending')) {
+                $query->where('is_trending', $request->boolean('is_trending'));
+            }
+
+            if ($request->has('is_limited')) {
+                $query->where('is_limited', $request->boolean('is_limited'));
+            }
+
+            if ($request->filled('min_price')) {
+                $query->where('price', '>=', $request->query('min_price'));
+            }
+
+            if ($request->filled('max_price')) {
+                $query->where('price', '<=', $request->query('max_price'));
+            }
+
+            if ($request->filled('status') && $user && ($user->isAdmin() || $user->isVendor())) {
+                $query->where('status', $request->query('status'));
+            }
+
+            if ($request->filled('visibility') && $user && ($user->isAdmin() || $user->isVendor())) {
+                $query->where('visibility', $request->query('visibility'));
+            }
+
+            $sortBy = $request->query('sort_by', 'latest');
+            match ($sortBy) {
+                'price_asc' => $query->orderBy('price', 'asc'),
+                'price_desc' => $query->orderBy('price', 'desc'),
+                'name_asc' => $query->orderBy('name', 'asc'),
+                'name_desc' => $query->orderBy('name', 'desc'),
+                default => $query->latest(),
+            };
+
+            $perPage = (int) $request->query('per_page', 10);
+            $products = $query->paginate($perPage);
 
             return response()->json([
                 'success' => true,
@@ -56,7 +105,7 @@ class ProductController extends Controller
                 'data' => $products,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching products: ' . $e->getMessage());
+            Log::error('Error fetching products: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -93,7 +142,7 @@ class ProductController extends Controller
                 'message' => 'You are not authorized to view this product',
             ], 403);
         } catch (\Exception $e) {
-            Log::error('Error fetching product: ' . $e->getMessage());
+            Log::error('Error fetching product: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -211,7 +260,7 @@ class ProductController extends Controller
                 'message' => 'You are not authorized to create products',
             ], 403);
         } catch (\Exception $e) {
-            Log::error('Error creating product: ' . $e->getMessage());
+            Log::error('Error creating product: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -306,7 +355,7 @@ class ProductController extends Controller
                 'message' => 'You are not authorized to update this product',
             ], 403);
         } catch (\Exception $e) {
-            Log::error('Error updating product: ' . $e->getMessage());
+            Log::error('Error updating product: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -335,7 +384,7 @@ class ProductController extends Controller
                 'message' => 'You are not authorized to delete this product',
             ], 403);
         } catch (\Exception $e) {
-            Log::error('Error deleting product: ' . $e->getMessage());
+            Log::error('Error deleting product: '.$e->getMessage());
 
             return response()->json([
                 'success' => false,

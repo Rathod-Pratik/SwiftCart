@@ -2,5 +2,5 @@
 @section('title', 'Products')
 @section('content')
     <x-header>Products</x-header>
-    @include('product.components.product-list')
+    @include('customer.product.components.product-list')
 @endsection
