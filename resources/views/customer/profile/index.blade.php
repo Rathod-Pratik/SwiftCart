@@ -210,7 +210,7 @@
                                     class="tab-nav-btn flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition text-gray-700 hover:bg-gray-100/70">
                                 <div class="flex items-center gap-3">
                                     <x-lucide-shield-check class="h-4 w-4 text-gray-500" />
-                                    <span>Password & Security</span>
+                                    <span>Password &amp; Security</span>
                                 </div>
                                 <x-lucide-chevron-right class="h-4 w-4 opacity-40" />
                             </button>
@@ -463,8 +463,14 @@
                                                     <div class="flex -space-x-2 overflow-hidden">
                                                         @foreach ($order->items->take(3) as $item)
                                                             <div class="inline-block h-10 w-10 rounded-xl bg-gray-100 border-2 border-white overflow-hidden shadow-xs shrink-0" title="{{ $item->product_name }}">
-                                                                @if ($item->product && !empty($item->product->image))
-                                                                    <img src="{{ str_starts_with($item->product->image, 'http') ? $item->product->image : asset('storage/' . $item->product->image) }}"
+                                                                @php
+                                                                    $productImage = $item->product?->image;
+                                                                    if (is_array($productImage)) {
+                                                                        $productImage = $productImage[0] ?? null;
+                                                                    }
+                                                                @endphp
+                                                                @if (!empty($productImage) && is_string($productImage))
+                                                                    <img src="{{ str_starts_with($productImage, 'http') ? $productImage : asset('storage/' . $productImage) }}"
                                                                          alt="{{ $item->product_name }}"
                                                                          class="h-full w-full object-cover">
                                                                 @else

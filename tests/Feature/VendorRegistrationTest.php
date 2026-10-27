@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Mail\VendorAccountApproved;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
@@ -364,4 +366,91 @@ test('laravel relationships: User has one Vendor, Vendor belongs to User, Vendor
     // Vendor has many Products
     expect($vendor->products)->toHaveCount(2)
         ->and($vendor->products->pluck('id')->all())->toEqualCanonicalizing([$product1->id, $product2->id]);
+});
+
+test('admin accepting vendor request sends VendorAccountApproved email', function () {
+    Mail::fake();
+
+    /** @var User $admin */
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    /** @var User $applicant */
+    $applicant = User::factory()->create(['role' => 'customer']);
+
+    /** @var Vendor $vendor */
+    $vendor = Vendor::factory()->create([
+        'user_id' => $applicant->id,
+        'store_name' => 'Swift Gadgets',
+        'status' => 'pending',
+    ]);
+
+    $response = $this->actingAs($admin)->patchJson("/api/vendor-applications/{$vendor->id}/status", [
+        'status' => 'approved',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJson([
+            'message' => 'Vendor application approved successfully.',
+        ]);
+
+    Mail::assertQueued(VendorAccountApproved::class, function (VendorAccountApproved $mail) use ($applicant, $vendor) {
+        return $mail->hasTo($applicant->email)
+            && $mail->vendor->id === $vendor->id;
+    });
+});
+
+test('admin rejecting vendor request does not send VendorAccountApproved email', function () {
+    Mail::fake();
+
+    /** @var User $admin */
+    $admin = User::factory()->create(['role' => 'admin']);
+
+    /** @var User $applicant */
+    $applicant = User::factory()->create(['role' => 'customer']);
+
+    /** @var Vendor $vendor */
+    $vendor = Vendor::factory()->create([
+        'user_id' => $applicant->id,
+        'status' => 'pending',
+    ]);
+
+    $response = $this->actingAs($admin)->patchJson("/api/vendor-applications/{$vendor->id}/status", [
+        'status' => 'rejected',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJson([
+            'message' => 'Vendor application rejected successfully.',
+        ]);
+
+    Mail::assertNothingQueued();
+});
+
+test('vendor account approved email contains product publishing, bank details, and required documents instructions', function () {
+    /** @var User $user */
+    $user = User::factory()->create([
+        'name' => 'Jane Seller',
+        'email' => 'jane.seller@example.com',
+        'phone' => '9876543210',
+    ]);
+
+    /** @var Vendor $vendor */
+    $vendor = Vendor::factory()->create([
+        'user_id' => $user->id,
+        'store_name' => 'Jane Boutique',
+        'status' => 'approved',
+    ]);
+
+    $mailable = new VendorAccountApproved($vendor);
+
+    $mailable->assertHasSubject('Vendor Account Approved - Start Selling on SwiftCart');
+    $mailable->assertSeeInHtml('Congratulations! Your Vendor Account is Ready');
+    $mailable->assertSeeInHtml('Jane Boutique');
+    $mailable->assertSeeInHtml('Start Publishing Your Products');
+    $mailable->assertSeeInHtml('Action Required: Update Bank Details for Payouts');
+    $mailable->assertSeeInHtml('Required Verification Documents');
+    $mailable->assertSeeInHtml(route('vendor.product.create'));
+    $mailable->assertSeeInHtml(route('vendor.profile'));
+    $mailable->assertSeeInHtml('Identity Proof');
+    $mailable->assertSeeInHtml('Business Certificate');
 });

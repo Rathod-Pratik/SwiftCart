@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVendorRequest;
+use App\Mail\VendorAccountApproved;
 use App\Models\Vendor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -202,9 +204,13 @@ class VendorController extends Controller
         $vendor->update(['status' => $newStatus]);
 
         if ($newStatus === 'approved') {
-            $vendor->user->update(['role' => 'vendor']);
+            $vendor->user?->update(['role' => 'vendor']);
+
+            if ($vendor->user?->email) {
+                Mail::to($vendor->user)->send(new VendorAccountApproved($vendor->fresh(['user'])));
+            }
         } elseif ($newStatus === 'rejected') {
-            $vendor->user->update(['role' => 'customer']);
+            $vendor->user?->update(['role' => 'customer']);
         }
 
         return response()->json([

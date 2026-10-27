@@ -43,7 +43,7 @@ Route::get('/profile', function () {
     $user = auth()->user();
 
     if ($user->isAdmin()) {
-        return redirect()->route('admin.Profile.Profile');
+        return redirect()->route('admin.profile');
     }
 
     if ($user->isVendor()) {
