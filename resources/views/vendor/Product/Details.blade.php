@@ -29,15 +29,49 @@
                 </div>
                 <span id="product-status-badge" class="w-fit rounded-full px-3 py-1 text-xs font-semibold"></span>
             </div>
-            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+
+            {{-- Product Images Gallery --}}
+            <div class="mb-8">
+                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500">Product Images</h3>
+                <div id="details-images-gallery" class="mt-3 flex flex-wrap gap-3"></div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Price</p><p id="product-price" class="mt-2 text-lg font-bold text-gray-900"></p></div>
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Discount</p><p id="product-discount" class="mt-2 text-lg font-bold text-gray-900"></p></div>
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Stock</p><p id="product-stock" class="mt-2 text-lg font-bold text-gray-900"></p></div>
+                <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Rating</p><p id="product-rating" class="mt-2 text-lg font-bold text-amber-600"></p></div>
+                <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Offer ID</p><p id="product-offer" class="mt-2 text-lg font-bold text-gray-900"></p></div>
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Visibility</p><p id="product-visibility" class="mt-2 text-sm capitalize text-gray-700"></p></div>
             </div>
+
             <dl class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2"><dt class="text-xs font-semibold uppercase text-gray-500">Description</dt><dd id="product-description" class="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-700"></dd></div>
-                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2"><dt class="text-xs font-semibold uppercase text-gray-500">Features</dt><dd id="product-features" class="mt-2 whitespace-pre-wrap text-sm leading-6 text-gray-700"></dd></div>
+                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
+                    <dt class="text-xs font-semibold uppercase text-gray-500">Vendor Services</dt>
+                    <dd id="product-services" class="mt-2 flex flex-wrap gap-2 text-sm text-gray-700"></dd>
+                </div>
+
+                {{-- Manufacturer Images Gallery --}}
+                <div id="details-m-section" class="hidden rounded-lg bg-gray-50 p-4 sm:col-span-2">
+                    <dt class="text-xs font-semibold uppercase text-gray-500">Manufacturer & Factory Proof</dt>
+                    <dd id="details-m-gallery" class="mt-2 flex flex-wrap gap-3"></dd>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
+                    <dt class="text-xs font-semibold uppercase text-gray-500">About this item</dt>
+                    <dd id="product-about" class="mt-2 text-sm text-gray-700"></dd>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
+                    <dt class="text-xs font-semibold uppercase text-gray-500">Features & Specifications</dt>
+                    <dd id="product-features" class="mt-2 text-sm text-gray-700"></dd>
+                </div>
+
+                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
+                    <dt class="text-xs font-semibold uppercase text-gray-500">Detailed Description</dt>
+                    <dd id="product-description" class="mt-2 text-sm leading-relaxed text-gray-700"></dd>
+                </div>
+
                 <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase text-gray-500">Created</dt><dd id="product-created" class="mt-2 text-sm text-gray-700"></dd></div>
                 <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase text-gray-500">Last updated</dt><dd id="product-updated" class="mt-2 text-sm text-gray-700"></dd></div>
             </dl>
@@ -56,7 +90,24 @@
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.content ?? @json(csrf_token());
                 const set = (selector, value) => { document.querySelector(selector).textContent = value ?? 'Not provided'; };
                 const date = (value) => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'Not available';
+                const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
+                }[character]));
                 const error = (message) => { status.textContent = message; status.className = 'mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700'; };
+
+                const resolveImageUrl = async (keyOrUrl) => {
+                    if (!keyOrUrl) return '';
+                    if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) return keyOrUrl;
+                    try {
+                        const res = await fetch(`/api/s3/sign?key=${encodeURIComponent(keyOrUrl)}`, { headers: { Accept: 'application/json' } });
+                        if (res.ok) {
+                            const data = await res.json();
+                            return data.url || keyOrUrl;
+                        }
+                    } catch {}
+                    return keyOrUrl;
+                };
+
                 const load = async () => {
                     if (!id) { loading.classList.add('hidden'); error('A product ID is required in the URL, for example: ?_id=1'); return; }
                     try {
@@ -68,13 +119,107 @@
                         set('#product-name', product.name);
                         set('#product-id', `Product ID: ${product.id}`);
                         set('#product-price', `₹${product.price}`);
-                        set('#product-discount', `₹${product.discount ?? 0}`);
+                        set('#product-discount', `${product.discount ?? 0}%`);
                         set('#product-stock', product.stock);
+                        set('#product-rating', product.rating != null ? `★ ${Number(product.rating).toFixed(1)} / 5` : 'Not rated');
+                        set('#product-offer', product.offerId || 'No active offer');
                         set('#product-visibility', product.visibility);
-                        set('#product-description', product.description);
-                        set('#product-features', product.features);
                         set('#product-created', date(product.created_at));
                         set('#product-updated', date(product.updated_at));
+
+                        // Render Product Images
+                        const imgGallery = document.querySelector('#details-images-gallery');
+                        const imagesList = Array.isArray(product.image) ? product.image : (product.image ? [product.image] : []);
+                        if (imagesList.length) {
+                            imgGallery.innerHTML = imagesList.map((k) => `
+                                <div class="h-28 w-28 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm">
+                                    <img data-key="${escapeHtml(k)}" src="/images/placeholder.png" alt="Product Image" class="h-full w-full object-cover">
+                                </div>
+                            `).join('');
+                            imgGallery.querySelectorAll('img[data-key]').forEach((img) => {
+                                resolveImageUrl(img.dataset.key).then((src) => { if (src) img.src = src; });
+                            });
+                        } else {
+                            imgGallery.innerHTML = '<span class="text-sm text-gray-400">No images uploaded.</span>';
+                        }
+
+                        // Render Manufacturer Images
+                        const mGallery = document.querySelector('#details-m-gallery');
+                        const mSection = document.querySelector('#details-m-section');
+                        const mList = Array.isArray(product.menifectures_images) ? product.menifectures_images : (product.menifectures_images ? [product.menifectures_images] : []);
+                        if (mList.length) {
+                            mSection.classList.remove('hidden');
+                            mGallery.innerHTML = mList.map((k) => `
+                                <div class="h-24 w-24 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                                    <img data-mkey="${escapeHtml(k)}" src="/images/placeholder.png" alt="Manufacturer Image" class="h-full w-full object-cover">
+                                </div>
+                            `).join('');
+                            mGallery.querySelectorAll('img[data-mkey]').forEach((img) => {
+                                resolveImageUrl(img.dataset.mkey).then((src) => { if (src) img.src = src; });
+                            });
+                        }
+
+                        // Render Vendor Services
+                        const servicesContainer = document.querySelector('#product-services');
+                        if (Array.isArray(product.vendor_service_id) && product.vendor_service_id.length) {
+                            servicesContainer.innerHTML = product.vendor_service_id.map((s) => `
+                                <span class="inline-flex items-center rounded-md bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                                    ✓ ${escapeHtml(s)}
+                                </span>
+                            `).join('');
+                        } else {
+                            servicesContainer.innerHTML = '<span class="text-sm text-gray-400">No vendor services listed.</span>';
+                        }
+
+                        // Render About Bullet Points
+                        const aboutContainer = document.querySelector('#product-about');
+                        if (Array.isArray(product.about) && product.about.length) {
+                            aboutContainer.innerHTML = `
+                                <ul class="list-disc space-y-1.5 pl-5 text-sm text-gray-700">
+                                    ${product.about.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
+                                </ul>
+                            `;
+                        } else {
+                            aboutContainer.innerHTML = '<span class="text-sm text-gray-400">No bullet points provided.</span>';
+                        }
+
+                        // Render Features (Key-Value)
+                        const featuresContainer = document.querySelector('#product-features');
+                        let featuresData = product.features;
+                        if (typeof featuresData === 'string') {
+                            try { featuresData = JSON.parse(featuresData); } catch {}
+                        }
+                        if (featuresData && typeof featuresData === 'object' && !Array.isArray(featuresData) && Object.keys(featuresData).length) {
+                            featuresContainer.innerHTML = `
+                                <div class="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                                    <table class="min-w-full divide-y divide-gray-100 text-sm">
+                                        <tbody class="divide-y divide-gray-100">
+                                            ${Object.entries(featuresData).map(([k, v]) => `
+                                                <tr>
+                                                    <td class="w-1/3 bg-gray-50/60 px-4 py-2.5 font-medium text-gray-600">${escapeHtml(k)}</td>
+                                                    <td class="px-4 py-2.5 text-gray-900">${escapeHtml(v)}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
+                        } else if (typeof product.features === 'string' && product.features.trim()) {
+                            featuresContainer.innerHTML = `<p class="whitespace-pre-wrap">${escapeHtml(product.features)}</p>`;
+                        } else {
+                            featuresContainer.innerHTML = '<span class="text-sm text-gray-400">No features listed.</span>';
+                        }
+
+                        // Render Description (Multiple Paragraphs)
+                        const descContainer = document.querySelector('#product-description');
+                        const descText = String(product.description || '');
+                        const paragraphs = descText.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+                        if (paragraphs.length) {
+                            descContainer.innerHTML = paragraphs.map((p) => `<p class="mb-3 last:mb-0">${escapeHtml(p)}</p>`).join('');
+                        } else {
+                            descContainer.innerHTML = '<span class="text-sm text-gray-400">No description provided.</span>';
+                        }
+
                         const badge = document.querySelector('#product-status-badge');
                         badge.textContent = product.status;
                         badge.className = `w-fit rounded-full px-3 py-1 text-xs font-semibold ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`;

@@ -399,9 +399,16 @@
                     const logoFallback = document.querySelector('#store-logo-fallback');
                     const logoImg = document.querySelector('#store-logo-img');
                     if (vendor.logo) {
-                        logoImg.src = `{{ asset('storage') }}/${vendor.logo}`;
                         logoImg.classList.remove('hidden');
                         logoFallback.classList.add('hidden');
+                        window.s3Url(vendor.logo).then(url => {
+                            logoImg.src = url ?? '';
+                            if (!url) {
+                                logoImg.classList.add('hidden');
+                                logoFallback.classList.remove('hidden');
+                                logoFallback.textContent = storeName.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+                            }
+                        });
                     } else {
                         logoFallback.textContent = storeName.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
                         logoFallback.classList.remove('hidden');

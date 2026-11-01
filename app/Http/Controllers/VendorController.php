@@ -5,17 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVendorRequest;
 use App\Mail\VendorAccountApproved;
 use App\Models\Vendor;
+use App\Services\S3Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class VendorController extends Controller
 {
+    public function __construct(protected S3Service $s3Service) {}
+
     /**
      * Show the vendor registration form or current status.
      */
@@ -55,19 +56,19 @@ class VendorController extends Controller
         $validated = $request->validated();
 
         $logoPath = $request->hasFile('logo')
-            ? $request->file('logo')->store('vendor-logos', 'public')
+            ? $this->s3Service->uploadFile($request->file('logo'), 'vendor-logos', $user->id, 'private')
             : null;
 
         $verificationDocPath = $request->hasFile('verification_document')
-            ? $request->file('verification_document')->store('verification_documents', 'local')
+            ? $this->s3Service->uploadFile($request->file('verification_document'), 'verification-documents', $user->id, 'private')
             : null;
 
         $idDocImagePath = $request->hasFile('id_document_image')
-            ? $request->file('id_document_image')->store('vendor-kyc-documents', 'local')
+            ? $this->s3Service->uploadFile($request->file('id_document_image'), 'vendor-kyc-documents', $user->id, 'private')
             : null;
 
         $bizCertDocPath = $request->hasFile('business_certificate_document')
-            ? $request->file('business_certificate_document')->store('vendor-kyc-documents', 'local')
+            ? $this->s3Service->uploadFile($request->file('business_certificate_document'), 'vendor-kyc-documents', $user->id, 'private')
             : null;
 
         $storeName = $validated['store_name'] ?? $validated['business_name'] ?? 'My Store';
@@ -220,23 +221,25 @@ class VendorController extends Controller
     }
 
     /**
-     * Securely download or view the vendor verification document.
+     * Return a presigned URL for the vendor verification document.
      */
-    public function downloadVerificationDocument(Vendor $vendor): StreamedResponse|JsonResponse
+    public function downloadVerificationDocument(Vendor $vendor): JsonResponse
     {
         Gate::authorize('downloadDocument', $vendor);
 
-        if (! $vendor->verification_document || ! Storage::disk('local')->exists($vendor->verification_document)) {
+        $url = $this->s3Service->signedUrl($vendor->verification_document);
+
+        if (! $url) {
             return response()->json(['message' => 'Verification document not found.'], 404);
         }
 
-        return Storage::disk('local')->download($vendor->verification_document);
+        return response()->json(['url' => $url]);
     }
 
     /**
-     * Securely download or view any vendor KYC / registration document.
+     * Return a presigned URL for a vendor KYC / registration document.
      */
-    public function downloadKycDocument(Vendor $vendor, string $type): StreamedResponse|JsonResponse
+    public function downloadKycDocument(Vendor $vendor, string $type): JsonResponse
     {
         Gate::authorize('downloadDocument', $vendor);
 
@@ -247,10 +250,68 @@ class VendorController extends Controller
             default => null,
         };
 
-        if (! $path || ! Storage::disk('local')->exists($path)) {
+        $url = $this->s3Service->signedUrl($path);
+
+        if (! $url) {
             return response()->json(['message' => 'Document file not found.'], 404);
         }
 
-        return Storage::disk('local')->download($path);
+        return response()->json(['url' => $url]);
+    }
+
+    /**
+     * Vendor: Update own KYC / store documents.
+     */
+    public function updateDocuments(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $vendor = $user->vendor;
+
+        if (! $vendor) {
+            return response()->json(['message' => 'Vendor profile not found.'], 404);
+        }
+
+        $request->validate([
+            'verification_document' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'id_document_image' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'business_certificate_document' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'logo' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+        ]);
+
+        $fields = [
+            'verification_document' => 'verification-documents',
+            'id_document_image' => 'vendor-kyc-documents',
+            'business_certificate_document' => 'vendor-kyc-documents',
+            'logo' => 'vendor-logos',
+        ];
+
+        $updates = [];
+
+        foreach ($fields as $field => $folder) {
+            if ($request->hasFile($field)) {
+                // Delete old file from S3
+                if ($vendor->{$field}) {
+                    $this->s3Service->deleteIfExists($vendor->{$field});
+                }
+                $newKey = $this->s3Service->uploadFile(
+                    $request->file($field),
+                    $folder,
+                    $user->id,
+                    'private'
+                );
+                if ($newKey) {
+                    $updates[$field] = $newKey;
+                }
+            }
+        }
+
+        if (! empty($updates)) {
+            $vendor->update($updates);
+        }
+
+        return response()->json([
+            'message' => 'Documents updated successfully.',
+            'vendor' => $vendor->fresh(),
+        ]);
     }
 }

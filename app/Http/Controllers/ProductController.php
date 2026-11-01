@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Services\S3Service;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -14,6 +16,8 @@ use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
+    public function __construct(protected S3Service $s3Service) {}
+
     /**
      * Display a listing of the products with filters and search.
      */
@@ -166,20 +170,32 @@ class ProductController extends Controller
                 'discount' => 'nullable|numeric|min:0',
                 'stock' => 'required|integer|min:0',
                 'image' => 'nullable|array',
-                'image.*' => 'string',
+                'image.*' => ['nullable', function ($attribute, $value, $fail) {
+                    if (! is_string($value) && ! ($value instanceof UploadedFile)) {
+                        $fail("The {$attribute} must be a valid string or image file.");
+                    }
+                }],
                 'category_id' => 'required|exists:categories,id',
-                'related_products' => 'nullable|array',
-                'related_products.*' => 'integer',
                 'store_link' => 'nullable|string|max:255',
                 'is_featured' => 'nullable|boolean',
                 'is_limited' => 'nullable|boolean',
                 'is_trending' => 'nullable|boolean',
-                'features' => 'required|string',
+                'features' => 'required',
                 'vendor_id' => 'nullable|exists:users,id',
                 'status' => 'nullable|in:active,inactive',
                 'visibility' => 'nullable|in:public,private',
+                'rating' => 'nullable|numeric|min:0|max:5',
+                'offerId' => 'nullable|string|max:255',
+                'vendor_service_id' => 'nullable|array',
+                'vendor_service_id.*' => 'string',
                 'about' => 'nullable|array',
+                'about.*' => 'string',
                 'menifectures_images' => 'nullable|array',
+                'menifectures_images.*' => ['nullable', function ($attribute, $value, $fail) {
+                    if (! is_string($value) && ! ($value instanceof UploadedFile)) {
+                        $fail("The {$attribute} must be a valid string or image file.");
+                    }
+                }],
                 'information_sections' => 'nullable|array',
                 'information_sections.*.title' => 'required_with:information_sections|string|max:255',
                 'information_sections.*.features' => 'nullable|array',
@@ -197,15 +213,10 @@ class ProductController extends Controller
             if ($request->hasFile('image')) {
                 $imageKeys = [];
 
-                foreach ($request->file('image') as $image) {
-                    $key = $this->s3Service->generateKey('product-images', $user->id, $image->getClientOriginalName());
+                foreach ($request->file('image') as $img) {
+                    $key = $this->s3Service->uploadFile($img, 'product-images', $user->id, 'private');
 
-                    $uploaded = $this->s3Service->uploadFromServer(
-                        $key,
-                        file_get_contents($image->getRealPath())
-                    );
-
-                    if (! $uploaded) {
+                    if (! $key) {
                         return response()->json([
                             'success' => false,
                             'message' => 'Failed to upload image',
@@ -215,12 +226,36 @@ class ProductController extends Controller
                     $imageKeys[] = $key;
                 }
 
-                $validated['images'] = $imageKeys; // store as JSON array in DB, or handle relation
+                $existingImages = is_array($request->input('image'))
+                    ? array_filter($request->input('image'), 'is_string')
+                    : [];
+                $validated['image'] = array_values(array_merge($existingImages, $imageKeys));
             }
 
-            if (array_key_exists('image', $validated)) {
-                $validated['images'] = $validated['image'];
-                unset($validated['image']);
+            if ($request->hasFile('menifectures_images')) {
+                $mImageKeys = [];
+
+                foreach ($request->file('menifectures_images') as $mImg) {
+                    $key = $this->s3Service->uploadFile($mImg, 'manufacturer-images', $user->id, 'private');
+
+                    if (! $key) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Failed to upload manufacturer image',
+                        ], 500);
+                    }
+
+                    $mImageKeys[] = $key;
+                }
+
+                $existingMImages = is_array($request->input('menifectures_images'))
+                    ? array_filter($request->input('menifectures_images'), 'is_string')
+                    : [];
+                $validated['menifectures_images'] = array_values(array_merge($existingMImages, $mImageKeys));
+            }
+
+            if (isset($validated['features']) && is_array($validated['features'])) {
+                $validated['features'] = json_encode($validated['features']);
             }
 
             $product = DB::transaction(function () use ($validated) {
@@ -284,20 +319,32 @@ class ProductController extends Controller
                 'discount' => 'nullable|numeric|min:0',
                 'stock' => 'sometimes|required|integer|min:0',
                 'image' => 'nullable|array',
-                'image.*' => 'string',
+                'image.*' => ['nullable', function ($attribute, $value, $fail) {
+                    if (! is_string($value) && ! ($value instanceof UploadedFile)) {
+                        $fail("The {$attribute} must be a valid string or image file.");
+                    }
+                }],
                 'category_id' => 'sometimes|required|exists:categories,id',
-                'related_products' => 'nullable|array',
-                'related_products.*' => 'integer',
                 'store_link' => 'nullable|string|max:255',
                 'is_featured' => 'nullable|boolean',
                 'is_limited' => 'nullable|boolean',
                 'is_trending' => 'nullable|boolean',
-                'features' => 'sometimes|required|string',
+                'features' => 'sometimes|required',
                 'vendor_id' => 'nullable|exists:users,id',
                 'status' => 'nullable|in:active,inactive',
                 'visibility' => 'nullable|in:public,private',
+                'rating' => 'nullable|numeric|min:0|max:5',
+                'offerId' => 'nullable|string|max:255',
+                'vendor_service_id' => 'nullable|array',
+                'vendor_service_id.*' => 'string',
                 'about' => 'nullable|array',
+                'about.*' => 'string',
                 'menifectures_images' => 'nullable|array',
+                'menifectures_images.*' => ['nullable', function ($attribute, $value, $fail) {
+                    if (! is_string($value) && ! ($value instanceof UploadedFile)) {
+                        $fail("The {$attribute} must be a valid string or image file.");
+                    }
+                }],
                 'information_sections' => 'nullable|array',
                 'information_sections.*.title' => 'required_with:information_sections|string|max:255',
                 'information_sections.*.features' => 'nullable|array',
@@ -305,9 +352,52 @@ class ProductController extends Controller
 
             $user = $request->user();
 
-            if (array_key_exists('image', $validated)) {
-                $validated['images'] = $validated['image'];
-                unset($validated['image']);
+            if ($request->hasFile('image')) {
+                $imageKeys = [];
+
+                foreach ($request->file('image') as $img) {
+                    $key = $this->s3Service->uploadFile($img, 'product-images', $user->id, 'private');
+
+                    if (! $key) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Failed to upload image',
+                        ], 500);
+                    }
+
+                    $imageKeys[] = $key;
+                }
+
+                $existingImages = is_array($request->input('image'))
+                    ? array_filter($request->input('image'), 'is_string')
+                    : [];
+                $validated['image'] = array_values(array_merge($existingImages, $imageKeys));
+            }
+
+            if ($request->hasFile('menifectures_images')) {
+                $mImageKeys = [];
+
+                foreach ($request->file('menifectures_images') as $mImg) {
+                    $key = $this->s3Service->uploadFile($mImg, 'manufacturer-images', $user->id, 'private');
+
+                    if (! $key) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Failed to upload manufacturer image',
+                        ], 500);
+                    }
+
+                    $mImageKeys[] = $key;
+                }
+
+                $existingMImages = is_array($request->input('menifectures_images'))
+                    ? array_filter($request->input('menifectures_images'), 'is_string')
+                    : [];
+                $validated['menifectures_images'] = array_values(array_merge($existingMImages, $mImageKeys));
+            }
+
+            if (isset($validated['features']) && is_array($validated['features'])) {
+                $validated['features'] = json_encode($validated['features']);
             }
 
             // Prevent vendor from changing vendor_id

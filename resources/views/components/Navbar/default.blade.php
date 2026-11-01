@@ -96,7 +96,9 @@
            class="flex items-center gap-2 rounded-xl p-1.5 text-xs font-semibold text-white  ">
           <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-[#d09523] text-xs font-bold text-white shadow-xs shrink-0 transition duration-200 hover:scale-105 focus:outline-none">
             @if (!empty($authUser->image))
-              <img src="{{ str_starts_with($authUser->image, 'http') ? $authUser->image : asset('storage/' . $authUser->image) }}"
+              <img src=""
+                   data-s3-key="{{ $authUser->image }}"
+                   data-s3-auto="true"
                    alt="{{ $authUser->name }}"
                    onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
                    class="h-full w-full object-cover">

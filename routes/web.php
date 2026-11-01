@@ -124,5 +124,7 @@ Route::middleware(['auth', 'verified', 'role:vendor'])->prefix('vendor')->group(
     Route::view('/rating/details', 'vendor.Rating.Details')->name('vendor.rating.details');
     Route::view('/query', 'vendor.Query.Query')->name('vendor.query');
     Route::view('/query/details', 'vendor.Query.Details')->name('vendor.query.details');
+    Route::view('/service', 'vendor.Services.Service')->name('vendor.service');
+    Route::view('/service/create', 'vendor.Services.create')->name('vendor.service.create');
     Route::view('/profile', 'vendor.Profile.Profile')->name('vendor.profile');
 });

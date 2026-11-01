@@ -7,6 +7,7 @@ use App\Services\S3Service;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
 use Mockery\MockInterface;
 use RuntimeException;
@@ -228,6 +229,5 @@ test('login with remember me sets remember token and authenticates', function ()
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertCookie(\Illuminate\Support\Facades\Auth::guard()->getRecallerName());
+    $response->assertCookie(Auth::guard()->getRecallerName());
 });
-

@@ -122,7 +122,6 @@
                 const form = document.querySelector('#category-form');
                 const categoryId = form.dataset.categoryId;
                 const apiUrl = @json(url('/api/categories'));
-                const storageUrl = @json(asset('storage'));
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? @json(csrf_token());
                 const status = document.querySelector('#form-status');
                 const submitButton = form.querySelector('button[type="submit"]');
@@ -183,15 +182,16 @@
                         const category = payload.data;
                         setFieldValue('name', category.name);
                         setFieldValue('slug', category.slug);
-                        const currentImage = document.querySelector('#current-image');
-                        const currentImagePreview = document.querySelector('#current-image-preview');
                         if (category.icon) {
-                            currentImagePreview.src = category.icon.startsWith('http')
-                                ? category.icon
-                                : `${storageUrl}/${category.icon}`;
+                            const currentImage = document.querySelector('#current-image');
+                            const currentImagePreview = document.querySelector('#current-image-preview');
                             currentImagePreview.onerror = () => currentImage.classList.add('hidden');
                             currentImage.classList.remove('hidden');
                             currentImage.classList.add('flex');
+                            window.s3Url(category.icon).then(url => {
+                                currentImagePreview.src = url ?? '';
+                                if (!url) currentImage.classList.add('hidden');
+                            });
                         } else {
                             currentImage.classList.add('hidden');
                         }

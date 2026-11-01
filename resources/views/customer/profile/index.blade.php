@@ -64,7 +64,8 @@
                             <div id="header-avatar" class="flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center overflow-hidden rounded-2xl bg-[#d09523] text-3xl font-extrabold text-[#204d4f] shadow-lg ring-4 ring-white/20 transition duration-300 group-hover:ring-[#d09523]">
                                 @if (!empty($user->image))
                                     <img id="header-avatar-img"
-                                         src="{{ str_starts_with($user->image, 'http') ? $user->image : asset('storage/' . $user->image) }}"
+                                         src=""
+                                         data-s3-key="{{ $user->image }}"
                                          alt="{{ $user->name }}"
                                          onerror="this.classList.add('hidden'); document.getElementById('header-avatar-initials').classList.remove('hidden');"
                                          class="h-full w-full object-cover">
@@ -470,9 +471,10 @@
                                                                     }
                                                                 @endphp
                                                                 @if (!empty($productImage) && is_string($productImage))
-                                                                    <img src="{{ str_starts_with($productImage, 'http') ? $productImage : asset('storage/' . $productImage) }}"
+                                                                    <img data-s3-key="{{ $productImage }}"
+                                                                         src=""
                                                                          alt="{{ $item->product_name }}"
-                                                                         class="h-full w-full object-cover">
+                                                                         class="h-full w-full object-cover s3-img">
                                                                 @else
                                                                     <div class="flex h-full w-full items-center justify-center bg-[#204d4f]/10 text-xs font-bold text-[#204d4f]">
                                                                         <x-lucide-package class="h-4 w-4" />
@@ -1017,9 +1019,9 @@
                                 }
 
                                 if (updated.image) {
-                                    const imgUrl = updated.image.startsWith('http') ? updated.image : `/storage/${updated.image}`;
+                                    const imgUrl = await window.s3Url(updated.image);
                                     if (headerAvatarImg) {
-                                        headerAvatarImg.src = imgUrl;
+                                        headerAvatarImg.src = imgUrl ?? '';
                                         headerAvatarImg.classList.remove('hidden');
                                         if (headerAvatarInitials) headerAvatarInitials.classList.add('hidden');
                                     }

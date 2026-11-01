@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Services\S3Service;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
 {
+    public function __construct(protected S3Service $s3Service) {}
+
     private array $rules = [
         'name' => 'required|string|max:255',
         'description' => 'required|string|max:255',
@@ -120,7 +122,22 @@ class CategoryController extends Controller
         try {
             Gate::authorize('create', Category::class);
             $validated = $request->validate($this->rules, $this->messages);
-            $validated['icon'] = $request->file('image')->store('categories', 'public');
+
+            $key = $this->s3Service->uploadFile(
+                $request->file('image'),
+                'categories',
+                $request->user()->id,
+                'private'
+            );
+
+            if (! $key) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to upload category image',
+                ], 500);
+            }
+
+            $validated['icon'] = $key;
             unset($validated['image']);
 
             $category = Category::create($validated);
@@ -170,12 +187,26 @@ class CategoryController extends Controller
             $validated = $request->validate($rules, $this->messages);
 
             if ($request->hasFile('image')) {
-                if ($category->icon && Storage::disk('public')->exists($category->icon)) {
-                    Storage::disk('public')->delete($category->icon);
+                // Delete old S3 object if it exists
+                $this->s3Service->deleteIfExists($category->icon);
+
+                $key = $this->s3Service->uploadFile(
+                    $request->file('image'),
+                    'categories',
+                    $request->user()->id,
+                    'private'
+                );
+
+                if (! $key) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Failed to upload category image',
+                    ], 500);
                 }
 
-                $validated['icon'] = $request->file('image')->store('categories', 'public');
+                $validated['icon'] = $key;
             }
+
             unset($validated['image']);
 
             $category->update($validated);
@@ -213,6 +244,10 @@ class CategoryController extends Controller
     {
         try {
             Gate::authorize('delete', $category);
+
+            // Remove image from S3
+            $this->s3Service->deleteIfExists($category->icon);
+
             $category->delete();
 
             return response()->json([

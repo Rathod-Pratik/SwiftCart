@@ -11,6 +11,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\S3Controller;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
@@ -21,10 +23,14 @@ Route::middleware('web')->group(function (): void {
     Route::post('/forgot-password', [AuthController::class, 'forgetPassword'])->middleware('guest');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('guest');
 
+    // S3 signed-URL endpoint — available to all authenticated users
+    Route::middleware(['auth'])->get('/s3/sign', [S3Controller::class, 'sign']);
+
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::get('/reviews', [ReviewController::class, 'index']);
+    Route::get('/services', [ServiceController::class, 'index']);
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {
         Route::get('/admin/dashboard/stats', [AdminDashboardController::class, 'stats']);
@@ -59,7 +65,14 @@ Route::middleware('web')->group(function (): void {
     });
 
     Route::middleware(['auth', 'role:vendor'])->group(function (): void {
+        Route::get('/vendor/services', [ServiceController::class, 'index']);
+        Route::post('/vendor/services', [ServiceController::class, 'store']);
+        Route::get('/vendor/services/{service}', [ServiceController::class, 'show']);
+        Route::match(['put', 'patch'], '/vendor/services/{service}', [ServiceController::class, 'update']);
+        Route::delete('/vendor/services/{service}', [ServiceController::class, 'destroy']);
         Route::patch('/vendor/bank-details', [AuthController::class, 'updateBankDetails']);
+        Route::post('/vendor/documents', [VendorController::class, 'updateDocuments']);
+        Route::get('/vendor-application', [VendorController::class, 'myApplication']);
     });
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {

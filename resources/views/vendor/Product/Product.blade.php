@@ -26,13 +26,15 @@
             <div id="product-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
 
             <div class="overflow-x-auto">
-                <table class="w-full min-w-[850px] text-left text-sm">
+                <table class="w-full min-w-[950px] text-left text-sm">
                     <thead class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
                         <tr>
                             <th class="px-4 py-3 font-semibold">Product</th>
                             <th class="px-4 py-3 font-semibold">Category</th>
                             <th class="px-4 py-3 font-semibold">Price</th>
+                            <th class="px-4 py-3 font-semibold">Rating</th>
                             <th class="px-4 py-3 font-semibold">Stock</th>
+                            <th class="px-4 py-3 font-semibold">Services & Offers</th>
                             <th class="px-4 py-3 font-semibold">Status</th>
                             <th class="px-4 py-3 text-right font-semibold">Actions</th>
                         </tr>
@@ -84,26 +86,48 @@
                     summary.textContent = meta.total ? `Showing ${meta.from}-${meta.to} of ${meta.total}` : '';
                 };
                 const render = (products, meta) => {
-                    list.innerHTML = products.map((product) => `
-                        <tr class="text-gray-700">
-                            <td class="px-4 py-4"><p class="font-semibold text-gray-900">${escapeHtml(product.name)}</p><p class="text-xs text-gray-500">ID: ${product.id}</p></td>
-                            <td class="px-4 py-4">${escapeHtml(product.category?.name || 'Unknown')}</td>
-                            <td class="px-4 py-4">₹${escapeHtml(product.price)}</td>
-                            <td class="px-4 py-4">${escapeHtml(product.stock)}</td>
-                            <td class="px-4 py-4"><span class="rounded-full px-3 py-1 text-xs font-semibold ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">${escapeHtml(product.status)}</span></td>
-                            <td class="px-4 py-4"><div class="flex justify-end gap-2">
-                                <a href="${detailsUrl}?_id=${product.id}" class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Details</a>
-                                <a href="${editUrl}?_id=${product.id}" class="rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">Edit</a>
-                            </div></td>
-                        </tr>
-                    `).join('');
+                    list.innerHTML = products.map((product) => {
+                        const services = Array.isArray(product.vendor_service_id) && product.vendor_service_id.length
+                            ? product.vendor_service_id.map((s) => `<span class="inline-block rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 border border-emerald-200">${escapeHtml(s)}</span>`).join(' ')
+                            : '';
+                        const offerBadge = product.offerId
+                            ? `<span class="inline-block rounded bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">Offer: ${escapeHtml(product.offerId)}</span>`
+                            : '';
+                        const ratingDisplay = product.rating != null
+                            ? `<span class="font-semibold text-amber-600">★ ${Number(product.rating).toFixed(1)}</span>`
+                            : (product.reviews_avg_rating ? `<span class="font-semibold text-amber-600">★ ${Number(product.reviews_avg_rating).toFixed(1)}</span>` : '<span class="text-gray-400">—</span>');
+
+                        return `
+                            <tr class="text-gray-700">
+                                <td class="px-4 py-4">
+                                    <p class="font-semibold text-gray-900">${escapeHtml(product.name)}</p>
+                                    <p class="text-xs text-gray-500">ID: ${product.id}</p>
+                                </td>
+                                <td class="px-4 py-4">${escapeHtml(product.category?.name || 'Unknown')}</td>
+                                <td class="px-4 py-4 font-semibold text-gray-900">₹${escapeHtml(product.price)}</td>
+                                <td class="px-4 py-4">${ratingDisplay}</td>
+                                <td class="px-4 py-4">${escapeHtml(product.stock)}</td>
+                                <td class="px-4 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        ${services || (!offerBadge ? '<span class="text-xs text-gray-400">—</span>' : '')}
+                                        ${offerBadge}
+                                    </div>
+                                </td>
+                                <td class="px-4 py-4"><span class="rounded-full px-3 py-1 text-xs font-semibold ${product.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">${escapeHtml(product.status)}</span></td>
+                                <td class="px-4 py-4"><div class="flex justify-end gap-2">
+                                    <a href="${detailsUrl}?_id=${product.id}" class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Details</a>
+                                    <a href="${editUrl}?_id=${product.id}" class="rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">Edit</a>
+                                </div></td>
+                            </tr>
+                        `;
+                    }).join('');
                     empty.classList.toggle('hidden', products.length > 0);
                     count.textContent = `${meta.total} product${meta.total === 1 ? '' : 's'}`;
                     renderPagination(meta);
                 };
                 const loadProducts = async (page = 1) => {
                     status.classList.add('hidden');
-                    list.innerHTML = '<tr><td colspan="6" class="px-4 py-12 text-center text-sm text-gray-500">Loading products...</td></tr>';
+                    list.innerHTML = '<tr><td colspan="8" class="px-4 py-12 text-center text-sm text-gray-500">Loading products...</td></tr>';
                     const params = new URLSearchParams({ page, per_page: 10, my_products: '1' });
                     if (search.value.trim()) params.set('search', search.value.trim());
                     try {

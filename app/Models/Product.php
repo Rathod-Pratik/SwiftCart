@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'price',
     'discount',
     'stock',
+    'image',
     'images',
     'category_id',
     'store_link',
@@ -25,6 +26,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'vendor_id',
     'status',
     'visibility',
+    'rating',
+    'offerId',
+    'vendor_service_id',
     'about',
     'menifectures_images',
 ])]
@@ -62,6 +66,8 @@ class Product extends Model
             'is_featured' => 'boolean',
             'is_limited' => 'boolean',
             'is_trending' => 'boolean',
+            'rating' => 'decimal:2',
+            'vendor_service_id' => 'array',
             'about' => 'array',
             'menifectures_images' => 'array',
         ];

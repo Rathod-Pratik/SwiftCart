@@ -37,7 +37,9 @@
                     <div class="relative group">
                         <div id="header-avatar" class="flex h-24 w-24 sm:h-28 sm:w-28 shrink-0 items-center justify-center rounded-2xl bg-[#F4C95D] text-3xl font-extrabold text-[#224e51] shadow-lg ring-4 ring-white/20 transition-all duration-300 group-hover:ring-[#F4C95D]">
                             @if (!empty($admin->image))
-                                <img id="header-avatar-img" src="{{ str_starts_with($admin->image, 'http') ? $admin->image : asset('storage/' . $admin->image) }}"
+                                <img id="header-avatar-img"
+                                     src=""
+                                     data-s3-key="{{ $admin->image }}"
                                      alt="{{ $admin->name }}"
                                      onerror="this.classList.add('hidden'); document.getElementById('header-avatar-initials').classList.remove('hidden');"
                                      class="h-full w-full rounded-2xl object-cover">
@@ -575,6 +577,17 @@
                 const headerAvatarImg = document.getElementById('header-avatar-img');
                 const headerAvatarInitials = document.getElementById('header-avatar-initials');
 
+                // Load initial avatar via signed S3 URL
+                if (headerAvatarImg && headerAvatarImg.dataset.s3Key) {
+                    window.s3Url(headerAvatarImg.dataset.s3Key).then(url => {
+                        if (url) {
+                            headerAvatarImg.src = url;
+                            headerAvatarImg.classList.remove('hidden');
+                            if (headerAvatarInitials) headerAvatarInitials.classList.add('hidden');
+                        }
+                    });
+                }
+
                 // Tabs Switching
                 window.switchTab = (tabName) => {
                     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
@@ -695,9 +708,9 @@
 
                         // Update avatar initials / image if returned
                         if (user.image) {
-                            const imgSrc = user.image.startsWith('http') ? user.image : `/storage/${user.image}`;
+                            const imgSrc = await window.s3Url(user.image);
                             if (headerAvatarImg) {
-                                headerAvatarImg.src = imgSrc;
+                                headerAvatarImg.src = imgSrc ?? '';
                                 headerAvatarImg.classList.remove('hidden');
                                 if (headerAvatarInitials) headerAvatarInitials.classList.add('hidden');
                             }
@@ -754,7 +767,8 @@
                                 if (headerAvatarInitials) headerAvatarInitials.textContent = initials;
 
                                 if (payload.user.image && headerAvatarImg) {
-                                    headerAvatarImg.src = payload.user.image.startsWith('http') ? payload.user.image : `/storage/${payload.user.image}`;
+                                    const url = await window.s3Url(payload.user.image);
+                                    headerAvatarImg.src = url ?? '';
                                     headerAvatarImg.classList.remove('hidden');
                                     if (headerAvatarInitials) headerAvatarInitials.classList.add('hidden');
                                 }

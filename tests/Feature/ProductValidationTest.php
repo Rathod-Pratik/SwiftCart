@@ -315,3 +315,111 @@ test('update replaces information_sections when a new array is provided', functi
     expect($product->informationSections()->count())->toBe(1);
     expect($product->informationSections()->first()->title)->toBe('New Section');
 });
+
+test('store rejects invalid rating, vendor_service_id, and about formats', function () {
+    /** @var TestCase $this */
+    /** @var User $vendor */
+    $vendor = User::factory()->create(['role' => 'vendor']);
+    $category = Category::factory()->create();
+
+    $response = $this->actingAs($vendor)->postJson('/api/products', [
+        'name' => 'Test Product',
+        'price' => 100,
+        'stock' => 10,
+        'category_id' => $category->id,
+        'features' => 'some features',
+        'rating' => 6, // greater than max 5
+        'vendor_service_id' => [123], // must be strings
+        'about' => [456], // must be strings
+    ]);
+
+    $response->assertStatus(422)
+        ->assertJsonValidationErrors([
+            'rating',
+            'vendor_service_id.0',
+            'about.0',
+        ]);
+});
+
+test('store and update succeed with rating, offerId, vendor_service_id, and about as array of strings', function () {
+    /** @var TestCase $this */
+    /** @var User $vendor */
+    $vendor = User::factory()->create(['role' => 'vendor']);
+    $category = Category::factory()->create();
+
+    $response = $this->actingAs($vendor)->postJson('/api/products', [
+        'name' => 'Product With Services',
+        'price' => 1299,
+        'stock' => 15,
+        'category_id' => $category->id,
+        'features' => 'Top notch performance',
+        'rating' => 4.5,
+        'offerId' => 'OFFER_FESTIVE_50',
+        'vendor_service_id' => ['Free Delivery', '7 Days Replacement'],
+        'about' => ['Bullet point 1', 'Bullet point 2'],
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'success' => true,
+            'message' => 'Product created successfully',
+        ]);
+
+    $product = Product::where('name', 'Product With Services')->first();
+    expect($product)->not->toBeNull();
+    expect($product->about)->toBe(['Bullet point 1', 'Bullet point 2']);
+
+    $updateResponse = $this->actingAs($vendor)->patchJson("/api/products/{$product->id}", [
+        'rating' => 4.8,
+        'offerId' => 'OFFER_DIWALI_20',
+        'vendor_service_id' => ['Free Delivery'],
+        'about' => ['Updated bullet 1', 'Updated bullet 2'],
+    ]);
+
+    $updateResponse->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+            'message' => 'Product updated successfully',
+        ]);
+
+    expect($product->fresh()->about)->toBe(['Updated bullet 1', 'Updated bullet 2']);
+});
+
+test('store succeeds with key-value pair features and multi-paragraph description', function () {
+    /** @var TestCase $this */
+    /** @var User $vendor */
+    $vendor = User::factory()->create(['role' => 'vendor']);
+    $category = Category::factory()->create();
+
+    $response = $this->actingAs($vendor)->postJson('/api/products', [
+        'name' => 'Laptop Pro 16',
+        'description' => "Paragraph 1: Excellent display and battery.\n\nParagraph 2: Unrivaled multi-core performance for creators.",
+        'price' => 89999,
+        'stock' => 10,
+        'category_id' => $category->id,
+        'features' => [
+            'Processor' => 'M3 Max',
+            'RAM' => '36GB Unified',
+            'Storage' => '1TB SSD',
+        ],
+        'about' => [
+            'Stunning 16.2-inch Liquid Retina XDR display',
+            'Up to 22 hours of battery life',
+        ],
+    ]);
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'success' => true,
+            'message' => 'Product created successfully',
+        ]);
+
+    $product = Product::where('name', 'Laptop Pro 16')->first();
+    expect($product)->not->toBeNull();
+    expect(json_decode($product->features, true))->toBe([
+        'Processor' => 'M3 Max',
+        'RAM' => '36GB Unified',
+        'Storage' => '1TB SSD',
+    ]);
+    expect($product->about)->toHaveCount(2);
+});

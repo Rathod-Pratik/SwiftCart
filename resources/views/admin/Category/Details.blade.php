@@ -89,7 +89,6 @@
             (() => {
                 const categoryId = @json($categoryId);
                 const apiUrl = @json(url('/api/categories'));
-                const storageUrl = @json(asset('storage'));
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? @json(csrf_token());
                 const loading = document.querySelector('#category-loading');
                 const details = document.querySelector('#category-details');
@@ -141,12 +140,16 @@
                             categoryImageEmpty.classList.remove('hidden');
                         };
                         if (category.icon) {
-                            categoryImage.src = category.icon.startsWith('http')
-                                ? category.icon
-                                : `${storageUrl}/${category.icon}`;
                             categoryImage.alt = `${category.name} category image`;
                             categoryImage.classList.remove('hidden');
                             categoryImageEmpty.classList.add('hidden');
+                            window.s3Url(category.icon).then(url => {
+                                categoryImage.src = url ?? '';
+                                if (!url) {
+                                    categoryImage.classList.add('hidden');
+                                    categoryImageEmpty.classList.remove('hidden');
+                                }
+                            });
                         } else {
                             categoryImage.classList.add('hidden');
                             categoryImageEmpty.classList.remove('hidden');

@@ -275,13 +275,9 @@ class AuthController extends Controller
 
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $key = $this->s3Service->generateKey('profile-images', $user->id, $image->getClientOriginalName());
-                $uploaded = $this->s3Service->uploadFromServer(
-                    $key,
-                    file_get_contents($image->getRealPath())
-                );
+                $key = $this->s3Service->uploadFile($image, 'profile-images', $user->id, 'private');
 
-                if (! $uploaded) {
+                if (! $key) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Failed to upload image',
