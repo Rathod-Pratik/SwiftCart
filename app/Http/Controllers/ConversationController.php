@@ -86,6 +86,23 @@ class ConversationController extends Controller
         ]);
     }
 
+    public function vendorStats(Request $request)
+    {
+        $vendorId = (int) $request->user()->id;
+        $conversations = Conversation::where('type', 'customer_vendor')->where('vendor_id', $vendorId);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total' => (clone $conversations)->count(),
+                'unread' => (clone $conversations)->whereHas('messages', fn ($query) => $query
+                    ->whereNull('read_at')
+                    ->where('sender_id', '!=', $vendorId))->count(),
+                'today' => (clone $conversations)->whereDate('last_message_at', today())->count(),
+            ],
+        ]);
+    }
+
     /**
      * Show one conversation only when it belongs to the authenticated vendor.
      */

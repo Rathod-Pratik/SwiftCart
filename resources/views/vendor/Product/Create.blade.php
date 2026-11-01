@@ -72,15 +72,6 @@
                         <p id="error-category_id" class="mt-1.5 text-xs font-medium text-rose-600 hidden"></p>
                     </div>
 
-                    {{-- Store External Link --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700" for="input-store_link">
-                            Store / Brand Website Link <span class="text-xs font-normal text-gray-400">(Optional)</span>
-                        </label>
-                        <input id="input-store_link" name="store_link" type="url" placeholder="https://brand.com/products/headphones" class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none transition focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
-                        <p id="error-store_link" class="mt-1.5 text-xs font-medium text-rose-600 hidden"></p>
-                    </div>
-
                     {{-- Status --}}
                     <div>
                         <label class="block text-sm font-semibold text-gray-700" for="select-status">
@@ -161,26 +152,6 @@
                         </div>
                     </div>
 
-                    {{-- Base/Initial Rating --}}
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700" for="input-rating">
-                            Base Rating (0 to 5) <span class="text-xs font-normal text-gray-400">(Optional)</span>
-                        </label>
-                        <div class="relative mt-2">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-amber-500 font-bold">★</span>
-                            <input id="input-rating" name="rating" type="number" min="0" max="5" step="0.1" placeholder="4.5" class="w-full rounded-xl border border-gray-300 pl-8 pr-4 py-3 text-sm outline-none transition focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
-                        </div>
-                        <p id="error-rating" class="mt-1.5 text-xs font-medium text-rose-600 hidden"></p>
-                    </div>
-
-                    {{-- Offer ID --}}
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700" for="input-offerId">
-                            Promotional Offer ID / Code <span class="text-xs font-normal text-gray-400">(Optional)</span>
-                        </label>
-                        <input id="input-offerId" name="offerId" maxlength="255" placeholder="e.g. FESTIVE_SAVINGS_2026" class="mt-2 w-full rounded-xl border border-gray-300 px-4 py-3 text-sm uppercase outline-none transition focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
-                        <p class="mt-1 text-[11px] text-gray-400">Associates special discounts or coupon eligibility badges with this product.</p>
-                    </div>
                 </div>
             </section>
 
@@ -385,35 +356,6 @@
                             <span class="mb-2 block text-xs font-semibold text-gray-500">Active Perks for This Product:</span>
                             <div id="selected-services-chips" class="flex flex-wrap gap-2">
                                 <span class="text-xs italic text-gray-400">None selected yet. Click cards above to attach perks.</span>
-                            </div>
-                        </div>
-
-                        {{-- Inline Quick Add Service --}}
-                        <div class="mt-4 rounded-xl border border-dashed border-gray-300 bg-gray-50/70 p-3.5">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-semibold text-gray-700">+ Add Custom Service Perk:</span>
-                                <a href="{{ route('vendor.service') }}" target="_blank" class="text-2xs font-semibold text-[#3d6f6d] hover:underline">
-                                    Manage All Services &rarr;
-                                </a>
-                            </div>
-                            <div class="flex flex-col gap-2 sm:flex-row">
-                                <input type="text" id="inline-service-name" placeholder="Service name (e.g. Free Gift Inside, 1-Year Guarantee)"
-                                    class="flex-1 rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs outline-none transition focus:border-[#3d6f6d] focus:ring-1 focus:ring-[#3d6f6d]">
-                                <select id="inline-service-icon" class="rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs text-gray-700 outline-none transition focus:border-[#3d6f6d]">
-                                    <option value="truck">🚚 Express Shipping (truck)</option>
-                                    <option value="banknote">💵 Cash on Delivery (banknote)</option>
-                                    <option value="box">📦 Free Delivery / Box (box)</option>
-                                    <option value="shield-check">🛡️ Warranty / Protection (shield-check)</option>
-                                    <option value="refresh-cw">🔄 7-Day Replacement (refresh-cw)</option>
-                                    <option value="headset">🎧 24/7 Support (headset)</option>
-                                    <option value="award">🎖️ Quality Guaranteed (award)</option>
-                                    <option value="zap">⚡ Lightning Dispatch (zap)</option>
-                                    <option value="gift">🎁 Free Surprise Gift (gift)</option>
-                                </select>
-                                <button type="button" id="inline-add-service-btn"
-                                    class="inline-flex items-center justify-center gap-1 rounded-xl bg-[#3d6f6d] px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[#315b59]">
-                                    + Add Perk
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -863,10 +805,21 @@
                     'credit-card': '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
                     'gift': '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 4.8 0 0 1 12 8a4.8 4.8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
                     'badge-percent': '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><line x1="15" x2="9" y1="9" y2="15"/>',
+                    'map-pin': '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+                    'lock': '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+                    'check-circle': '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+                    'star': '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+                    'thumbs-up': '<path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"/>',
+                    'heart-handshake': '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+                    'sparkles': '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>',
                 };
 
                 const getServiceIconSvg = (key, className = 'h-4 w-4') => {
-                    const cleanKey = (key || 'truck').toLowerCase().trim();
+                    const cleanKey = String(key || 'truck')
+                        .toLowerCase()
+                        .trim()
+                        .replace(/^lucide[-_]/, '')
+                        .replace(/[\s_]+/g, '-');
                     const svgPath = serviceIconMap[cleanKey] || serviceIconMap['truck'];
                     return `<svg class="${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${svgPath}</svg>`;
                 };
@@ -924,8 +877,8 @@
                     }
 
                     servicesContainer.innerHTML = availableServices.map((service) => {
-                        const isSelected = selectedServiceNames.has(service.name);
-                        const iconSvg = getServiceIconSvg(service.icon, `h-4 w-4 ${isSelected ? 'text-[#3d6f6d]' : 'text-gray-500'}`);
+                        const isSelected = Array.from(selectedServiceNames).some((name) => name.toLowerCase() === service.name.toLowerCase());
+                        const iconSvg = getServiceIconSvg(service.icon, `h-4 w-4 ${isSelected ? 'text-white' : 'text-gray-500'}`);
 
                         return `
                             <button type="button" data-service-name="${escapeHtml(service.name)}"
@@ -942,7 +895,7 @@
                                         <p class="text-xs font-bold truncate">${escapeHtml(service.name)}</p>
                                         ${isSelected ? '<span class="text-xs font-bold text-[#3d6f6d]">✓</span>' : ''}
                                     </div>
-                                    <p class="text-2xs text-gray-500 line-clamp-1 mt-0.5">${escapeHtml(service.description || 'Service perk for products')}</p>
+                                    <p class="text-xs text-gray-500 line-clamp-1 mt-0.5">${escapeHtml(service.description || 'Service perk for products')}</p>
                                 </div>
                             </button>
                         `;
@@ -951,8 +904,9 @@
                     servicesContainer.querySelectorAll('.service-select-card').forEach((card) => {
                         card.addEventListener('click', () => {
                             const name = card.dataset.serviceName;
-                            if (selectedServiceNames.has(name)) {
-                                selectedServiceNames.delete(name);
+                            const selectedName = Array.from(selectedServiceNames).find((selected) => selected.toLowerCase() === name.toLowerCase());
+                            if (selectedName) {
+                                selectedServiceNames.delete(selectedName);
                             } else {
                                 selectedServiceNames.add(name);
                             }
@@ -1071,15 +1025,6 @@
                     }
                 });
 
-                form.elements.rating.addEventListener('input', () => {
-                    const val = form.elements.rating.value;
-                    if (val !== '' && (parseFloat(val) < 0 || parseFloat(val) > 5)) {
-                        setFieldError('rating', 'Rating must be between 0 and 5.');
-                    } else {
-                        setFieldError('rating', '');
-                    }
-                });
-
                 // --- 6. Load Categories & Product Data ---
                 const loadCategories = async () => {
                     const response = await fetch(`${categoryUrl}?per_page=100`, { headers: { Accept: 'application/json' } });
@@ -1103,8 +1048,7 @@
                     const product = payload.data;
 
                     const setValue = (name, val) => { if (form.elements[name]) form.elements[name].value = val ?? ''; };
-                    ['name', 'price', 'discount', 'stock', 'store_link', 'status', 'visibility', 'category_id', 'offerId'].forEach((field) => setValue(field, product[field]));
-                    setValue('rating', product.rating != null ? product.rating : '');
+                    ['name', 'price', 'discount', 'stock', 'status', 'visibility', 'category_id'].forEach((field) => setValue(field, product[field]));
                     setValue('vendor_service_id', Array.isArray(product.vendor_service_id) ? product.vendor_service_id.join(', ') : (product.vendor_service_id || ''));
                     selectedServiceNames.clear();
                     if (Array.isArray(product.vendor_service_id)) {
@@ -1212,18 +1156,12 @@
                         markInvalid(stockInput, 'stock', 'Please enter an available stock quantity (integer >= 0).');
                     }
 
-                    // 5. Rating
-                    const ratingInput = form.elements.rating;
-                    if (ratingInput.value !== '' && (parseFloat(ratingInput.value) < 0 || parseFloat(ratingInput.value) > 5)) {
-                        markInvalid(ratingInput, 'rating', 'Rating must be between 0 and 5.');
-                    }
-
-                    // 6. Product Images (at least 1 image)
+                    // 5. Product Images (at least 1 image)
                     if (!validateImages()) {
                         if (!firstInvalidEl) firstInvalidEl = document.querySelector('#product-images-input');
                     }
 
-                    // 7. Features (key-value)
+                    // 6. Features (key-value)
                     const featuresObj = {};
                     let featureCount = 0;
                     document.querySelectorAll('.feature-row').forEach((row) => {
@@ -1295,16 +1233,6 @@
                     formData.append('price', priceNum);
                     formData.append('discount', parseFloat(form.elements.discount.value || 0));
                     formData.append('stock', stockNum);
-
-                    if (form.elements.store_link.value.trim()) {
-                        formData.append('store_link', form.elements.store_link.value.trim());
-                    }
-                    if (ratingInput.value !== '') {
-                        formData.append('rating', parseFloat(ratingInput.value));
-                    }
-                    if (form.elements.offerId.value.trim()) {
-                        formData.append('offerId', form.elements.offerId.value.trim());
-                    }
 
                     formData.append('status', form.elements.status.value);
                     formData.append('visibility', form.elements.visibility.value);

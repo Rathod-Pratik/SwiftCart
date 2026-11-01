@@ -316,7 +316,7 @@ test('update replaces information_sections when a new array is provided', functi
     expect($product->informationSections()->first()->title)->toBe('New Section');
 });
 
-test('store rejects invalid rating, vendor_service_id, and about formats', function () {
+test('store rejects invalid vendor_service_id and about formats', function () {
     /** @var TestCase $this */
     /** @var User $vendor */
     $vendor = User::factory()->create(['role' => 'vendor']);
@@ -328,20 +328,18 @@ test('store rejects invalid rating, vendor_service_id, and about formats', funct
         'stock' => 10,
         'category_id' => $category->id,
         'features' => 'some features',
-        'rating' => 6, // greater than max 5
         'vendor_service_id' => [123], // must be strings
         'about' => [456], // must be strings
     ]);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors([
-            'rating',
             'vendor_service_id.0',
             'about.0',
         ]);
 });
 
-test('store and update succeed with rating, offerId, vendor_service_id, and about as array of strings', function () {
+test('store and update succeed with vendor services and about as array of strings', function () {
     /** @var TestCase $this */
     /** @var User $vendor */
     $vendor = User::factory()->create(['role' => 'vendor']);
@@ -353,8 +351,6 @@ test('store and update succeed with rating, offerId, vendor_service_id, and abou
         'stock' => 15,
         'category_id' => $category->id,
         'features' => 'Top notch performance',
-        'rating' => 4.5,
-        'offerId' => 'OFFER_FESTIVE_50',
         'vendor_service_id' => ['Free Delivery', '7 Days Replacement'],
         'about' => ['Bullet point 1', 'Bullet point 2'],
     ]);
@@ -370,8 +366,6 @@ test('store and update succeed with rating, offerId, vendor_service_id, and abou
     expect($product->about)->toBe(['Bullet point 1', 'Bullet point 2']);
 
     $updateResponse = $this->actingAs($vendor)->patchJson("/api/products/{$product->id}", [
-        'rating' => 4.8,
-        'offerId' => 'OFFER_DIWALI_20',
         'vendor_service_id' => ['Free Delivery'],
         'about' => ['Updated bullet 1', 'Updated bullet 2'],
     ]);

@@ -44,6 +44,7 @@ class ProductController extends Controller
                         })->orWhere('vendor_id', $user->id);
                     });
                 }
+
             }
 
             if ($request->filled('search')) {
@@ -118,6 +119,21 @@ class ProductController extends Controller
         }
     }
 
+    public function vendorStats(Request $request): JsonResponse
+    {
+        $products = Product::where('vendor_id', $request->user()->id);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total' => (clone $products)->count(),
+                'active' => (clone $products)->where('status', 'active')->count(),
+                'inactive' => (clone $products)->where('status', 'inactive')->count(),
+                'out_of_stock' => (clone $products)->where('stock', 0)->count(),
+            ],
+        ]);
+    }
+
     /**
      * Display a specific product.
      */
@@ -176,7 +192,6 @@ class ProductController extends Controller
                     }
                 }],
                 'category_id' => 'required|exists:categories,id',
-                'store_link' => 'nullable|string|max:255',
                 'is_featured' => 'nullable|boolean',
                 'is_limited' => 'nullable|boolean',
                 'is_trending' => 'nullable|boolean',
@@ -184,8 +199,6 @@ class ProductController extends Controller
                 'vendor_id' => 'nullable|exists:users,id',
                 'status' => 'nullable|in:active,inactive',
                 'visibility' => 'nullable|in:public,private',
-                'rating' => 'nullable|numeric|min:0|max:5',
-                'offerId' => 'nullable|string|max:255',
                 'vendor_service_id' => 'nullable|array',
                 'vendor_service_id.*' => 'string',
                 'about' => 'nullable|array',
@@ -325,7 +338,6 @@ class ProductController extends Controller
                     }
                 }],
                 'category_id' => 'sometimes|required|exists:categories,id',
-                'store_link' => 'nullable|string|max:255',
                 'is_featured' => 'nullable|boolean',
                 'is_limited' => 'nullable|boolean',
                 'is_trending' => 'nullable|boolean',
@@ -333,8 +345,6 @@ class ProductController extends Controller
                 'vendor_id' => 'nullable|exists:users,id',
                 'status' => 'nullable|in:active,inactive',
                 'visibility' => 'nullable|in:public,private',
-                'rating' => 'nullable|numeric|min:0|max:5',
-                'offerId' => 'nullable|string|max:255',
                 'vendor_service_id' => 'nullable|array',
                 'vendor_service_id.*' => 'string',
                 'about' => 'nullable|array',

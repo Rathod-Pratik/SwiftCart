@@ -41,6 +41,11 @@
                         <x-lucide-clipboard-list class="h-4 w-4" />
                         <span>Manage Orders</span>
                     </a>
+                    <a href="{{ route('vendor.coupon') }}"
+                       class="inline-flex items-center gap-2 rounded-xl bg-white/10 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-md border border-white/15 transition-all hover:bg-white/20 hover:scale-[1.02]">
+                        <x-lucide-ticket-percent class="h-4 w-4" />
+                        <span>Manage Coupons</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -234,20 +239,6 @@
                                 </div>
                             </div>
                             <x-lucide-arrow-right class="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-amber-600" />
-                        </a>
-
-                        <a href="{{ route('vendor.rating') }}"
-                           class="group flex items-center justify-between rounded-xl border border-gray-100 p-3.5 transition-all hover:border-violet-300 hover:bg-violet-50/40">
-                            <div class="flex items-center gap-3">
-                                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 transition-transform group-hover:scale-105">
-                                    <x-lucide-star class="h-5 w-5" />
-                                </span>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-gray-900 group-hover:text-violet-700">Customer Ratings</h4>
-                                    <p class="text-xs text-gray-500">View product reviews & feedback</p>
-                                </div>
-                            </div>
-                            <x-lucide-arrow-right class="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-violet-600" />
                         </a>
 
                         <a href="{{ route('vendor.query') }}"

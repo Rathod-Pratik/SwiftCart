@@ -9,6 +9,111 @@ use Illuminate\Validation\ValidationException;
 
 class CouponController extends Controller
 {
+    public function vendorIndex(Request $request)
+    {
+        $coupons = Coupon::latest()->get()->map(fn (Coupon $coupon): array => $this->vendorPayload($coupon));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupons fetched successfully',
+            'data' => $coupons->values(),
+        ]);
+    }
+
+    public function vendorShow(Coupon $coupon)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $this->vendorPayload($coupon),
+        ]);
+    }
+
+    public function vendorStore(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:coupons,code',
+            'discount_type' => 'required|in:fixed,percentage',
+            'discount_value' => 'required|numeric|min:0.01',
+            'expires_at' => 'required|date',
+            'is_active' => 'boolean',
+            'usage_limit' => 'nullable|integer|min:1',
+        ]);
+
+        $coupon = Coupon::create([
+            'code' => strtoupper($validated['code']),
+            'discount_type' => $validated['discount_type'],
+            'discount_amount' => $validated['discount_value'],
+            'expires_at' => $validated['expires_at'],
+            'is_active' => $validated['is_active'] ?? true,
+            'number_of_coupons' => $validated['usage_limit'] ?? 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon created successfully',
+            'data' => $this->vendorPayload($coupon),
+        ], 201);
+    }
+
+    public function vendorUpdate(Request $request, Coupon $coupon)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:255|unique:coupons,code,'.$coupon->id,
+            'discount_type' => 'required|in:fixed,percentage',
+            'discount_value' => 'required|numeric|min:0.01',
+            'expires_at' => 'required|date',
+            'is_active' => 'boolean',
+            'usage_limit' => 'nullable|integer|min:1',
+        ]);
+
+        $coupon->update([
+            'code' => strtoupper($validated['code']),
+            'discount_type' => $validated['discount_type'],
+            'discount_amount' => $validated['discount_value'],
+            'expires_at' => $validated['expires_at'],
+            'is_active' => $validated['is_active'] ?? false,
+            'number_of_coupons' => $validated['usage_limit'] ?? 1,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon updated successfully',
+            'data' => $this->vendorPayload($coupon->fresh()),
+        ]);
+    }
+
+    public function vendorDestroy(Coupon $coupon)
+    {
+        $coupon->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Coupon deleted successfully',
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function vendorPayload(Coupon $coupon): array
+    {
+        return [
+            'id' => $coupon->id,
+            'code' => $coupon->code,
+            'discount_type' => $coupon->discount_type,
+            'discount_value' => $coupon->discount_amount,
+            'expires_at' => $coupon->expires_at,
+            'is_active' => (bool) $coupon->is_active,
+            'usage_limit' => $coupon->number_of_coupons,
+            'used_count' => 0,
+            'description' => null,
+            'minimum_order_amount' => null,
+            'maximum_discount' => null,
+            'per_user_limit' => 1,
+            'starts_at' => null,
+        ];
+    }
+
     public function index()
     {
         try {

@@ -51,20 +51,28 @@ Route::middleware('web')->group(function (): void {
 
     Route::middleware(['auth', 'role:vendor', 'vendor.approved'])->group(function (): void {
         Route::post('/products', [ProductController::class, 'store']);
+        Route::get('/vendor/products/stats', [ProductController::class, 'vendorStats']);
         Route::match(['put', 'patch'], '/products/{product}', [ProductController::class, 'update']);
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);
         Route::get('/vendor/orders', [OrderController::class, 'vendorIndex']);
+        Route::get('/vendor/orders/stats', [OrderController::class, 'vendorStats']);
         Route::get('/vendor/orders/{order}', [OrderController::class, 'vendorShow']);
         Route::patch('/vendor/orders/{order}/status', [OrderController::class, 'vendorUpdateStatus']);
         Route::get('/vendor/ratings/products', [ReviewController::class, 'vendorProducts']);
         Route::get('/vendor/ratings/products/{product}', [ReviewController::class, 'vendorProductReviews']);
         Route::get('/vendor/queries', [ConversationController::class, 'vendorIndex']);
+        Route::get('/vendor/queries/stats', [ConversationController::class, 'vendorStats']);
         Route::get('/vendor/queries/{conversation}', [ConversationController::class, 'vendorShow']);
         Route::get('/vendor/queries/{conversation}/messages', [MessageController::class, 'index']);
         Route::post('/vendor/queries/{conversation}/messages', [MessageController::class, 'store']);
     });
 
     Route::middleware(['auth', 'role:vendor'])->group(function (): void {
+        Route::get('/vendor/coupons', [CouponController::class, 'vendorIndex']);
+        Route::post('/vendor/coupons', [CouponController::class, 'vendorStore']);
+        Route::get('/vendor/coupons/{coupon}', [CouponController::class, 'vendorShow']);
+        Route::match(['put', 'patch'], '/vendor/coupons/{coupon}', [CouponController::class, 'vendorUpdate']);
+        Route::delete('/vendor/coupons/{coupon}', [CouponController::class, 'vendorDestroy']);
         Route::get('/vendor/services', [ServiceController::class, 'index']);
         Route::post('/vendor/services', [ServiceController::class, 'store']);
         Route::get('/vendor/services/{service}', [ServiceController::class, 'show']);

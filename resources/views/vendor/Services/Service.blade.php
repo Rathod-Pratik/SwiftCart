@@ -17,10 +17,7 @@
                 </p>
             </div>
             <div class="flex items-center gap-2.5">
-                <a href="{{ route('vendor.product.create') }}" class="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50">
-                    <x-lucide-package class="h-4 w-4 text-gray-500" />
-                    <span>Product Catalog</span>
-                </a>
+
                 <a href="{{ route('vendor.service.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-[#3d6f6d] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#315b59]">
                     <x-lucide-plus class="h-4 w-4" />
                     <span>Add New Service</span>

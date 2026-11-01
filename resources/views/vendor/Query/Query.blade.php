@@ -10,6 +10,22 @@
             <p class="mt-1 text-sm text-gray-600">Review customer conversations about your products.</p>
         </div>
 
+        <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            @foreach ([['Total Queries', 'query-stat-total', 'message-square', 'bg-teal-50', 'text-[#3d6f6d]', 'text-[#3d6f6d]'], ['Unread', 'query-stat-unread', 'mail', 'bg-sky-50', 'text-sky-600', 'text-sky-600'], ['Active Today', 'query-stat-today', 'calendar', 'bg-violet-50', 'text-violet-600', 'text-violet-600']] as [$label, $id, $icon, $iconBackground, $iconColor, $valueColor])
+                <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $label }}</p>
+                            <p id="{{ $id }}" class="mt-2 text-2xl font-bold {{ $valueColor }}">—</p>
+                        </div>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $iconBackground }} {{ $iconColor }}">
+                            <x-dynamic-component :component="'lucide-'.$icon" class="h-5 w-5" />
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
         <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <label class="block w-full sm:max-w-sm" for="query-search">
@@ -55,6 +71,16 @@
                 const pagination = document.querySelector('#pagination');
                 const summary = document.querySelector('#pagination-summary');
                 let timer;
+
+                fetch(@json(url('/api/vendor/queries/stats')), { headers: { Accept: 'application/json' } })
+                    .then((response) => response.json())
+                    .then((payload) => {
+                        if (!payload.success) return;
+                        document.querySelector('#query-stat-total').textContent = payload.data.total;
+                        document.querySelector('#query-stat-unread').textContent = payload.data.unread;
+                        document.querySelector('#query-stat-today').textContent = payload.data.today;
+                    })
+                    .catch(() => {});
 
                 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
                     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',

@@ -118,10 +118,10 @@ Route::middleware(['auth', 'verified', 'role:vendor'])->prefix('vendor')->group(
     Route::view('/product', 'vendor.Product.Product')->name('vendor.product');
     Route::view('/product/create', 'vendor.Product.Create')->name('vendor.product.create');
     Route::view('/product/details', 'vendor.Product.Details')->name('vendor.product.details');
+    Route::view('/coupon', 'vendor.Coupon.Coupon')->name('vendor.coupon');
+    Route::view('/coupon/create', 'vendor.Coupon.Create')->name('vendor.coupon.create');
     Route::view('/order', 'vendor.Order.Order')->name('vendor.order');
     Route::view('/order/details', 'vendor.Order.Details')->name('vendor.order.details');
-    Route::view('/rating', 'vendor.Rating.Rating')->name('vendor.rating');
-    Route::view('/rating/details', 'vendor.Rating.Details')->name('vendor.rating.details');
     Route::view('/query', 'vendor.Query.Query')->name('vendor.query');
     Route::view('/query/details', 'vendor.Query.Details')->name('vendor.query.details');
     Route::view('/service', 'vendor.Services.Service')->name('vendor.service');

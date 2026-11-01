@@ -92,7 +92,6 @@
                         set('#vendor-name', product.vendor?.name);
                         set('#vendor-email', product.vendor?.email);
                         set('#product-features', product.features);
-                        set('#product-store-link', product.store_link);
                         set('#product-about', Array.isArray(product.about) ? product.about.join('\n') : product.about);
                         loading.classList.add('hidden');
                         details.classList.remove('hidden');

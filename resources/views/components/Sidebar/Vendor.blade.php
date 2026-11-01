@@ -5,8 +5,8 @@
         ['route' => 'vendor.dashboard', 'label' => 'Dashboard', 'icon' => 'layout-dashboard'],
         ['route' => 'vendor.product', 'label' => 'Products', 'icon' => 'package'],
         ['route' => 'vendor.service*', 'label' => 'Services', 'icon' => 'truck'],
+        ['route' => 'vendor.coupon*', 'label' => 'Coupons', 'icon' => 'ticket-percent'],
         ['route' => 'vendor.order', 'label' => 'Orders', 'icon' => 'shopping-bag'],
-        ['route' => 'vendor.rating*', 'label' => 'Ratings', 'icon' => 'star'],
         ['route' => 'vendor.query*', 'label' => 'Queries', 'icon' => 'message-square'],
         ['route' => 'vendor.profile', 'label' => 'Profile', 'icon' => 'user-round'],
     ];

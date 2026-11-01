@@ -363,6 +363,22 @@ class OrderController extends Controller
         ]);
     }
 
+    public function vendorStats(Request $request)
+    {
+        $orders = Order::whereHas('items.product', fn ($query) => $query->where('vendor_id', $request->user()->id));
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total' => (clone $orders)->count(),
+                'pending' => (clone $orders)->where('order_status', 'pending')->count(),
+                'processing' => (clone $orders)->whereIn('order_status', ['confirmed', 'processing', 'shipped'])->count(),
+                'delivered' => (clone $orders)->where('order_status', 'delivered')->count(),
+                'cancelled' => (clone $orders)->whereIn('order_status', ['cancelled', 'returned'])->count(),
+            ],
+        ]);
+    }
+
     public function vendorShow(Request $request, Order $order)
     {
         $vendorId = $request->user()->id;

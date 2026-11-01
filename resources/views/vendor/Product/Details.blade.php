@@ -40,8 +40,6 @@
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Price</p><p id="product-price" class="mt-2 text-lg font-bold text-gray-900"></p></div>
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Discount</p><p id="product-discount" class="mt-2 text-lg font-bold text-gray-900"></p></div>
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Stock</p><p id="product-stock" class="mt-2 text-lg font-bold text-gray-900"></p></div>
-                <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Rating</p><p id="product-rating" class="mt-2 text-lg font-bold text-amber-600"></p></div>
-                <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Offer ID</p><p id="product-offer" class="mt-2 text-lg font-bold text-gray-900"></p></div>
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Visibility</p><p id="product-visibility" class="mt-2 text-sm capitalize text-gray-700"></p></div>
             </div>
 
@@ -121,8 +119,6 @@
                         set('#product-price', `₹${product.price}`);
                         set('#product-discount', `${product.discount ?? 0}%`);
                         set('#product-stock', product.stock);
-                        set('#product-rating', product.rating != null ? `★ ${Number(product.rating).toFixed(1)} / 5` : 'Not rated');
-                        set('#product-offer', product.offerId || 'No active offer');
                         set('#product-visibility', product.visibility);
                         set('#product-created', date(product.created_at));
                         set('#product-updated', date(product.updated_at));
