@@ -1,7 +1,7 @@
 @extends('layouts.Vendor')
 
 @section('content')
-    <x-slot name="title"><span id="page-head-title">Add Service</span></x-slot>
+    <x-slot name="title">Add Service</x-slot>
 
     <div class="p-4 sm:p-6 lg:p-8">
         {{-- Breadcrumb & Navigation --}}
@@ -233,7 +233,6 @@
                 const saveSpinner = document.querySelector('#save-spinner');
                 const pageTitle = document.querySelector('#page-title');
                 const breadcrumbCurrent = document.querySelector('#breadcrumb-current');
-                const pageHeadTitle = document.querySelector('#page-head-title');
 
                 // Preview elements
                 const previewName = document.querySelector('#preview-name');
@@ -249,23 +248,12 @@
                 // Determine Edit Mode from URL query parameter ?id=...
                 const urlParams = new URLSearchParams(window.location.search);
                 const editId = urlParams.get('id');
-                const paramName = urlParams.get('name');
-                const paramIcon = urlParams.get('icon');
-                const paramDesc = urlParams.get('desc');
-                const paramActive = urlParams.get('active');
 
-                // Instant pre-fill from query params if available
                 if (editId) {
                     pageTitle.textContent = 'Edit Service';
                     breadcrumbCurrent.textContent = 'Edit Service';
-                    pageHeadTitle.textContent = 'Edit Service';
                     saveLabel.textContent = 'Update Service';
                     serviceIdInput.value = editId;
-
-                    if (paramName) nameInput.value = paramName;
-                    if (paramDesc) descInput.value = paramDesc;
-                    if (paramIcon) iconInput.value = paramIcon;
-                    if (paramActive !== null) statusToggle.checked = paramActive === '1';
                 }
 
                 // Comprehensive Icon Library with metadata & SVG paths
@@ -408,7 +396,6 @@
                 const loadServiceForEdit = async (id) => {
                     pageTitle.textContent = 'Edit Service';
                     breadcrumbCurrent.textContent = 'Edit Service';
-                    pageHeadTitle.textContent = 'Edit Service';
                     saveLabel.textContent = 'Update Service';
                     serviceIdInput.value = id;
 
@@ -533,4 +520,3 @@
         </script>
     @endpush
 @endsection
-

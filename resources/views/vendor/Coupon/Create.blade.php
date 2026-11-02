@@ -1,7 +1,7 @@
 @extends('layouts.Vendor')
 
 @section('content')
-    <x-slot name="title"><span id="page-head-title">Add Coupon</span></x-slot>
+    <x-slot name="title">Add Coupon</x-slot>
 
     <div class="p-4 sm:p-6 lg:p-8">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -247,7 +247,6 @@
 
                 const loadForEdit = async () => {
                     document.querySelector('#page-title').textContent = 'Edit Coupon';
-                    document.querySelector('#page-head-title').textContent = 'Edit Coupon';
                     document.querySelector('#breadcrumb-current').textContent = 'Edit Coupon';
                     saveLabel.textContent = 'Update Coupon';
                     idInput.value = editId;

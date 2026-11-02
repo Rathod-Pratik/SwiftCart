@@ -124,3 +124,34 @@ test('vendors can manage coupons through the vendor coupon API', function () {
 
     expect(Coupon::whereKey($coupon->id)->exists())->toBeFalse();
 });
+
+test('vendor coupon edit data is loaded from the database', function () {
+    $vendor = User::factory()->create(['role' => 'vendor']);
+    $coupon = Coupon::factory()->create([
+        'code' => 'DATABASE20',
+        'discount_type' => 'percentage',
+        'discount_amount' => 20,
+        'description' => 'Database coupon description',
+        'minimum_order_amount' => 100,
+        'maximum_discount' => 50,
+        'starts_at' => '2029-12-01 08:00:00',
+        'expires_at' => '2030-01-01 12:00:00',
+        'is_active' => false,
+        'number_of_coupons' => 15,
+        'per_user_limit' => 2,
+    ]);
+
+    $this->actingAs($vendor)->getJson("/api/vendor/coupons/{$coupon->id}")
+        ->assertSuccessful()
+        ->assertJsonPath('data.code', 'DATABASE20')
+        ->assertJsonPath('data.discount_type', 'percentage')
+        ->assertJsonPath('data.discount_value', 20)
+        ->assertJsonPath('data.description', 'Database coupon description')
+        ->assertJsonPath('data.minimum_order_amount', '100.00')
+        ->assertJsonPath('data.maximum_discount', '50.00')
+        ->assertJsonPath('data.starts_at', '2029-12-01T08:00:00.000000Z')
+        ->assertJsonPath('data.expires_at', '2030-01-01T12:00:00.000000Z')
+        ->assertJsonPath('data.is_active', false)
+        ->assertJsonPath('data.usage_limit', 15)
+        ->assertJsonPath('data.per_user_limit', 2);
+});

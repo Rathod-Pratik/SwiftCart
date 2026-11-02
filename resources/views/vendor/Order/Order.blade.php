@@ -4,6 +4,11 @@
     <x-slot name="title">Orders</x-slot>
 
     <div class="p-4 sm:p-6">
+        <nav class="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-400" aria-label="Breadcrumb">
+            <a href="{{ route('vendor.dashboard') }}" class="transition hover:text-gray-600">Dashboard</a>
+            <span>/</span>
+            <span class="text-gray-800">Orders</span>
+        </nav>
         <div class="mb-6">
             <p class="text-sm font-medium text-[#3d6f6d]">Order management</p>
             <h1 class="text-2xl font-bold text-gray-900">Orders</h1>

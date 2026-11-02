@@ -4,6 +4,11 @@
     <x-slot name="title">Services & Perks</x-slot>
 
     <div class="p-4 sm:p-6 lg:p-8">
+        <nav class="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-400" aria-label="Breadcrumb">
+            <a href="{{ route('vendor.dashboard') }}" class="transition hover:text-gray-600">Dashboard</a>
+            <span>/</span>
+            <span class="text-gray-800">Services</span>
+        </nav>
         {{-- Header --}}
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -266,7 +271,7 @@
                                    <span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span> Inactive
                                </span>`;
 
-                        const editHref = `${createUrl}?id=${service.id}&name=${encodeURIComponent(service.name)}&icon=${encodeURIComponent(service.icon || 'truck')}&desc=${encodeURIComponent(service.description || '')}&active=${service.is_active ? 1 : 0}`;
+                        const editHref = `${createUrl}?id=${encodeURIComponent(service.id)}`;
 
                         const actions = `
                             <div class="flex items-center justify-end gap-2">
@@ -393,4 +398,3 @@
         </script>
     @endpush
 @endsection
-

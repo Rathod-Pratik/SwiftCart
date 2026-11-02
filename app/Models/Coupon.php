@@ -18,7 +18,23 @@ class Coupon extends Model
         'expires_at',
         'is_active',
         'number_of_coupons',
+        'description',
+        'minimum_order_amount',
+        'maximum_discount',
+        'per_user_limit',
+        'starts_at',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'minimum_order_amount' => 'decimal:2',
+            'maximum_discount' => 'decimal:2',
+            'is_active' => 'boolean',
+            'expires_at' => 'datetime',
+            'starts_at' => 'datetime',
+        ];
+    }
 
     public function Order()
     {

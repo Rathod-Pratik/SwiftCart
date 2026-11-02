@@ -10,6 +10,9 @@
     @endphp
 
     <div class="space-y-6 p-4 sm:p-6 lg:p-8">
+        <nav class="flex items-center gap-2 text-xs font-semibold text-gray-400" aria-label="Breadcrumb">
+            <a href="{{ route('vendor.dashboard') }}" class="text-gray-800 transition hover:text-gray-600">Dashboard</a>
+        </nav>
 
         {{-- ── Welcome Hero Banner ── --}}
         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#224E51] via-[#1c4346] to-[#122e30] p-6 text-white shadow-lg">
@@ -321,6 +324,15 @@
                 // ── Helpers ──────────────────────────────────────────
                 const $ = (sel) => document.querySelector(sel);
                 const setText = (sel, val) => { const el = $(sel); if (el) el.textContent = val; };
+                const fetchJson = async (url) => {
+                    const response = await fetch(url, { headers: { Accept: 'application/json' } });
+
+                    if (!response.ok) {
+                        throw new Error(`Request failed with status ${response.status}`);
+                    }
+
+                    return response.json();
+                };
 
                 const statusConfig = {
                     delivered : { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-500' },
@@ -335,9 +347,9 @@
 
                 // ── Fetch vendor data in parallel ────────────────────
                 Promise.all([
-                    fetch(ordersApi,   { headers: { Accept: 'application/json' } }).then(r => r.json()).catch(() => ({})),
-                    fetch(productsApi, { headers: { Accept: 'application/json' } }).then(r => r.json()).catch(() => ({})),
-                    fetch(ratingsApi,  { headers: { Accept: 'application/json' } }).then(r => r.json()).catch(() => ({})),
+                    fetchJson(ordersApi),
+                    fetchJson(productsApi),
+                    fetchJson(ratingsApi),
                 ]).then(([ordersData, productsData, ratingsData]) => {
                     const orders   = ordersData.data?.data ?? ordersData.data ?? [];
                     const products = productsData.data?.data ?? productsData.data ?? [];
@@ -495,9 +507,11 @@
                             tooltip: { y: { formatter: v => `${v} orders` } },
                         });
                         statusChart.render();
-                    };
-
                     initCharts();
+                    window.showToast?.('Dashboard data loaded successfully.', 'success');
+                }).catch((error) => {
+                    console.error('Vendor dashboard data loading failed:', error);
+                    window.showToast?.('Unable to load dashboard data. Please refresh and try again.', 'error');
                 });
             })();
         </script>

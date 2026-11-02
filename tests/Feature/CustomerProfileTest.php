@@ -98,6 +98,20 @@ test('vendor is redirected to vendor profile when visiting /profile', function (
     $response->assertRedirect(route('vendor.profile'));
 });
 
+test('vendor profile waits for the S3 helper before loading documents', function () {
+    /** @var User $vendor */
+    $vendor = User::factory()->create([
+        'role' => 'vendor',
+        'email_verified_at' => now(),
+    ]);
+
+    $response = $this->actingAs($vendor)->get(route('vendor.profile'));
+
+    $response->assertOk()
+        ->assertSee('const getS3Url = async (key)')
+        ->assertSee('Unable to load your document status. Please try again.');
+});
+
 test('customer can update their profile information through api', function () {
     /** @var User $customer */
     $customer = User::factory()->create([

@@ -15,11 +15,13 @@
 
     <main class="min-h-screen pt-20 lg:ml-64">
         <div class="min-h-screen p-3 sm:p-5">
-            <div class="min-h-[calc(100vh-7rem)] rounded-2xl border border-[#224e51]/20 bg-white shadow-sm">
+            <div class="min-h-[calc(100vh-7rem)] rounded-2xl border border-[#224e51]/20 bg-white shadow-sm [&_a]:cursor-pointer [&_button]:cursor-pointer">
                 @yield('content')
             </div>
         </div>
     </main>
+
+    <x-toast />
 
     <script>
         window.Logout = async function() {

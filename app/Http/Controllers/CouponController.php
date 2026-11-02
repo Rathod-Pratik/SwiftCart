@@ -37,6 +37,11 @@ class CouponController extends Controller
             'expires_at' => 'required|date',
             'is_active' => 'boolean',
             'usage_limit' => 'nullable|integer|min:1',
+            'description' => 'nullable|string|max:500',
+            'minimum_order_amount' => 'nullable|numeric|min:0',
+            'maximum_discount' => 'nullable|numeric|min:0',
+            'per_user_limit' => 'nullable|integer|min:1',
+            'starts_at' => 'nullable|date',
         ]);
 
         $coupon = Coupon::create([
@@ -46,6 +51,11 @@ class CouponController extends Controller
             'expires_at' => $validated['expires_at'],
             'is_active' => $validated['is_active'] ?? true,
             'number_of_coupons' => $validated['usage_limit'] ?? 1,
+            'description' => $validated['description'] ?? null,
+            'minimum_order_amount' => $validated['minimum_order_amount'] ?? null,
+            'maximum_discount' => $validated['maximum_discount'] ?? null,
+            'per_user_limit' => $validated['per_user_limit'] ?? 1,
+            'starts_at' => $validated['starts_at'] ?? null,
         ]);
 
         return response()->json([
@@ -64,6 +74,11 @@ class CouponController extends Controller
             'expires_at' => 'required|date',
             'is_active' => 'boolean',
             'usage_limit' => 'nullable|integer|min:1',
+            'description' => 'nullable|string|max:500',
+            'minimum_order_amount' => 'nullable|numeric|min:0',
+            'maximum_discount' => 'nullable|numeric|min:0',
+            'per_user_limit' => 'nullable|integer|min:1',
+            'starts_at' => 'nullable|date',
         ]);
 
         $coupon->update([
@@ -73,6 +88,11 @@ class CouponController extends Controller
             'expires_at' => $validated['expires_at'],
             'is_active' => $validated['is_active'] ?? false,
             'number_of_coupons' => $validated['usage_limit'] ?? 1,
+            'description' => $validated['description'] ?? null,
+            'minimum_order_amount' => $validated['minimum_order_amount'] ?? null,
+            'maximum_discount' => $validated['maximum_discount'] ?? null,
+            'per_user_limit' => $validated['per_user_limit'] ?? 1,
+            'starts_at' => $validated['starts_at'] ?? null,
         ]);
 
         return response()->json([
@@ -106,11 +126,11 @@ class CouponController extends Controller
             'is_active' => (bool) $coupon->is_active,
             'usage_limit' => $coupon->number_of_coupons,
             'used_count' => 0,
-            'description' => null,
-            'minimum_order_amount' => null,
-            'maximum_discount' => null,
-            'per_user_limit' => 1,
-            'starts_at' => null,
+            'description' => $coupon->description,
+            'minimum_order_amount' => $coupon->minimum_order_amount,
+            'maximum_discount' => $coupon->maximum_discount,
+            'per_user_limit' => $coupon->per_user_limit,
+            'starts_at' => $coupon->starts_at,
         ];
     }
 

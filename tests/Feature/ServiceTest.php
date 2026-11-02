@@ -120,6 +120,27 @@ test('vendor can update their own service', function () {
     ]);
 });
 
+test('vendor service edit data is loaded from the database', function () {
+    /** @var TestCase $this */
+    /** @var User $vendor */
+    $vendor = User::factory()->create(['role' => 'vendor']);
+
+    $service = Service::create([
+        'vendor_id' => $vendor->id,
+        'name' => 'Database Service',
+        'icon' => 'shield-check',
+        'description' => 'Stored service description',
+        'is_active' => false,
+    ]);
+
+    $this->actingAs($vendor)->getJson("/api/vendor/services/{$service->id}")
+        ->assertSuccessful()
+        ->assertJsonPath('data.name', 'Database Service')
+        ->assertJsonPath('data.icon', 'shield-check')
+        ->assertJsonPath('data.description', 'Stored service description')
+        ->assertJsonPath('data.is_active', false);
+});
+
 test('vendor cannot update another vendor service', function () {
     /** @var TestCase $this */
     /** @var User $vendor1 */

@@ -13,17 +13,6 @@
 
     <div class="p-4 sm:p-6 lg:p-8">
 
-        {{-- Flash Alert --}}
-        <div id="profile-alert" class="mb-6 hidden items-center justify-between rounded-xl px-5 py-4 text-sm font-medium shadow-sm transition-all duration-300" role="alert">
-            <div class="flex items-center gap-3">
-                <span id="alert-icon"></span>
-                <span id="alert-message"></span>
-            </div>
-            <button type="button" onclick="dismissAlert()" class="rounded-lg p-1 opacity-70 transition hover:opacity-100">
-                <x-lucide-x class="h-4 w-4" />
-            </button>
-        </div>
-
         {{-- ── Hero Header Card ── --}}
         <div class="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-r from-[#224e51] via-[#2d5d60] to-[#3d6f6d] p-6 text-white shadow-md sm:p-8">
             <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
@@ -131,15 +120,15 @@
                     <x-lucide-building-2 class="h-4 w-4" />
                     Business & Bank
                 </button>
-                <button type="button" onclick="switchTab('danger')" id="tab-btn-danger"
-                        class="tab-button cursor-pointer inline-flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-red-500 hover:border-red-300 transition">
-                    <x-lucide-trash-2 class="h-4 w-4" />
-                    Account
-                </button>
                 <button type="button" onclick="switchTab('documents')" id="tab-btn-documents"
                         class="tab-button cursor-pointer inline-flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition">
                     <x-lucide-file-text class="h-4 w-4" />
                     Documents
+                </button>
+                <button type="button" onclick="switchTab('danger')" id="tab-btn-danger"
+                        class="tab-button cursor-pointer inline-flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-red-500 hover:border-red-300 transition">
+                    <x-lucide-trash-2 class="h-4 w-4" />
+                    Account
                 </button>
             </nav>
         </div>
@@ -602,11 +591,23 @@
                 const bankUrl     = @json(url('/api/vendor/bank-details'));
                 const resendUrl   = @json(url('/api/email/verification-notification'));
                 const csrf        = document.querySelector('meta[name="csrf-token"]')?.content ?? @json(csrf_token());
+                const getS3Url = async (key) => {
+                    if (typeof window.s3Url === 'function') {
+                        return window.s3Url(key);
+                    }
+
+                    await new Promise(resolve => {
+                        if (document.readyState === 'loading') {
+                            document.addEventListener('DOMContentLoaded', resolve, { once: true });
+                        } else {
+                            resolve();
+                        }
+                    });
+
+                    return typeof window.s3Url === 'function' ? window.s3Url(key) : null;
+                };
 
                 // ── DOM refs ────────────────────────────────────────
-                const alertBox        = document.getElementById('profile-alert');
-                const alertMessage    = document.getElementById('alert-message');
-                const alertIcon       = document.getElementById('alert-icon');
                 const generalForm     = document.getElementById('profile-general-form');
                 const passwordForm    = document.getElementById('profile-password-form');
                 const bankForm        = document.getElementById('profile-bank-form');
@@ -621,7 +622,7 @@
 
                 // ── Load initial S3 avatar ──────────────────────────
                 if (headerAvatarImg?.dataset.s3Key) {
-                    window.s3Url(headerAvatarImg.dataset.s3Key).then(url => {
+                    getS3Url(headerAvatarImg.dataset.s3Key).then(url => {
                         if (url) {
                             headerAvatarImg.src = url;
                             headerAvatarImg.classList.remove('hidden');
@@ -632,18 +633,9 @@
 
                 // ── Alert helpers ───────────────────────────────────
                 window.showAlert = (message, type = 'success') => {
-                    alertBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-red-50', 'text-red-800', 'border-red-200');
-                    if (type === 'success') {
-                        alertBox.classList.add('flex', 'bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
-                        alertIcon.innerHTML = `<svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
-                    } else {
-                        alertBox.classList.add('flex', 'bg-red-50', 'text-red-800', 'border', 'border-red-200');
-                        alertIcon.innerHTML = `<svg class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>`;
-                    }
-                    alertMessage.textContent = message;
-                    alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    window.showToast?.(message, type === 'error' ? 'error' : type);
+                    return;
                 };
-                window.dismissAlert = () => alertBox.classList.add('hidden');
 
                 // switchTab is defined at top-level above the IIFE
 
@@ -702,7 +694,7 @@
                         const payload = await res.json();
                         if (!res.ok) throw new Error(payload.message || 'Upload failed.');
                         if (payload.user?.image) {
-                            const signed = await window.s3Url(payload.user.image);
+                            const signed = await getS3Url(payload.user.image);
                             updateAvatarSrc(signed);
                         }
                         showAlert('Profile photo updated.');
@@ -733,7 +725,7 @@
                             ['name','email','phone','address'].forEach(f => { if (generalForm.elements[f]) generalForm.elements[f].value = user[f] ?? ''; });
                         }
                         if (user.image) {
-                            const signed = await window.s3Url(user.image);
+                            const signed = await getS3Url(user.image);
                             updateAvatarSrc(signed);
                         }
                     } catch {}
@@ -760,6 +752,7 @@
                     try {
                         const res  = await fetch(vendorAppUrl, { headers: { Accept: 'application/json' } });
                         const data = await res.json();
+                        if (!res.ok) throw new Error(data.message || 'Unable to load vendor documents.');
                         const vendor = data.vendor;
 
                         for (const field of DOC_FIELDS) {
@@ -771,8 +764,8 @@
                             if (s3Key) {
                                 // Show uploaded badge + generate signed view link
                                 statusEl.innerHTML = `<svg class="h-3.5 w-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-700 font-semibold">Uploaded</span>`;
-                                if (viewEl && window.s3Url) {
-                                    window.s3Url(s3Key).then(url => {
+                                if (viewEl) {
+                                    getS3Url(s3Key).then(url => {
                                         if (url) { viewEl.href = url; viewEl.classList.remove('hidden'); }
                                     });
                                 }
@@ -782,6 +775,10 @@
                         }
                     } catch (err) {
                         console.warn('Could not load vendor documents:', err);
+                        document.querySelectorAll('[id^="doc-status-"]').forEach(statusEl => {
+                            statusEl.innerHTML = '<span class="text-red-600">Unable to load document status.</span>';
+                        });
+                        showAlert('Unable to load your document status. Please try again.', 'error');
                     } finally {
                         if (loadingEl) loadingEl.classList.add('hidden');
                         if (contentEl) contentEl.classList.remove('hidden');
@@ -808,8 +805,8 @@
                             if (statusEl) statusEl.innerHTML = `<svg class="h-3.5 w-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-700 font-semibold">Uploaded</span>`;
                             // Refresh view link
                             const newKey = payload.vendor?.[field];
-                            if (newKey && viewEl && window.s3Url) {
-                                window.s3Url(newKey).then(url => { if (url) { viewEl.href = url; viewEl.classList.remove('hidden'); } });
+                            if (newKey && viewEl) {
+                                getS3Url(newKey).then(url => { if (url) { viewEl.href = url; viewEl.classList.remove('hidden'); } });
                             }
                         } catch { showAlert('A network error occurred.', 'error'); }
                         finally { if (uploadingEl) uploadingEl.classList.add('hidden'); input.value = ''; }
@@ -822,7 +819,7 @@
 
                 // ── Personal Info submit ────────────────────────────
                 generalForm?.addEventListener('submit', async (e) => {
-                    e.preventDefault(); clearErrors(generalForm); dismissAlert();
+                    e.preventDefault(); clearErrors(generalForm); window.hideToast?.();
                     const btn = document.getElementById('btn-save-general');
                     const txt = document.getElementById('btn-save-general-text');
                     btn.disabled = true; txt.textContent = 'Saving…';
@@ -844,7 +841,7 @@
 
                 // ── Password submit ─────────────────────────────────
                 passwordForm?.addEventListener('submit', async (e) => {
-                    e.preventDefault(); clearErrors(passwordForm); dismissAlert();
+                    e.preventDefault(); clearErrors(passwordForm); window.hideToast?.();
                     const btn = document.getElementById('btn-save-password');
                     const txt = document.getElementById('btn-save-password-text');
                     btn.disabled = true; txt.textContent = 'Updating…';
@@ -860,7 +857,7 @@
 
                 // ── Bank Details submit ─────────────────────────────
                 bankForm?.addEventListener('submit', async (e) => {
-                    e.preventDefault(); dismissAlert();
+                    e.preventDefault(); window.hideToast?.();
                     const btn = document.getElementById('btn-save-bank');
                     const txt = document.getElementById('btn-save-bank-text');
                     btn.disabled = true; txt.textContent = 'Saving…';
