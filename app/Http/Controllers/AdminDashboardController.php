@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Conversation;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -47,8 +48,26 @@ class AdminDashboardController extends Controller
         })->count();
         $totalProducts = Product::count();
         $totalCategories = Category::count();
+        $activeCategories = Category::where('status', 'active')->count();
+        $inactiveCategories = Category::where('status', 'inactive')->count();
+        $activeProducts = Product::where('status', 'active')->count();
+        $inactiveProducts = Product::where('status', 'inactive')->count();
+        $outOfStockProducts = Product::where('stock', 0)->count();
+        $totalVendors = Vendor::count();
         $approvedVendors = Vendor::where('status', 'approved')->count();
         $pendingVendors = Vendor::where('status', 'pending')->count();
+        $rejectedVendors = Vendor::where('status', 'rejected')->count();
+        $totalUsers = User::count();
+        $adminUsers = User::where('role', 'admin')->count();
+        $vendorUsers = User::where('role', 'vendor')->count();
+        $customerUsers = User::where(function ($query) {
+            $query->where('role', 'customer')
+                ->orWhere('role', 'user')
+                ->orWhereNull('role');
+        })->count();
+        $totalQueries = Conversation::count();
+        $unreadQueries = Conversation::whereHas('messages', fn ($query) => $query->whereNull('read_at'))->count();
+        $queriesToday = Conversation::whereDate('last_message_at', today())->count();
 
         // Order statuses
         $ordersCompleted = Order::whereIn('order_status', ['completed', 'delivered'])->count();
@@ -107,8 +126,22 @@ class AdminDashboardController extends Controller
                 'total_customers' => $totalCustomers,
                 'total_products' => $totalProducts,
                 'total_categories' => $totalCategories,
+                'active_categories' => $activeCategories,
+                'inactive_categories' => $inactiveCategories,
+                'active_products' => $activeProducts,
+                'inactive_products' => $inactiveProducts,
+                'out_of_stock_products' => $outOfStockProducts,
+                'total_vendors' => $totalVendors,
                 'approved_vendors' => $approvedVendors,
                 'pending_vendors' => $pendingVendors,
+                'rejected_vendors' => $rejectedVendors,
+                'total_users' => $totalUsers,
+                'admin_users' => $adminUsers,
+                'vendor_users' => $vendorUsers,
+                'customer_users' => $customerUsers,
+                'total_queries' => $totalQueries,
+                'unread_queries' => $unreadQueries,
+                'queries_today' => $queriesToday,
                 'revenue_growth' => '+14.8%',
                 'orders_growth' => '+8.2%',
                 'customers_growth' => '+12.5%',

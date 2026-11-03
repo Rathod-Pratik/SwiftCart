@@ -578,7 +578,7 @@
                 const headerAvatarInitials = document.getElementById('header-avatar-initials');
 
                 // Load initial avatar via signed S3 URL
-                if (headerAvatarImg && headerAvatarImg.dataset.s3Key) {
+                if (headerAvatarImg && headerAvatarImg.dataset.s3Key && typeof window.s3Url === 'function') {
                     window.s3Url(headerAvatarImg.dataset.s3Key).then(url => {
                         if (url) {
                             headerAvatarImg.src = url;

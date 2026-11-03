@@ -4,6 +4,28 @@
     <x-slot name="title">Vendors</x-slot>
 
     <div class="p-4 sm:p-6">
+        <div class="mb-6">
+            <p class="text-sm font-medium text-[#3d6f6d]">Marketplace management</p>
+            <h1 class="text-2xl font-bold text-gray-900">Vendors</h1>
+            <p class="mt-1 text-sm text-gray-600">Review vendor accounts and manage marketplace partners.</p>
+        </div>
+
+        <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            @foreach ([['Total Vendors', 'vendor-stat-total', 'store', 'bg-teal-50', 'text-[#3d6f6d]', 'text-[#3d6f6d]'], ['Approved', 'vendor-stat-approved', 'circle-check', 'bg-emerald-50', 'text-emerald-600', 'text-emerald-600'], ['Pending', 'vendor-stat-pending', 'clock', 'bg-amber-50', 'text-amber-600', 'text-amber-600'], ['Rejected', 'vendor-stat-rejected', 'x', 'bg-rose-50', 'text-rose-600', 'text-rose-600']] as [$label, $id, $icon, $iconBackground, $iconColor, $valueColor])
+                <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $label }}</p>
+                            <p id="{{ $id }}" class="mt-2 text-2xl font-bold {{ $valueColor }}">—</p>
+                        </div>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $iconBackground }} {{ $iconColor }}">
+                            <x-dynamic-component :component="'lucide-'.$icon" class="h-5 w-5" />
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
         <div class=" rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <label class="relative block w-full sm:max-w-sm" for="vendor-search">
@@ -74,6 +96,20 @@
                     status.textContent = message;
                     status.className = 'mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700';
                 };
+
+                fetch(@json(url('/api/admin/dashboard/stats')), { headers: { Accept: 'application/json' } })
+                    .then((response) => {
+                        if (!response.ok) throw new Error('Unable to load vendor statistics.');
+                        return response.json();
+                    })
+                    .then((payload) => {
+                        if (!payload.stats) throw new Error(payload.message || 'Unable to load vendor statistics.');
+                        document.querySelector('#vendor-stat-total').textContent = payload.stats.total_vendors;
+                        document.querySelector('#vendor-stat-approved').textContent = payload.stats.approved_vendors;
+                        document.querySelector('#vendor-stat-pending').textContent = payload.stats.pending_vendors;
+                        document.querySelector('#vendor-stat-rejected').textContent = payload.stats.rejected_vendors;
+                    })
+                    .catch((error) => showError(error.message));
 
                 const clearDataRows = () => {
                     list.querySelectorAll('tr:not(#vendor-loading)').forEach((row) => row.remove());

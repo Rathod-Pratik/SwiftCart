@@ -4,6 +4,28 @@
     <x-slot name="title">Products</x-slot>
 
     <div class="p-4 sm:p-6">
+        <div class="mb-6">
+            <p class="text-sm font-medium text-[#3d6f6d]">Catalog management</p>
+            <h1 class="text-2xl font-bold text-gray-900">Products</h1>
+            <p class="mt-1 text-sm text-gray-600">Review and manage all products listed in the marketplace.</p>
+        </div>
+
+        <div class="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+            @foreach ([['Total Products', 'product-stat-total', 'package', 'bg-teal-50', 'text-[#3d6f6d]', 'text-[#3d6f6d]'], ['Active', 'product-stat-active', 'circle-check', 'bg-emerald-50', 'text-emerald-600', 'text-emerald-600'], ['Inactive', 'product-stat-inactive', 'pause-circle', 'bg-gray-100', 'text-gray-500', 'text-gray-600'], ['Out of Stock', 'product-stat-out', 'alert-triangle', 'bg-amber-50', 'text-amber-600', 'text-amber-600']] as [$label, $id, $icon, $iconBackground, $iconColor, $valueColor])
+                <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $label }}</p>
+                            <p id="{{ $id }}" class="mt-2 text-2xl font-bold {{ $valueColor }}">—</p>
+                        </div>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg {{ $iconBackground }} {{ $iconColor }}">
+                            <x-dynamic-component :component="'lucide-'.$icon" class="h-5 w-5" />
+                        </span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
         <div class="rounded-xl bg-white p-4 shadow-sm sm:p-6">
             <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <label class="block w-full sm:max-w-sm" for="product-search">
@@ -73,6 +95,21 @@
                     status.textContent = text;
                     status.className = 'mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700';
                 };
+
+                fetch(@json(url('/api/admin/dashboard/stats')), { headers: { Accept: 'application/json' } })
+                    .then((response) => {
+                        if (!response.ok) throw new Error('Unable to load product statistics.');
+                        return response.json();
+                    })
+                    .then((payload) => {
+                        if (!payload.stats) throw new Error(payload.message || 'Unable to load product statistics.');
+                        document.querySelector('#product-stat-total').textContent = payload.stats.total_products;
+                        document.querySelector('#product-stat-active').textContent = payload.stats.active_products;
+                        document.querySelector('#product-stat-inactive').textContent = payload.stats.inactive_products;
+                        document.querySelector('#product-stat-out').textContent = payload.stats.out_of_stock_products;
+                    })
+                    .catch((error) => showError(error.message));
+
                 const renderPagination = (meta) => {
                     pagination.innerHTML = '';
                     for (let page = 1; page <= meta.last_page; page += 1) {
