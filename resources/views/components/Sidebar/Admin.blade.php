@@ -15,10 +15,9 @@
                     ['route' => 'admin.product', 'label' => 'Products', 'icon' => 'package'],
                     ['route' => 'admin.user', 'label' => 'Users', 'icon' => 'users'],
                     ['route' => 'admin.vendor', 'label' => 'Vendors', 'icon' => 'store'],
-                    ['route' => 'admin.rating', 'label' => 'Ratings', 'icon' => 'star'],
                     ['route' => 'admin.query*', 'label' => 'Queries', 'icon' => 'message-square'],
                     // ['route' => 'admin.notification', 'label' => 'Notifications', 'icon' => 'bell'],
-                    // ['route' => 'admin.profile', 'label' => 'Profile', 'icon' => 'user-round'],
+                    ['route' => 'admin.profile', 'label' => 'Profile', 'icon' => 'user-round'],
                 ];
             @endphp
 

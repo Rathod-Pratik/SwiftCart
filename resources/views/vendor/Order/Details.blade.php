@@ -23,7 +23,9 @@
         </div>
 
         <div id="order-status-message" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
-        <div id="order-loading" class="rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">Loading order details...</div>
+        <div id="order-loading" class="rounded-xl bg-white p-8 shadow-sm">
+            <x-loading />
+        </div>
 
         <section id="order-details" class="hidden max-w-5xl rounded-xl bg-white p-5 shadow-sm sm:p-8">
             <div class="mb-8 flex flex-col gap-4 border-b border-gray-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
@@ -98,8 +100,7 @@
                 const money = (value) => `₹${Number(value ?? 0).toFixed(2)}`;
                 const date = (value) => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'Not available';
                 const showMessage = (text, isError = true) => {
-                    message.textContent = text;
-                    message.className = `mb-4 rounded-lg px-4 py-3 text-sm ${isError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`;
+                    window.showToast?.(text, isError ? 'error' : 'success');
                 };
                 const loadOrder = async () => {
                     if (!id) { loading.classList.add('hidden'); showMessage('An order ID is required in the URL, for example: ?_id=1'); return; }

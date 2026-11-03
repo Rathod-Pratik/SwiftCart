@@ -1,3 +1,14 @@
+@php
+    /** @var \App\Models\User $adminUser */
+    $adminUser = auth()->user();
+    $adminInitials = collect(explode(' ', $adminUser->name ?? 'Admin'))
+        ->filter()
+        ->take(2)
+        ->map(fn($part) => mb_substr($part, 0, 1))
+        ->join('');
+    $adminInitials = strtoupper($adminInitials ?: 'AD');
+@endphp
+
 <nav class="fixed top-0 z-50 w-full bg-[#224e51] text-[#64883e] shadow-lg">
     <div class="px-4 py-3 sm:px-8">
         <div class="flex items-center justify-between">
@@ -27,10 +38,20 @@
                 </a>
 
                 <a href="{{ route('admin.profile') }}" title="My Profile" class="block shrink-0">
-                    <img
-                        src="{{ asset('images/Review4.jpg') }}"
-                        class="h-10 w-10 cursor-pointer rounded-full border-2 border-[#FFFFFF] object-cover transition duration-300 hover:scale-105"
-                        alt="Profile Image">
+                    <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#FFFFFF] bg-[#F4C95D] text-sm font-bold text-[#224e51] transition duration-300 hover:scale-105">
+                        @if (!empty($adminUser?->image))
+                            <img
+                                src=""
+                                data-s3-key="{{ $adminUser->image }}"
+                                data-s3-auto="true"
+                                onerror="this.classList.add('hidden'); document.getElementById('admin-nav-avatar-initials').classList.remove('hidden');"
+                                class="h-full w-full object-cover"
+                                alt="{{ $adminUser->name }}">
+                            <span id="admin-nav-avatar-initials" class="hidden">{{ $adminInitials }}</span>
+                        @else
+                            <span id="admin-nav-avatar-initials">{{ $adminInitials }}</span>
+                        @endif
+                    </div>
                 </a>
 
             </div>

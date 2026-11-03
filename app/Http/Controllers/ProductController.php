@@ -146,9 +146,14 @@ class ProductController extends Controller
 
             $cachedProduct = Cache::tags(['products', "product:{$product->id}"])
                 ->remember($cacheKey, now()->addMinutes(10), function () use ($product) {
-                    $product->load(['category', 'vendor:id,name,email,image', 'informationSections']);
+                    $product->load([
+                        'category',
+                        'vendor:id,name,email,phone,address,image',
+                        'vendor.vendor:id,user_id,phone,business_address,pickup_address,alternate_phone',
+                        'informationSections',
+                    ]);
 
-                    return $product;
+                    return $product->toArray();
                 });
 
             return response()->json([
@@ -289,7 +294,12 @@ class ProductController extends Controller
                 return $product;
             });
 
-            $product->load(['category', 'vendor:id,name,email,image', 'informationSections']);
+            $product->load([
+                'category',
+                'vendor:id,name,email,phone,address,image',
+                'vendor.vendor:id,user_id,phone,business_address,pickup_address,alternate_phone',
+                'informationSections',
+            ]);
 
             return response()->json([
                 'success' => true,

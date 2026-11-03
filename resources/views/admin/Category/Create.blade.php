@@ -5,7 +5,15 @@
 
     <x-slot name="title">{{ $categoryId ? 'Edit Category' : 'Create Category' }}</x-slot>
 
-    <div class="p-4 sm:p-6">
+    <div class="min-h-[calc(100vh-7rem)] p-4 sm:p-6">
+        <nav class="mb-4 flex items-center gap-2 text-sm text-gray-500" aria-label="Breadcrumb">
+            <a href="{{ route('admin.dashboard') }}" class="transition hover:text-[#3d6f6d]">Dashboard</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ route('admin.category') }}" class="transition hover:text-[#3d6f6d]">Categories</a>
+            <span aria-hidden="true">/</span>
+            <span class="font-medium text-gray-700">{{ $categoryId ? 'Edit Category' : 'Create Category' }}</span>
+        </nav>
+
         <div class="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 id="page-title" class="text-2xl font-bold text-gray-900">
@@ -22,7 +30,7 @@
             </a>
         </div>
 
-        <div class="max-w-3xl rounded-xl bg-white p-5 shadow-sm sm:p-8">
+        <div class="w-full rounded-xl bg-white p-5 shadow-sm sm:p-8">
             <form id="category-form"
                   method="POST"
                   action="{{ url('/api/categories') }}"
@@ -33,7 +41,7 @@
                 @csrf
                 <div id="form-status" class="hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
 
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <div>
                         <label for="name" class="mb-2 block text-sm font-semibold text-gray-700">Name</label>
                         <input id="name"
@@ -61,7 +69,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     <div>
                         <label for="image" class="mb-2 block text-sm font-semibold text-gray-700">Category image</label>
                         <input id="image"
@@ -70,9 +78,9 @@
                                accept="image/jpeg,image/png,image/webp"
                                {{ $categoryId ? '' : 'required' }}
                                class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition file:mr-4 file:rounded-md file:border-0 file:bg-[#3d6f6d] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-[#315b59] focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
-                        <div id="current-image" class="mt-3 hidden items-center gap-3">
-                            <img id="current-image-preview" class="h-16 w-16 rounded-lg border border-gray-200 object-cover" alt="Current category image">
-                            <span class="text-xs text-gray-500">Choose a new image to replace the current one.</span>
+                        <div id="image-preview-container" class="mt-4 hidden overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-3">
+                            <img id="image-preview" class="h-56 w-full rounded-lg object-contain" alt="Category image preview">
+                            <p id="image-preview-label" class="mt-2 text-xs text-gray-500">Image preview</p>
                         </div>
                         <p id="image-error" class="mt-1 text-sm text-red-600 {{ $errors->has('image') ? '' : 'hidden' }}">@error('image'){{ $message }}@enderror</p>
                     </div>
@@ -126,7 +134,12 @@
                 const status = document.querySelector('#form-status');
                 const submitButton = form.querySelector('button[type="submit"]');
                 const submitLabel = document.querySelector('#submit-label');
+                const imageInput = form.elements.image;
+                const imagePreviewContainer = document.querySelector('#image-preview-container');
+                const imagePreview = document.querySelector('#image-preview');
+                const imagePreviewLabel = document.querySelector('#image-preview-label');
                 const fieldNames = ['name', 'slug', 'image', 'status', 'description'];
+                let selectedImageUrl = null;
 
                 const showStatus = (message, isError = false) => {
                     status.textContent = message;
@@ -169,6 +182,35 @@
                     return Object.keys(errors).length === 0;
                 };
 
+                const showImagePreview = (url, label) => {
+                    if (selectedImageUrl && selectedImageUrl !== url) {
+                        URL.revokeObjectURL(selectedImageUrl);
+                        selectedImageUrl = null;
+                    }
+
+                    imagePreview.src = url;
+                    imagePreviewLabel.textContent = label;
+                    imagePreviewContainer.classList.remove('hidden');
+                };
+
+                imageInput.addEventListener('change', () => {
+                    const file = imageInput.files?.[0];
+                    if (!file) return;
+
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                    if (!allowedTypes.includes(file.type) || file.size > 5 * 1024 * 1024) {
+                        imageInput.value = '';
+                        showFieldErrors({
+                            image: ['Please choose a JPEG, PNG, or WEBP image up to 5 MB.'],
+                        });
+                        return;
+                    }
+
+                    selectedImageUrl = URL.createObjectURL(file);
+                    showImagePreview(selectedImageUrl, `New image: ${file.name}`);
+                    document.querySelector('#image-error').classList.add('hidden');
+                });
+
                 const loadCategory = async () => {
                     try {
                         const response = await fetch(`${apiUrl}/${encodeURIComponent(categoryId)}`, {
@@ -183,17 +225,11 @@
                         setFieldValue('name', category.name);
                         setFieldValue('slug', category.slug);
                         if (category.icon) {
-                            const currentImage = document.querySelector('#current-image');
-                            const currentImagePreview = document.querySelector('#current-image-preview');
-                            currentImagePreview.onerror = () => currentImage.classList.add('hidden');
-                            currentImage.classList.remove('hidden');
-                            currentImage.classList.add('flex');
                             window.s3Url(category.icon).then(url => {
-                                currentImagePreview.src = url ?? '';
-                                if (!url) currentImage.classList.add('hidden');
+                                if (url && !imageInput.files.length) {
+                                    showImagePreview(url, 'Current category image');
+                                }
                             });
-                        } else {
-                            currentImage.classList.add('hidden');
                         }
                         setFieldValue('description', category.description);
                         form.elements.status.value = category.status;
@@ -241,6 +277,10 @@
                 });
 
                 if (categoryId) loadCategory();
+
+                window.addEventListener('pagehide', () => {
+                    if (selectedImageUrl) URL.revokeObjectURL(selectedImageUrl);
+                });
             })();
         </script>
     @endpush

@@ -6,8 +6,17 @@
     <x-slot name="title">Category Details</x-slot>
 
     <div class="p-4 sm:p-6">
+        <nav class="mb-4 flex items-center gap-2 text-sm text-gray-500" aria-label="Breadcrumb">
+            <a href="{{ route('admin.dashboard') }}" class="transition hover:text-[#3d6f6d]">Dashboard</a>
+            <span aria-hidden="true">/</span>
+            <a href="{{ route('admin.category') }}" class="transition hover:text-[#3d6f6d]">Categories</a>
+            <span aria-hidden="true">/</span>
+            <span class="font-medium text-gray-700">Category Details</span>
+        </nav>
+
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
+                <p class="text-sm font-medium text-[#3d6f6d]">Catalog management</p>
                 <h1 class="text-2xl font-bold text-gray-900">Category Details</h1>
             </div>
 

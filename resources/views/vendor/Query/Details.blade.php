@@ -23,7 +23,9 @@
         </div>
 
         <div id="query-message" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
-        <div id="query-loading" class="rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">Loading query details...</div>
+        <div id="query-loading" class="rounded-xl bg-white p-8 shadow-sm">
+            <x-loading />
+        </div>
 
         <section id="query-details" class="hidden grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <div class="rounded-xl bg-white p-5 shadow-sm sm:p-8">
@@ -70,8 +72,7 @@
                 }[character]));
                 const set = (selector, value) => { document.querySelector(selector).textContent = value || 'Not provided'; };
                 const showMessage = (text, isError = true) => {
-                    message.textContent = text;
-                    message.className = `mb-4 rounded-lg px-4 py-3 text-sm ${isError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`;
+                    window.showToast?.(text, isError ? 'error' : 'success');
                 };
                 const loadMessages = async () => {
                     const response = await fetch(`${apiUrl}/${id}/messages`, { headers: { Accept: 'application/json' } });

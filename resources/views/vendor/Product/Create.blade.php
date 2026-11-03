@@ -67,8 +67,9 @@
                             Product Category <span class="text-rose-500 font-bold">*</span>
                         </label>
                         <select name="category_id" id="category_id" class="mt-2 w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-[#3d6f6d] focus:ring-2 focus:ring-[#3d6f6d]/20">
-                            <option value="">Loading categories...</option>
+                            <option value="">Select a category</option>
                         </select>
+                        <div id="category-loading" class="mt-2"><x-loading /></div>
                         <p id="error-category_id" class="mt-1.5 text-xs font-medium text-rose-600 hidden"></p>
                     </div>
 
@@ -345,7 +346,7 @@
 
                         {{-- Dynamic Service Cards with Vector Icons from Library --}}
                         <div id="service-suggestions-container" class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                            <div class="col-span-full py-4 text-center text-xs text-gray-400">Loading service perks from library...</div>
+                            <div class="col-span-full py-4"><x-loading /></div>
                         </div>
 
                         {{-- Hidden/Synchronized input --}}
@@ -397,9 +398,11 @@
         <script>
             (() => {
                 const form = document.querySelector('#product-form');
-                const productId = form.dataset.productId;
+                const query = new URLSearchParams(window.location.search);
+                const productId = query.get('_id') || query.get('id') || query.get('productId') || form.dataset.productId;
                 const productUrl = @json(url('/api/products'));
                 const categoryUrl = @json(url('/api/categories'));
+                const categoryLoading = document.querySelector('#category-loading');
                 const statusAlert = document.querySelector('#form-status');
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const submitLabel = document.querySelector('#submit-label');
@@ -1032,6 +1035,7 @@
                     if (!response.ok || !payload.success) throw new Error(payload.message || 'Unable to load categories.');
                     const categories = payload.data.data ?? [];
                     form.elements.category_id.innerHTML = '<option value="">Select a category</option>' + categories.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
+                    categoryLoading?.classList.add('hidden');
                 };
 
                 const loadProduct = async () => {
@@ -1042,12 +1046,20 @@
                         return;
                     }
 
-                    const response = await fetch(`${productUrl}/${productId}`, { headers: { Accept: 'application/json' } });
+                    console.log('Loading product for edit:', productId);
+                    const response = await fetch(`${productUrl}/${encodeURIComponent(productId)}`, { headers: { Accept: 'application/json' } });
                     const payload = await response.json();
+                    console.log('Product API response:', payload);
                     if (!response.ok || !payload.success) throw new Error(payload.message || 'Unable to load product.');
-                    const product = payload.data;
+                    const product = payload.data?.data ?? payload.data;
+                    console.log('Product data for edit:', product);
+                    if (!product || typeof product !== 'object') throw new Error('Product data was not returned by the API.');
 
-                    const setValue = (name, val) => { if (form.elements[name]) form.elements[name].value = val ?? ''; };
+                    const getField = (name) => form.querySelector(`[name="${name}"]`);
+                    const setValue = (name, val) => {
+                        const field = getField(name);
+                        if (field) field.value = val ?? '';
+                    };
                     ['name', 'price', 'discount', 'stock', 'status', 'visibility', 'category_id'].forEach((field) => setValue(field, product[field]));
                     setValue('vendor_service_id', Array.isArray(product.vendor_service_id) ? product.vendor_service_id.join(', ') : (product.vendor_service_id || ''));
                     selectedServiceNames.clear();
@@ -1058,7 +1070,10 @@
                     }
                     syncSelectedServices();
                     renderServiceSuggestions();
-                    ['is_featured', 'is_trending', 'is_limited'].forEach((field) => { form.elements[field].checked = Boolean(product[field]); });
+                    ['is_featured', 'is_trending', 'is_limited'].forEach((field) => {
+                        const checkbox = getField(field);
+                        if (checkbox) checkbox.checked = Boolean(product[field]);
+                    });
                     updatePricePreview();
 
                     // Load Images
@@ -1201,19 +1216,7 @@
 
                     // If any error exists, scroll to first error and stop
                     if (firstInvalidEl) {
-                        statusAlert.innerHTML = `
-                            <div class="flex items-start gap-3">
-                                <svg class="h-5 w-5 text-rose-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <div>
-                                    <p class="font-bold text-rose-900">Required information is missing or invalid</p>
-                                    <p class="mt-0.5 text-xs text-rose-700">Please review the highlighted sections above and correct the indicated fields.</p>
-                                </div>
-                            </div>
-                        `;
-                        statusAlert.className = 'rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium shadow-sm';
-                        statusAlert.classList.remove('hidden');
+                        window.showToast?.('Please review the highlighted fields and correct the indicated values.', 'error');
 
                         firstInvalidEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         if (typeof firstInvalidEl.focus === 'function') {
@@ -1303,9 +1306,7 @@
                         }
                         window.location.href = @json(route('vendor.product'));
                     } catch (error) {
-                        statusAlert.innerHTML = `<p class="font-bold text-rose-900">Submission Error</p><p class="mt-0.5 text-xs text-rose-700">${escapeHtml(error.message)}</p>`;
-                        statusAlert.className = 'rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium shadow-sm';
-                        statusAlert.classList.remove('hidden');
+                        window.showToast?.(error.message, 'error');
                         statusAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
                         submitBtn.disabled = false;
@@ -1314,10 +1315,9 @@
                     }
                 });
 
-                Promise.all([loadCategories(), loadProduct()]).catch((error) => {
-                    statusAlert.innerHTML = `<p class="text-xs text-rose-700">${escapeHtml(error.message)}</p>`;
-                    statusAlert.className = 'rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium shadow-sm';
-                    statusAlert.classList.remove('hidden');
+                loadCategories().then(loadProduct).catch((error) => {
+                    console.error('Unable to initialize product form:', error);
+                    window.showToast?.(error.message, 'error');
                 });
             })();
         </script>

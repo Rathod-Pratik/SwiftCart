@@ -419,9 +419,7 @@
                             renderIconGrid();
                             updatePreview();
                         } else if (!nameInput.value) {
-                            formStatus.textContent = result.message || 'Service not found';
-                            formStatus.className = 'mb-5 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700 font-medium';
-                            formStatus.classList.remove('hidden');
+                            window.showToast?.(result.message || 'Service not found', 'error');
                         }
                     } catch (err) {
                         console.error('Error fetching service:', err);
@@ -486,23 +484,17 @@
                         const result = await response.json();
 
                         if (result.success) {
-                            formStatus.textContent = isEdit ? 'Service updated successfully!' : 'Service created successfully!';
-                            formStatus.className = 'mb-5 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 font-medium';
-                            formStatus.classList.remove('hidden');
+                            window.showToast?.(isEdit ? 'Service updated successfully!' : 'Service created successfully!', 'success');
 
                             setTimeout(() => {
                                 window.location.href = indexUrl;
                             }, 1000);
                         } else {
                             const errMessage = result.message || (result.errors ? Object.values(result.errors).flat().join(', ') : 'Failed to save service');
-                            formStatus.textContent = errMessage;
-                            formStatus.className = 'mb-5 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700 font-medium';
-                            formStatus.classList.remove('hidden');
+                            window.showToast?.(errMessage, 'error');
                         }
                     } catch (err) {
-                        formStatus.textContent = 'A network error occurred. Please try again.';
-                        formStatus.className = 'mb-5 rounded-xl bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-700 font-medium';
-                        formStatus.classList.remove('hidden');
+                        window.showToast?.('A network error occurred. Please try again.', 'error');
                     } finally {
                         saveSpinner.classList.add('hidden');
                         saveBtn.disabled = false;

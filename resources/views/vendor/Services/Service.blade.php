@@ -104,7 +104,7 @@
             <div id="service-status" class="mb-4 hidden rounded-xl px-4 py-3 text-sm font-medium" role="alert"></div>
 
             {{-- Table --}}
-            <div class="overflow-x-auto">
+            <div class="min-h-[260px] overflow-x-auto">
                 <table class="w-full min-w-[650px] text-left text-sm">
                     <thead class="border-b border-gray-200 text-xs font-semibold uppercase tracking-wider text-gray-500">
                         <tr>
@@ -115,9 +115,12 @@
                             <th class="px-4 py-3 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="service-list" class="divide-y divide-gray-100"></tbody>
+                    <tbody id="service-list" class="divide-y divide-gray-100">
+                        <tr><td colspan="5" class="px-4 py-12"><x-loading /></td></tr>
+                    </tbody>
                 </table>
             </div>
+            <template id="service-loading-template"><x-loading /></template>
 
             {{-- Empty State --}}
             <div id="service-empty" class="hidden py-14 text-center">
@@ -168,6 +171,7 @@
                 const createUrl = @json(route('vendor.service.create'));
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
                 const list = document.querySelector('#service-list');
+                const loadingTemplate = document.querySelector('#service-loading-template');
                 const empty = document.querySelector('#service-empty');
                 const status = document.querySelector('#service-status');
                 const search = document.querySelector('#service-search');
@@ -224,9 +228,7 @@
                 }[c]));
 
                 const showBanner = (message, isError = false) => {
-                    status.textContent = message;
-                    status.className = `mb-4 rounded-xl px-4 py-3 text-sm font-medium ${isError ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}`;
-                    status.classList.remove('hidden');
+                    window.showToast?.(message, isError ? 'error' : 'success');
                     setTimeout(() => status.classList.add('hidden'), 5000);
                 };
 
@@ -326,6 +328,7 @@
                 };
 
                 const loadServices = async () => {
+                    list.innerHTML = `<tr><td colspan="5" class="px-4 py-12">${loadingTemplate.innerHTML}</td></tr>`;
                     try {
                         const response = await fetch(apiUrl, {
                             headers: {

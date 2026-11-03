@@ -80,7 +80,7 @@
 
             <div id="coupon-status" class="mb-4 hidden rounded-xl px-4 py-3 text-sm font-medium" role="alert"></div>
 
-            <div class="overflow-x-auto">
+            <div class="min-h-[260px] overflow-x-auto">
                 <table class="w-full min-w-[850px] text-left text-sm">
                     <thead class="border-b border-gray-200 text-xs font-semibold uppercase tracking-wider text-gray-500">
                         <tr>
@@ -93,9 +93,12 @@
                             <th class="px-4 py-3 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="coupon-list" class="divide-y divide-gray-100"></tbody>
+                    <tbody id="coupon-list" class="divide-y divide-gray-100">
+                        <tr><td colspan="7" class="px-4 py-12"><x-loading /></td></tr>
+                    </tbody>
                 </table>
             </div>
+            <template id="coupon-loading-template"><x-loading /></template>
 
             <div id="coupon-empty" class="hidden py-14 text-center">
                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3d6f6d]/10 text-[#3d6f6d]">
@@ -138,6 +141,7 @@
                 const createUrl = @json(route('vendor.coupon.create'));
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
                 const list = document.querySelector('#coupon-list');
+                const loadingTemplate = document.querySelector('#coupon-loading-template');
                 const empty = document.querySelector('#coupon-empty');
                 const status = document.querySelector('#coupon-status');
                 const search = document.querySelector('#coupon-search');
@@ -163,10 +167,7 @@
                 }[character]));
 
                 const showBanner = (message, isError = false) => {
-                    status.textContent = message;
-                    status.className = `mb-4 rounded-xl border px-4 py-3 text-sm font-medium ${isError ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-emerald-200 bg-emerald-50 text-emerald-800'}`;
-                    status.classList.remove('hidden');
-                    setTimeout(() => status.classList.add('hidden'), 5000);
+                    window.showToast?.(message, isError ? 'error' : 'success');
                 };
 
                 const formatCurrency = (value) => `₹${Number(value || 0).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
@@ -261,6 +262,7 @@
                 };
 
                 const loadCoupons = async () => {
+                    list.innerHTML = `<tr><td colspan="7" class="px-4 py-12">${loadingTemplate.innerHTML}</td></tr>`;
                     try {
                         const response = await fetch(apiUrl, {
                             headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }

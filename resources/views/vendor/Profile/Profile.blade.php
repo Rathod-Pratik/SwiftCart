@@ -467,9 +467,8 @@
                     </p>
                 </div>
 
-                <div id="docs-loading" class="py-6 text-center text-sm text-gray-400">
-                    <svg class="mx-auto mb-2 h-5 w-5 animate-spin text-gray-300" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-                    Loading document status…
+                <div id="docs-loading" class="py-6">
+                    <x-loading />
                 </div>
 
                 <div id="docs-content" class="hidden">
@@ -567,7 +566,7 @@
     @push('scripts')
         <script>
             // ── Tab switching — top-level so onclick= always resolves it ──
-            function switchTab(tabName) {
+            window.switchTab = function (tabName) {
                 document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
                 document.querySelectorAll('.tab-button').forEach(b => {
                     b.classList.remove('border-[#224e51]', 'text-[#224e51]', 'font-semibold', 'border-red-300', 'text-red-600');
@@ -584,7 +583,7 @@
                         btn.classList.add('border-[#224e51]', 'text-[#224e51]', 'font-semibold');
                     }
                 }
-            }
+            };
 
             (() => {
                 const profileUrl  = @json(url('/api/profile'));
@@ -630,12 +629,6 @@
                         }
                     });
                 }
-
-                // ── Alert helpers ───────────────────────────────────
-                window.showAlert = (message, type = 'success') => {
-                    window.showToast?.(message, type === 'error' ? 'error' : type);
-                    return;
-                };
 
                 // switchTab is defined at top-level above the IIFE
 
@@ -697,9 +690,9 @@
                             const signed = await getS3Url(payload.user.image);
                             updateAvatarSrc(signed);
                         }
-                        showAlert('Profile photo updated.');
+                        window.showToast?.('Profile photo updated.');
                     } catch (err) {
-                        showAlert(err.message, 'error');
+                        window.showToast?.(err.message, 'error');
                     } finally {
                         if (headerSpinner) { headerSpinner.classList.add('hidden'); headerSpinner.classList.remove('flex'); }
                         avatarInput.value = '';
@@ -778,7 +771,7 @@
                         document.querySelectorAll('[id^="doc-status-"]').forEach(statusEl => {
                             statusEl.innerHTML = '<span class="text-red-600">Unable to load document status.</span>';
                         });
-                        showAlert('Unable to load your document status. Please try again.', 'error');
+                        window.showToast?.('Unable to load your document status. Please try again.', 'error');
                     } finally {
                         if (loadingEl) loadingEl.classList.add('hidden');
                         if (contentEl) contentEl.classList.remove('hidden');
@@ -799,8 +792,8 @@
                             fd.append(field, file);
                             const res = await fetch(vendorDocsUrl, { method: 'POST', headers: { Accept: 'application/json', 'X-CSRF-TOKEN': csrf }, body: fd });
                             const payload = await res.json();
-                            if (!res.ok) { showAlert(payload.message || 'Upload failed.', 'error'); return; }
-                            showAlert(`${field.replace(/_/g,' ')} uploaded successfully!`);
+                            if (!res.ok) { window.showToast?.(payload.message || 'Upload failed.', 'error'); return; }
+                            window.showToast?.(`${field.replace(/_/g,' ')} uploaded successfully!`);
                             // Update status badge
                             if (statusEl) statusEl.innerHTML = `<svg class="h-3.5 w-3.5 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span class="text-emerald-700 font-semibold">Uploaded</span>`;
                             // Refresh view link
@@ -808,7 +801,7 @@
                             if (newKey && viewEl) {
                                 getS3Url(newKey).then(url => { if (url) { viewEl.href = url; viewEl.classList.remove('hidden'); } });
                             }
-                        } catch { showAlert('A network error occurred.', 'error'); }
+                        } catch { window.showToast?.('A network error occurred.', 'error'); }
                         finally { if (uploadingEl) uploadingEl.classList.add('hidden'); input.value = ''; }
                     });
                 });
@@ -827,15 +820,15 @@
                         const fd = new FormData(generalForm); fd.append('_method', 'PATCH');
                         const res = await fetch(profileUrl, { method: 'POST', headers: { Accept: 'application/json', 'X-CSRF-TOKEN': csrf }, body: fd });
                         const payload = await res.json();
-                        if (!res.ok) { if (res.status === 422 && payload.errors) { showErrors(payload.errors); showAlert('Please check the form for errors.', 'error'); } else { showAlert(payload.message || 'Update failed.', 'error'); } return; }
-                        showAlert(payload.message || 'Profile updated successfully!');
+                        if (!res.ok) { if (res.status === 422 && payload.errors) { showErrors(payload.errors); window.showToast?.('Please check the form for errors.', 'error'); } else { window.showToast?.(payload.message || 'Update failed.', 'error'); } return; }
+                        window.showToast?.(payload.message || 'Profile updated successfully!');
                         if (payload.user) {
                             if (headerName) headerName.textContent = payload.user.name;
                             if (headerEmail) headerEmail.querySelector('span').textContent = payload.user.email;
                             const navName = document.querySelector('.vendor-nav-name');
                             if (navName) navName.textContent = `Welcome, ${payload.user.name}`;
                         }
-                    } catch { showAlert('A network error occurred.', 'error'); }
+                    } catch { window.showToast?.('A network error occurred.', 'error'); }
                     finally { btn.disabled = false; txt.textContent = 'Save Changes'; }
                 });
 
@@ -848,10 +841,10 @@
                     try {
                         const res = await fetch(profileUrl, { method: 'PATCH', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify({ password: passwordForm.elements['password'].value, password_confirmation: passwordForm.elements['password_confirmation'].value }) });
                         const payload = await res.json();
-                        if (!res.ok) { if (res.status === 422 && payload.errors) { showErrors(payload.errors); showAlert('Password requirements not met.', 'error'); } else { showAlert(payload.message || 'Update failed.', 'error'); } return; }
-                        showAlert('Password updated successfully!');
+                        if (!res.ok) { if (res.status === 422 && payload.errors) { showErrors(payload.errors); window.showToast?.('Password requirements not met.', 'error'); } else { window.showToast?.(payload.message || 'Update failed.', 'error'); } return; }
+                        window.showToast?.('Password updated successfully!');
                         passwordForm.reset();
-                    } catch { showAlert('A network error occurred.', 'error'); }
+                    } catch { window.showToast?.('A network error occurred.', 'error'); }
                     finally { btn.disabled = false; txt.textContent = 'Update Password'; }
                 });
 
@@ -865,10 +858,10 @@
                         const data = Object.fromEntries(new FormData(bankForm)); delete data._token;
                         const res = await fetch(bankUrl, { method: 'PATCH', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf }, body: JSON.stringify(data) });
                         const payload = await res.json();
-                        if (!res.ok) { showAlert(payload.message || 'Failed to update bank details.', 'error'); return; }
-                        showAlert('Bank details updated successfully!');
+                        if (!res.ok) { window.showToast?.(payload.message || 'Failed to update bank details.', 'error'); return; }
+                        window.showToast?.('Bank details updated successfully!');
                         bankForm.elements['account_number'].value = '';
-                    } catch { showAlert('A network error occurred.', 'error'); }
+                    } catch { window.showToast?.('A network error occurred.', 'error'); }
                     finally { btn.disabled = false; txt.textContent = 'Save Bank Details'; }
                 });
 
@@ -879,8 +872,8 @@
                     try {
                         const res = await fetch(resendUrl, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf } });
                         const payload = await res.json();
-                        showAlert(payload.message || 'Verification email sent!');
-                    } catch { showAlert('Unable to send verification email.', 'error'); }
+                        window.showToast?.(payload.message || 'Verification email sent!');
+                    } catch { window.showToast?.('Unable to send verification email.', 'error'); }
                     finally { if (btn) btn.disabled = false; }
                 };
 

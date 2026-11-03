@@ -5,20 +5,29 @@
 
     <x-slot name="title">Vendor Details</x-slot>
 
-    <div class="p-4 sm:p-6">
+    <div class="min-h-[calc(100vh-7rem)] p-4 sm:p-6">
+        <nav class="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-400" aria-label="Breadcrumb">
+            <a href="{{ route('admin.dashboard') }}" class="transition hover:text-gray-600">Dashboard</a>
+            <span>/</span>
+            <a href="{{ route('admin.vendor') }}" class="transition hover:text-gray-600">Vendors</a>
+            <span>/</span>
+            <span class="text-gray-800">Details</span>
+        </nav>
+
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Vendor Details</h1>
+                <p class="mt-1 text-sm text-gray-600">Review vendor, business, verification, and account information.</p>
             </div>
             <a href="{{ route('admin.vendor') }}"
                class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">
                 Back
             </a>
         </div>
-        <div id="vendor-loading" class="rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">Loading vendor details...</div>
+        <div id="vendor-loading" class="min-h-[calc(100vh-14rem)] rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">Loading vendor details...</div>
 
-        <section id="vendor-details" class="hidden max-w-5xl rounded-xl bg-white p-5 shadow-sm sm:p-8">
-            <div class="mb-8 flex flex-col gap-4 border-b border-gray-100 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <section id="vendor-details" class="hidden w-full rounded-xl bg-white p-5 shadow-sm sm:p-8 lg:p-10">
+            <div class="mb-10 flex flex-col gap-5 border-b border-gray-100 pb-8 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-4">
                     <div id="vendor-avatar" class="flex h-16 w-16 items-center justify-center rounded-full bg-[#b8d8da] text-xl font-bold text-[#3d6f6d]"></div>
                     <div>
@@ -29,11 +38,11 @@
                 <span id="vendor-status-badge" class="w-fit rounded-full px-3 py-1 text-xs font-semibold"></span>
             </div>
 
-            <div id="vendor-status" class="hidden mb-4 rounded-lg px-4 py-3 text-sm"></div>
+            <div id="vendor-status" class="mb-6 hidden rounded-lg px-4 py-3 text-sm"></div>
 
-            <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                 <div>
-                    <h3 class="mb-4 text-lg font-bold text-gray-900">Contact Information</h3>
+                    <h3 class="mb-5 text-lg font-bold text-gray-900">Contact Information</h3>
                     <dl class="grid gap-4">
                         <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Vendor ID</dt><dd id="vendor-id" class="mt-2 text-sm text-gray-700"></dd></div>
                         <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Phone</dt><dd id="vendor-phone" class="mt-2 text-sm text-gray-700"></dd></div>
@@ -42,7 +51,7 @@
                     </dl>
                 </div>
                 <div>
-                    <h3 class="mb-4 text-lg font-bold text-gray-900">Business Information</h3>
+                    <h3 class="mb-5 text-lg font-bold text-gray-900">Business Information</h3>
                     <dl class="grid gap-4">
                         <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Company</dt><dd id="vendor-company" class="mt-2 text-sm text-gray-700"></dd></div>
                         <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Account holder</dt><dd id="vendor-account-holder" class="mt-2 text-sm text-gray-700"></dd></div>
@@ -53,8 +62,8 @@
             </div>
 
             {{-- 3. Identity Verification & KYC --}}
-            <div class="mt-8 border-t border-gray-100 pt-6">
-                <div class="mb-4 flex items-center gap-2">
+            <div class="mt-10 border-t border-gray-100 pt-8">
+                <div class="mb-5 flex items-center gap-3">
                     <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
                         <x-lucide-shield-check class="h-4 w-4" />
                     </span>
@@ -64,7 +73,7 @@
                     </div>
                 </div>
 
-                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     <div class="rounded-lg bg-gray-50 p-4">
                         <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Identity Document Type</dt>
                         <dd id="vendor-id-type" class="mt-2 text-sm font-semibold text-gray-900"></dd>
@@ -113,8 +122,8 @@
             </div>
 
             {{-- 4. Shipping & Warehouse Logistics --}}
-            <div class="mt-8 border-t border-gray-100 pt-6">
-                <div class="mb-4 flex items-center gap-2">
+            <div class="mt-10 border-t border-gray-100 pt-8">
+                <div class="mb-5 flex items-center gap-3">
                     <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                         <x-lucide-package class="h-4 w-4" />
                     </span>
@@ -124,7 +133,7 @@
                     </div>
                 </div>
 
-                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
                         <dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Pickup / Warehouse Address</dt>
                         <dd id="vendor-pickup-address" class="mt-2 text-sm text-gray-700"></dd>
@@ -143,7 +152,7 @@
                 </dl>
             </div>
 
-            <div class="mt-8 grid grid-cols-1 gap-4 border-t border-gray-100 pt-6 sm:grid-cols-2">
+            <div class="mt-10 grid grid-cols-1 gap-5 border-t border-gray-100 pt-8 sm:grid-cols-2">
                 <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Joined</dt><dd id="vendor-created-at" class="mt-2 text-sm text-gray-700"></dd></div>
                 <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase tracking-wide text-gray-500">Last updated</dt><dd id="vendor-updated-at" class="mt-2 text-sm text-gray-700"></dd></div>
             </div>

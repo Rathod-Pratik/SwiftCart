@@ -41,7 +41,7 @@
             </div>
             <div id="query-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
 
-            <div class="overflow-x-auto">
+            <div class="min-h-[260px] overflow-x-auto">
                 <table class="w-full min-w-[760px] text-left text-sm">
                     <thead class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
                         <tr>
@@ -55,6 +55,7 @@
                     <tbody id="query-list" class="divide-y divide-gray-100"></tbody>
                 </table>
             </div>
+            <template id="query-loading-template"><x-loading /></template>
             <div id="query-empty" class="hidden py-12 text-center text-sm text-gray-500">No customer queries found.</div>
             <div class="mt-5 flex flex-col gap-3 border-t border-gray-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <p id="pagination-summary" class="text-sm text-gray-500"></p>
@@ -72,6 +73,7 @@
                 const empty = document.querySelector('#query-empty');
                 const status = document.querySelector('#query-status');
                 const search = document.querySelector('#query-search');
+                const loadingTemplate = document.querySelector('#query-loading-template');
                 const count = document.querySelector('#query-count');
                 const pagination = document.querySelector('#pagination');
                 const summary = document.querySelector('#pagination-summary');
@@ -92,8 +94,7 @@
                 }[character]));
                 const formatDate = (value) => value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'No activity';
                 const showError = (text) => {
-                    status.textContent = text;
-                    status.className = 'mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700';
+                    window.showToast?.(text, 'error');
                 };
                 const renderPagination = (meta) => {
                     pagination.innerHTML = '';
@@ -124,7 +125,7 @@
                 };
                 const loadQueries = async (page = 1) => {
                     status.classList.add('hidden');
-                    list.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center text-sm text-gray-500">Loading queries...</td></tr>';
+                    list.innerHTML = `<tr><td colspan="5" class="px-4 py-12">${loadingTemplate.innerHTML}</td></tr>`;
                     const params = new URLSearchParams({ page, per_page: 10 });
                     if (search.value.trim()) params.set('search', search.value.trim());
                     try {

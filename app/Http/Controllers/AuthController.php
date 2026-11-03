@@ -441,7 +441,15 @@ class AuthController extends Controller
     public function getUserById(int $id): JsonResponse
     {
         try {
-            $user = User::query()->whereKey($id)->first();
+            $user = User::query()
+                ->withCount(['orders', 'wishlists', 'carts', 'reviews'])
+                ->with([
+                    'orders' => fn ($query) => $query
+                        ->latest()
+                        ->with('items:id,order_id,product_name,quantity,total_price'),
+                ])
+                ->whereKey($id)
+                ->first();
             if (! $user) {
                 return response()->json(['message' => 'User not found'], 404);
             }
