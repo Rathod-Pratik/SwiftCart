@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\User;
+use App\Notifications\CategoryActionNotification;
 use App\Services\S3Service;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -142,6 +145,15 @@ class CategoryController extends Controller
 
             $category = Category::create($validated);
 
+            try {
+                $admins = User::where('role', 'admin')->get();
+                if ($admins->isNotEmpty()) {
+                    Notification::send($admins, new CategoryActionNotification($category->name, 'created', $category->id));
+                }
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending category created notification: '.$notifError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Category created successfully',
@@ -211,6 +223,15 @@ class CategoryController extends Controller
 
             $category->update($validated);
 
+            try {
+                $admins = User::where('role', 'admin')->get();
+                if ($admins->isNotEmpty()) {
+                    Notification::send($admins, new CategoryActionNotification($category->name, 'updated', $category->id));
+                }
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending category updated notification: '.$notifError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Category updated successfully',
@@ -248,7 +269,17 @@ class CategoryController extends Controller
             // Remove image from S3
             $this->s3Service->deleteIfExists($category->icon);
 
+            $categoryName = $category->name;
             $category->delete();
+
+            try {
+                $admins = User::where('role', 'admin')->get();
+                if ($admins->isNotEmpty()) {
+                    Notification::send($admins, new CategoryActionNotification($categoryName, 'deleted'));
+                }
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending category deleted notification: '.$notifError->getMessage());
+            }
 
             return response()->json([
                 'success' => true,

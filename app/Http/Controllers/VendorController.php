@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVendorRequest;
 use App\Mail\VendorAccountApproved;
 use App\Models\Vendor;
+use App\Notifications\VendorApplicationStatusChanged;
 use App\Services\S3Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
@@ -212,6 +214,12 @@ class VendorController extends Controller
             }
         } elseif ($newStatus === 'rejected') {
             $vendor->user?->update(['role' => 'customer']);
+        }
+
+        try {
+            $vendor->user?->notify(new VendorApplicationStatusChanged($vendor, $newStatus));
+        } catch (\Throwable $notifError) {
+            Log::warning('Failed sending vendor application status notification: '.$notifError->getMessage());
         }
 
         return response()->json([

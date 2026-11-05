@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\User;
+use App\Notifications\NewOrderReceived;
+use App\Notifications\OrderStatusUpdated;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -208,6 +211,26 @@ class OrderController extends Controller
                 }
                 OrderItem::insert($itemsData);
 
+                try {
+                    $vendorGroups = [];
+                    foreach ($itemsData as $item) {
+                        $p = Product::find($item['product_id']);
+                        if ($p && $p->vendor_id) {
+                            $vendorGroups[$p->vendor_id][] = $item;
+                        }
+                    }
+                    foreach ($vendorGroups as $vId => $vItems) {
+                        $vendorUser = User::find($vId);
+                        if ($vendorUser) {
+                            $vendorTotal = array_sum(array_column($vItems, 'total_price'));
+                            $itemCount = array_sum(array_column($vItems, 'quantity'));
+                            $vendorUser->notify(new NewOrderReceived($order, $itemCount, (float) $vendorTotal));
+                        }
+                    }
+                } catch (\Throwable $notifError) {
+                    Log::warning('Failed sending vendor order notification: '.$notifError->getMessage());
+                }
+
                 return $order->load('items');
             });
 
@@ -298,6 +321,20 @@ class OrderController extends Controller
 
             Gate::authorize('update', $order);
             $order->update(['order_status' => $validated['status']]);
+
+        try {
+            $order->loadMissing('user');
+            $order->user?->notify(new OrderStatusUpdated($order, $validated['status']));
+        } catch (\Throwable $e) {
+            Log::warning('Failed sending vendor status notification to customer: '.$e->getMessage());
+        }
+
+            try {
+                $order->loadMissing(['items.product.vendor', 'user']);
+                $order->user?->notify(new OrderStatusUpdated($order, $validated['status']));
+            } catch (\Throwable $e) {
+                Log::warning('Failed sending order status update notification: '.$e->getMessage());
+            }
 
             if ($validated['status'] === 'completed') {
                 return response()->json([
@@ -420,6 +457,13 @@ class OrderController extends Controller
         }
 
         $order->update(['order_status' => $validated['status']]);
+
+        try {
+            $order->loadMissing('user');
+            $order->user?->notify(new OrderStatusUpdated($order, $validated['status']));
+        } catch (\Throwable $e) {
+            Log::warning('Failed sending vendor status notification to customer: '.$e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

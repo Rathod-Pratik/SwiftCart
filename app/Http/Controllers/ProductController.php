@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\User;
+use App\Notifications\ProductActionNotification;
+use App\Notifications\ProductFlagsUpdatedNotification;
+use App\Notifications\ProductLowStockAlert;
+use App\Notifications\ProductRemovedAdminNotification;
 use App\Notifications\ProductRemovedByAdmin;
 use App\Services\S3Service;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -13,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
@@ -318,6 +324,12 @@ class ProductController extends Controller
                 'informationSections',
             ]);
 
+            try {
+                $user->notify(new ProductActionNotification($product->name, 'created', $product->id));
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending product created notification: '.$notifError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product created successfully',
@@ -466,6 +478,21 @@ class ProductController extends Controller
 
             $product->load(['category', 'vendor:id,name,email,image', 'informationSections']);
 
+            try {
+                $targetUser = $product->vendor ?? $user;
+                $targetUser?->notify(new ProductActionNotification($product->name, 'updated', $product->id));
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending product updated notification: '.$notifError->getMessage());
+            }
+
+            if ($product->wasChanged('stock') && (int) $product->stock <= 3) {
+                try {
+                    $product->vendor?->notify(new ProductLowStockAlert($product, (int) $product->stock));
+                } catch (\Throwable $notifError) {
+                    Log::warning('Failed sending low stock notification: '.$notifError->getMessage());
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product updated successfully',
@@ -515,6 +542,15 @@ class ProductController extends Controller
 
             $product->update($validated);
 
+            try {
+                $admins = User::where('role', 'admin')->get();
+                if ($admins->isNotEmpty()) {
+                    Notification::send($admins, new ProductFlagsUpdatedNotification($product->name, $validated, $product->id));
+                }
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending product flags notification: '.$notifError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Product promotional flags updated successfully',
@@ -549,7 +585,16 @@ class ProductController extends Controller
         try {
             Gate::authorize('delete', $product);
 
+            $productName = $product->name;
+            $vendor = $product->vendor ?? auth()->user();
+
             $product->delete();
+
+            try {
+                $vendor?->notify(new ProductActionNotification($productName, 'deleted'));
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending product deleted notification: '.$notifError->getMessage());
+            }
 
             return response()->json([
                 'success' => true,
@@ -598,6 +643,19 @@ class ProductController extends Controller
                     'is_removed_by_admin' => true,
                     'removed_at' => now(),
                 ]);
+
+                try {
+                    $admins = User::where('role', 'admin')->get();
+                    if ($admins->isNotEmpty()) {
+                        Notification::send($admins, new ProductRemovedAdminNotification(
+                            $product->name,
+                            $validated['reason'],
+                            $vendor?->name
+                        ));
+                    }
+                } catch (\Throwable $notifError) {
+                    Log::warning('Failed sending admin product removal notification: '.$notifError->getMessage());
+                }
             });
 
             return response()->json([

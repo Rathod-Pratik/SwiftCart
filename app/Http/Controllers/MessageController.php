@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Events\MessageSent;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Models\User;
+use App\Notifications\AdminQueryReceivedNotification;
+use App\Notifications\NewCustomerQueryReceived;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class MessageController extends Controller
@@ -74,6 +78,28 @@ class MessageController extends Controller
             ]);
 
             $conversation->update(['last_message_at' => now()]);
+
+            try {
+                $conversation->loadMissing(['customer', 'vendor', 'admin']);
+                $sender = $request->user();
+
+                if ($conversation->vendor && $sender->id !== (int) $conversation->vendor_id) {
+                    $conversation->vendor->notify(new NewCustomerQueryReceived($conversation, $message, $sender));
+                } elseif ($conversation->customer && $sender->id !== (int) $conversation->customer_id) {
+                    $conversation->customer->notify(new NewCustomerQueryReceived($conversation, $message, $sender));
+                }
+
+                if ($conversation->type === 'customer_admin' || $conversation->admin_id) {
+                    if (! $sender->isAdmin()) {
+                        $admins = User::where('role', 'admin')->get();
+                        if ($admins->isNotEmpty()) {
+                            Notification::send($admins, new AdminQueryReceivedNotification($conversation, $message, $sender));
+                        }
+                    }
+                }
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending chat notification: '.$notifError->getMessage());
+            }
 
             broadcast(new MessageSent($message))->toOthers();
 

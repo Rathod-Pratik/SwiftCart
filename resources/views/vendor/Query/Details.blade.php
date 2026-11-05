@@ -23,7 +23,7 @@
         </div>
 
         <div id="query-message" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
-        <div id="query-loading" class="rounded-xl bg-white p-8 shadow-sm">
+        <div id="query-loading" class="rounded-xl bg-white min-h-[60vh] flex align-center justify-center p-8 shadow-sm">
             <x-loading />
         </div>
 

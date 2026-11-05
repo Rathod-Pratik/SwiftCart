@@ -23,7 +23,7 @@
             </div>
         </div>
         <div id="product-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
-        <div id="product-loading" class="rounded-xl bg-white p-8 shadow-sm">
+        <div id="product-loading" class="rounded-xl bg-white min-h-[60vh] flex align-center justify-center p-8 shadow-sm">
             <x-loading />
         </div>
         <section id="product-details" class="hidden w-full bg-white p-5 sm:p-8">
@@ -49,8 +49,8 @@
                 <div class="rounded-lg bg-gray-50 p-4"><p class="text-xs font-semibold uppercase text-gray-500">Visibility</p><p id="product-visibility" class="mt-2 text-sm capitalize text-gray-700"></p></div>
             </div>
 
-            <dl class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
+           <dl class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {{--    <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
                     <div class="flex items-center justify-between gap-3">
                         <dt class="text-xs font-semibold uppercase text-gray-500">Vendor Details</dt>
                         <a href="{{ route('vendor.profile') }}" class="rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">
@@ -78,7 +78,7 @@
                             </div>
                         </div>
                     </dd>
-                </div>
+                </div> --}}
                 <div class="rounded-lg bg-gray-50 p-4 sm:col-span-2">
                     <dt class="text-xs font-semibold uppercase text-gray-500">Vendor Services</dt>
                     <dd id="product-services" class="mt-2 flex flex-wrap gap-2 text-sm text-gray-700"></dd>
@@ -107,7 +107,7 @@
 
                 <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase text-gray-500">Created</dt><dd id="product-created" class="mt-2 text-sm text-gray-700"></dd></div>
                 <div class="rounded-lg bg-gray-50 p-4"><dt class="text-xs font-semibold uppercase text-gray-500">Last updated</dt><dd id="product-updated" class="mt-2 text-sm text-gray-700"></dd></div>
-            </dl>
+            </dl> 
 
             <div class="mt-8 flex flex-wrap justify-end gap-3 border-t border-gray-100 pt-6">
                 <a id="bottom-edit-link" href="#" class="pointer-events-none inline-flex items-center justify-center rounded-lg bg-[#3d6f6d] px-4 py-2.5 text-sm font-semibold text-white opacity-50 hover:bg-[#315b59]">Update Product</a>
@@ -160,11 +160,11 @@
                         set('#product-discount', `${product.discount ?? 0}%`);
                         set('#product-stock', product.stock);
                         set('#product-visibility', product.visibility);
-                        set('#vendor-name', product.vendor?.name);
-                        set('#vendor-email', product.vendor?.email);
-                        const vendorProfile = product.vendor?.vendor;
-                        set('#vendor-phone', product.vendor?.phone || vendorProfile?.phone || vendorProfile?.alternate_phone);
-                        set('#vendor-address', product.vendor?.address || vendorProfile?.business_address || vendorProfile?.pickup_address);
+                        // set('#vendor-name', product.vendor?.name);
+                        // set('#vendor-email', product.vendor?.email);
+                        // const vendorProfile = product.vendor?.vendor;
+                        // set('#vendor-phone', product.vendor?.phone || vendorProfile?.phone || vendorProfile?.alternate_phone);
+                        // set('#vendor-address', product.vendor?.address || vendorProfile?.business_address || vendorProfile?.pickup_address);
                         set('#product-created', date(product.created_at));
                         set('#product-updated', date(product.updated_at));
                         if (product.vendor?.image) {

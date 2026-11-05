@@ -30,8 +30,8 @@
 
         <div id="category-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
 
-        <div id="category-loading" class="rounded-xl bg-white p-8 text-center text-sm text-gray-500 shadow-sm">
-            Loading category details...
+        <div id="category-loading" class="rounded-xl bg-white p-8 shadow-sm min-h-[60vh] justify-center flex items-center">
+            <x-Loading/>
         </div>
 
         <section id="category-details" class="hidden max-w-4xl overflow-hidden rounded-2xl bg-white shadow-sm">

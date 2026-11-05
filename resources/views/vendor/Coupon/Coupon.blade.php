@@ -3,19 +3,13 @@
 @section('content')
     <x-slot name="title">Coupons & Discounts</x-slot>
 
-    <div class="p-4 sm:p-6 lg:p-8">
-        <nav class="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-400" aria-label="Breadcrumb">
-            <a href="{{ route('vendor.dashboard') }}" class="transition hover:text-gray-600">Dashboard</a>
-            <span>/</span>
-            <span class="text-gray-800">Coupons</span>
-        </nav>
+    <div class="p-4 sm:p-6 lg:p-6">
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2 text-sm font-semibold text-[#3d6f6d]">
-                    <x-lucide-ticket-percent class="h-4 w-4" />
-                    <span>Promotions & Offers</span>
-                </div>
-                <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">Vendor Coupons</h1>
+                <p class="text-sm font-medium text-[#3d6f6d]">
+                   Promotions & Offers
+                </p>
+                <h1 class="text-2xl font-bold text-gray-900">Vendor Coupons</h1>
                 <p class="mt-1 text-sm text-gray-500">Create discount codes, manage offer validity, and track coupon usage.</p>
             </div>
             <a href="{{ route('vendor.coupon.create') }}" class="inline-flex items-center gap-2 rounded-xl bg-[#3d6f6d] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#315b59]">

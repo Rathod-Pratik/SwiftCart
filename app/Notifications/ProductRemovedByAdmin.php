@@ -34,7 +34,11 @@ class ProductRemovedByAdmin extends Notification implements ShouldQueue
             'title' => 'Product removed by admin',
             'product_name' => $this->productName,
             'reason' => $this->reason,
-            'description' => $this->description,
+            'description' => "Product \"{$this->productName}\" was removed by admin. Reason: {$this->reason}. {$this->description}",
+            'category' => 'product',
+            'priority' => 'high',
+            'action_url' => route('vendor.product'),
+            'action_label' => 'View Catalog',
         ];
     }
 

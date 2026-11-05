@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Review;
+use App\Notifications\NewProductReviewReceived;
 use App\Services\S3Service;
 use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class ReviewController extends Controller
@@ -196,6 +198,15 @@ class ReviewController extends Controller
             }
 
             $review = Review::create($validatedData);
+
+            try {
+                $product = Product::with('vendor')->find($review->product_id);
+                if ($product && $product->vendor && $product->vendor->id !== Auth::id()) {
+                    $product->vendor->notify(new NewProductReviewReceived($product, $review));
+                }
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending product review notification: '.$notifError->getMessage());
+            }
 
             return response()->json([
                 'success' => true,

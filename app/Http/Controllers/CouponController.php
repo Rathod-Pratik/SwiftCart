@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
+use App\Notifications\CouponActionNotification;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class CouponController extends Controller
@@ -58,6 +60,12 @@ class CouponController extends Controller
             'starts_at' => $validated['starts_at'] ?? null,
         ]);
 
+        try {
+            $request->user()?->notify(new CouponActionNotification($coupon->code, 'created'));
+        } catch (\Throwable $notifError) {
+            Log::warning('Failed sending coupon created notification: '.$notifError->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Coupon created successfully',
@@ -95,6 +103,12 @@ class CouponController extends Controller
             'starts_at' => $validated['starts_at'] ?? null,
         ]);
 
+        try {
+            $request->user()?->notify(new CouponActionNotification($coupon->code, 'updated'));
+        } catch (\Throwable $notifError) {
+            Log::warning('Failed sending coupon updated notification: '.$notifError->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Coupon updated successfully',
@@ -104,7 +118,14 @@ class CouponController extends Controller
 
     public function vendorDestroy(Coupon $coupon)
     {
+        $code = $coupon->code;
         $coupon->delete();
+
+        try {
+            request()->user()?->notify(new CouponActionNotification($code, 'deleted'));
+        } catch (\Throwable $notifError) {
+            Log::warning('Failed sending coupon deleted notification: '.$notifError->getMessage());
+        }
 
         return response()->json([
             'success' => true,

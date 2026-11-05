@@ -29,11 +29,15 @@
                         class="h-10 w-72 rounded-xl border border-[#FFFFFF] bg-white py-2 pl-10 pr-4 text-sm text-[#000000] placeholder:text-[#000000] transition focus:border-[#FFFFFF] focus:outline-none focus:ring-2 focus:ring-[#FFFFFF]" />
                 </div>
 
-                <a href="{{ route('admin.notification') }}" class="relative cursor-pointer rounded-xl p-2 transition duration-300 hover:bg-white/15 hover:text-[#d9e4e4]" aria-label="Notifications" title="Notifications">
+                <a href="{{ route('admin.notification') }}"
+                   id="admin-notification-btn"
+                   class="relative cursor-pointer rounded-xl p-2 transition duration-300 hover:bg-white/15 hover:text-[#d9e4e4]"
+                   aria-label="Notifications"
+                   title="Notifications">
                     <x-lucide-bell class="h-6 w-6 text-[#FFFFFF]" />
                     <span id="nav-unread-badge"
-                        class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-semibold text-white bg-red-500 rounded-full">
-                        8
+                        class="hidden absolute -top-1 -right-1 items-center justify-center min-w-5 h-5 px-1.5 text-[10px] font-bold text-white bg-red-500 rounded-full">
+                        0
                     </span>
                 </a>
 
@@ -59,3 +63,80 @@
         </div>
     </div>
 </nav>
+
+{{-- Navbar Notification Badge Sync Script --}}
+<script>
+    (() => {
+        const STORAGE_KEY = 'swiftcart_admin_notifications_v1';
+        const unreadBadge = document.getElementById('nav-unread-badge');
+        if (!unreadBadge) return;
+
+        const setBadgeCount = (count) => {
+            const num = parseInt(count, 10) || 0;
+            if (num > 0) {
+                unreadBadge.textContent = num > 9 ? '9+' : num;
+                unreadBadge.classList.remove('hidden');
+                unreadBadge.classList.add('flex');
+            } else {
+                unreadBadge.textContent = '0';
+                unreadBadge.classList.add('hidden');
+                unreadBadge.classList.remove('flex');
+            }
+        };
+
+        const loadBadgeFromStorage = () => {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    const items = JSON.parse(stored);
+                    if (Array.isArray(items)) {
+                        const unread = items.filter(n => !n.read).length;
+                        setBadgeCount(unread);
+                        return true;
+                    }
+                }
+            } catch (e) {}
+            return false;
+        };
+
+        const fetchBadgeCount = async () => {
+            loadBadgeFromStorage();
+
+            try {
+                const res = await fetch('/api/notifications/unread-count', {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (res.ok) {
+                    const payload = await res.json();
+                    if (typeof payload.unread_count === 'number') {
+                        if (payload.unread_count > 0 || !loadBadgeFromStorage()) {
+                            setBadgeCount(payload.unread_count);
+                        }
+                    }
+                }
+            } catch (e) {
+                loadBadgeFromStorage();
+            }
+        };
+
+        // Listen for updates from Notification Page
+        window.addEventListener('admin-notifications-updated', (e) => {
+            if (e.detail && Array.isArray(e.detail)) {
+                const unread = e.detail.filter(n => !n.read).length;
+                setBadgeCount(unread);
+            } else {
+                fetchBadgeCount();
+            }
+        });
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY) {
+                loadBadgeFromStorage();
+            }
+        });
+
+        window.refreshAdminNotificationBadge = fetchBadgeCount;
+
+        fetchBadgeCount();
+    })();
+</script>

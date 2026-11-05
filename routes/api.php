@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -83,6 +84,10 @@ Route::middleware('web')->group(function (): void {
         Route::patch('/vendor/bank-details', [AuthController::class, 'updateBankDetails']);
         Route::post('/vendor/documents', [VendorController::class, 'updateDocuments']);
         Route::get('/vendor-application', [VendorController::class, 'myApplication']);
+        Route::get('/vendor/notifications', [NotificationController::class, 'index']);
+        Route::patch('/vendor/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/vendor/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/vendor/notifications/{id}', [NotificationController::class, 'destroy']);
     });
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {
@@ -112,6 +117,15 @@ Route::middleware('web')->group(function (): void {
         Route::post('/logout', [AuthController::class, 'logout']);
 
         Route::get('/verify-coupon', [CouponController::class, 'VerifyCoupon']);
+        Route::prefix('notifications')->group(function (): void {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+            Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
+            Route::patch('/{id}/unread', [NotificationController::class, 'markAsUnread']);
+            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+            Route::delete('/{id}', [NotificationController::class, 'destroy']);
+        });
+
         Route::prefix('wishlists')->group(function (): void {
             Route::get('/', [WishlistController::class, 'index']);
             Route::post('/', [WishlistController::class, 'store']);

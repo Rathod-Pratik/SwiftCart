@@ -301,15 +301,19 @@
                     }
                 ];
 
+                const csrfToken = '{{ csrf_token() }}';
+
+                const getLocalStored = () => {
+                    try {
+                        const stored = localStorage.getItem(STORAGE_KEY);
+                        return stored ? JSON.parse(stored) : null;
+                    } catch (e) {
+                        return null;
+                    }
+                };
+
                 // Load State
                 let notifications = [];
-                try {
-                    const stored = localStorage.getItem(STORAGE_KEY);
-                    notifications = stored ? JSON.parse(stored) : initialSeed;
-                } catch (e) {
-                    notifications = initialSeed;
-                }
-
                 let currentCategory = 'all';
                 let currentSearch = '';
 
@@ -322,6 +326,7 @@
                 const saveState = () => {
                     try {
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
+                        window.dispatchEvent(new CustomEvent('admin-notifications-updated', { detail: notifications }));
                     } catch (e) {
                         console.error('Failed to save notification state:', e);
                     }
@@ -331,7 +336,10 @@
                     const total = notifications.length;
                     const unread = notifications.filter(n => !n.read).length;
                     const vendor = notifications.filter(n => n.category === 'vendor').length;
-                    const stock = notifications.filter(n => n.category === 'inventory').length;
+                    const stock = notifications.filter(n => n.category === 'inventory' || n.category === 'product').length;
+                    const order = notifications.filter(n => n.category === 'order').length;
+                    const query = notifications.filter(n => n.category === 'query').length;
+                    const system = notifications.filter(n => n.category === 'system').length;
 
                     document.getElementById('stat-total').textContent = total;
                     document.getElementById('stat-unread').textContent = unread;
@@ -340,16 +348,23 @@
 
                     document.getElementById('pill-count-all').textContent = total;
                     document.getElementById('pill-count-vendor').textContent = vendor;
-                    document.getElementById('pill-count-order').textContent = notifications.filter(n => n.category === 'order').length;
+                    document.getElementById('pill-count-order').textContent = order;
                     document.getElementById('pill-count-inventory').textContent = stock;
-                    document.getElementById('pill-count-query').textContent = notifications.filter(n => n.category === 'query').length;
-                    document.getElementById('pill-count-system').textContent = notifications.filter(n => n.category === 'system').length;
+                    document.getElementById('pill-count-query').textContent = query;
+                    document.getElementById('pill-count-system').textContent = system;
 
                     // Update Top Navbar Badge
                     const navBadge = document.getElementById('nav-unread-badge');
                     if (navBadge) {
-                        navBadge.textContent = unread;
-                        navBadge.style.display = unread > 0 ? 'flex' : 'none';
+                        if (unread > 0) {
+                            navBadge.textContent = unread > 9 ? '9+' : unread;
+                            navBadge.classList.remove('hidden');
+                            navBadge.classList.add('flex');
+                        } else {
+                            navBadge.textContent = '0';
+                            navBadge.classList.add('hidden');
+                            navBadge.classList.remove('flex');
+                        }
                     }
                 };
 
@@ -360,20 +375,27 @@
 
                     const filtered = notifications.filter(item => {
                         // Category filter
-                        if (currentCategory !== 'all' && item.category !== currentCategory) return false;
+                        if (currentCategory !== 'all' && item.category !== currentCategory && !(currentCategory === 'inventory' && item.category === 'product')) {
+                            return false;
+                        }
 
                         // Status filter
                         if (status === 'unread' && item.read) return false;
                         if (status === 'read' && !item.read) return false;
 
                         // Priority filter
-                        if (priority !== 'all' && item.priority !== priority) return false;
+                        if (priority !== 'all') {
+                            const p = (item.priority || 'normal').toLowerCase();
+                            if (priority === 'high' && p !== 'high') return false;
+                            if (priority === 'medium' && p !== 'medium' && p !== 'normal') return false;
+                            if (priority === 'low' && p !== 'low') return false;
+                        }
 
                         // Search
                         if (search) {
-                            const matchTitle = item.title.toLowerCase().includes(search);
-                            const matchDesc = item.description.toLowerCase().includes(search);
-                            const matchCat = item.category.toLowerCase().includes(search);
+                            const matchTitle = (item.title || '').toLowerCase().includes(search);
+                            const matchDesc = (item.description || '').toLowerCase().includes(search);
+                            const matchCat = (item.category || '').toLowerCase().includes(search);
                             if (!matchTitle && !matchDesc && !matchCat) return false;
                         }
 
@@ -391,9 +413,10 @@
                     emptyState.classList.add('hidden');
 
                     container.innerHTML = filtered.map(item => {
-                        const priorityBadge = item.priority === 'high'
+                        const itemPriority = (item.priority || 'normal').toLowerCase();
+                        const priorityBadge = itemPriority === 'high'
                             ? `<span class="inline-flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[11px] font-semibold text-red-700">Urgent</span>`
-                            : item.priority === 'medium'
+                            : (itemPriority === 'medium' || itemPriority === 'normal')
                             ? `<span class="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-[11px] font-semibold text-amber-700">Medium</span>`
                             : `<span class="inline-flex items-center gap-1 rounded-full bg-gray-100 border border-gray-200 px-2 py-0.5 text-[11px] font-semibold text-gray-600">Info</span>`;
 
@@ -401,9 +424,23 @@
                             vendor: 'Vendor',
                             order: 'Order',
                             inventory: 'Inventory',
+                            product: 'Inventory',
                             query: 'Support',
                             system: 'System'
                         }[item.category] || 'Alert';
+
+                        const iconBg = item.iconBg || (
+                            item.category === 'vendor' ? 'bg-[#F4C95D]/20 text-[#224e51]' :
+                            item.category === 'order' ? 'bg-emerald-100 text-emerald-700' :
+                            (item.category === 'inventory' || item.category === 'product') ? 'bg-amber-100 text-amber-700' :
+                            item.category === 'query' ? 'bg-sky-100 text-sky-700' :
+                            item.category === 'system' ? 'bg-purple-100 text-purple-700' :
+                            'bg-gray-100 text-gray-700'
+                        );
+
+                        const actionUrl = item.actionUrl || item.action_url || null;
+                        const actionLabel = item.actionLabel || item.action_label || 'View';
+                        const timeAgo = item.time || item.time_ago || 'Just now';
 
                         return `
                             <div id="${item.id}"
@@ -418,19 +455,19 @@
                                         ${
                                             item.read
                                                 ? `<span class="h-2.5 w-2.5 rounded-full bg-gray-200"></span>`
-                                                : `<span class="h-2.5 w-2.5 rounded-full bg-[#224e51] ring-4 ring-[#224e51]/20 animate-pulse"></span>`
+                                                : `<span class="h-2.5 w-2.5 rounded-full bg-[#224e51] ring-4 ring-[#224e51]/20"></span>`
                                         }
                                     </div>
 
                                     {{-- Icon Container --}}
-                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${item.iconBg} font-bold shadow-xs">
+                                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconBg} font-bold shadow-xs">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             ${
                                                 item.category === 'vendor'
                                                     ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>'
                                                     : item.category === 'order'
                                                     ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>'
-                                                    : item.category === 'inventory'
+                                                    : (item.category === 'inventory' || item.category === 'product')
                                                     ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>'
                                                     : item.category === 'query'
                                                     ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>'
@@ -450,7 +487,7 @@
                                         <div class="mt-2 flex items-center gap-3 text-xs text-gray-400">
                                             <span class="flex items-center gap-1">
                                                 <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                ${item.time}
+                                                ${timeAgo}
                                             </span>
                                         </div>
                                     </div>
@@ -459,11 +496,11 @@
                                 {{-- Action Buttons --}}
                                 <div class="flex items-center justify-end gap-2 border-t border-gray-100 pt-3 sm:border-0 sm:pt-0 shrink-0">
                                     ${
-                                        item.actionUrl
+                                        actionUrl
                                             ? `
-                                            <a href="${item.actionUrl}"
+                                            <a href="${actionUrl}"
                                                class="inline-flex items-center gap-1.5 rounded-xl bg-[#224e51]/10 px-3 py-1.5 text-xs font-semibold text-[#224e51] transition hover:bg-[#224e51] hover:text-white">
-                                                <span>${item.actionLabel || 'View'}</span>
+                                                <span>${actionLabel}</span>
                                                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                                             </a>
                                             `
@@ -509,25 +546,59 @@
                     renderNotifications();
                 };
 
-                window.toggleReadStatus = (id) => {
+                window.toggleReadStatus = async (id) => {
                     const item = notifications.find(n => n.id === id);
                     if (item) {
                         item.read = !item.read;
                         saveState();
                         renderNotifications();
+
+                        const isRead = item.read;
+                        try {
+                            await fetch(`/api/notifications/${id}/${isRead ? 'read' : 'unread'}`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken
+                                }
+                            });
+                        } catch (e) {}
                     }
                 };
 
-                window.deleteNotification = (id) => {
+                window.deleteNotification = async (id) => {
                     notifications = notifications.filter(n => n.id !== id);
                     saveState();
                     renderNotifications();
+
+                    try {
+                        await fetch(`/api/notifications/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                    } catch (e) {}
                 };
 
-                window.markAllAsRead = () => {
+                window.markAllAsRead = async () => {
                     notifications.forEach(n => n.read = true);
                     saveState();
                     renderNotifications();
+
+                    try {
+                        await fetch('/api/notifications/mark-all-read', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                    } catch (e) {}
                 };
 
                 window.clearReadNotifications = () => {
@@ -551,8 +622,40 @@
                     });
                 }
 
-                // Initial render
-                renderNotifications();
+                // Initialize from API / local storage
+                const loadPageNotifications = async () => {
+                    const local = getLocalStored();
+
+                    try {
+                        const res = await fetch('/api/notifications?per_page=30', {
+                            headers: { 'Accept': 'application/json' }
+                        });
+
+                        if (res.ok) {
+                            const payload = await res.json();
+                            const dbItems = payload.data?.data || payload.data || [];
+
+                            if (dbItems.length > 0) {
+                                const dbIds = new Set(dbItems.map(i => i.id));
+                                const localSeed = (local || initialSeed).filter(i => !dbIds.has(i.id) && String(i.id).startsWith('notif-'));
+                                notifications = [...dbItems, ...localSeed];
+                            } else if (local && local.length > 0) {
+                                notifications = local;
+                            } else {
+                                notifications = initialSeed;
+                            }
+                        } else {
+                            notifications = local || initialSeed;
+                        }
+                    } catch (e) {
+                        notifications = local || initialSeed;
+                    }
+
+                    saveState();
+                    renderNotifications();
+                };
+
+                loadPageNotifications();
             })();
         </script>
     @endpush

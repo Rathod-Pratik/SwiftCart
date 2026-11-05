@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Notifications\ServiceActionNotification;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class ServiceController extends Controller
@@ -87,6 +89,12 @@ class ServiceController extends Controller
 
             $service = Service::create($validated);
 
+            try {
+                $user?->notify(new ServiceActionNotification($service->name, 'created'));
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending service created notification: '.$notifError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Service created successfully',
@@ -162,6 +170,12 @@ class ServiceController extends Controller
 
             $service->update($validated);
 
+            try {
+                $user?->notify(new ServiceActionNotification($service->name, 'updated'));
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending service updated notification: '.$notifError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Service updated successfully',
@@ -197,7 +211,14 @@ class ServiceController extends Controller
                 ], 403);
             }
 
+            $serviceName = $service->name;
             $service->delete();
+
+            try {
+                $user?->notify(new ServiceActionNotification($serviceName, 'deleted'));
+            } catch (\Throwable $notifError) {
+                Log::warning('Failed sending service deleted notification: '.$notifError->getMessage());
+            }
 
             return response()->json([
                 'success' => true,

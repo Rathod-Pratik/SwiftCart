@@ -4,11 +4,6 @@
     <x-slot name="title">Queries</x-slot>
 
     <div class="p-4 sm:p-6">
-        <nav class="mb-6 flex items-center gap-2 text-xs font-semibold text-gray-400" aria-label="Breadcrumb">
-            <a href="{{ route('vendor.dashboard') }}" class="transition hover:text-gray-600">Dashboard</a>
-            <span>/</span>
-            <span class="text-gray-800">Queries</span>
-        </nav>
         <div class="mb-6">
             <p class="text-sm font-medium text-[#3d6f6d]">Customer support</p>
             <h1 class="text-2xl font-bold text-gray-900">Queries</h1>
@@ -41,7 +36,7 @@
             </div>
             <div id="query-status" class="mb-4 hidden rounded-lg px-4 py-3 text-sm" role="alert"></div>
 
-            <div class="min-h-[260px] overflow-x-auto">
+            <div class="overflow-x-auto">
                 <table class="w-full min-w-[760px] text-left text-sm">
                     <thead class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
                         <tr>
