@@ -34,6 +34,8 @@ Route::middleware('web')->group(function (): void {
 
     Route::middleware(['auth', 'role:admin'])->group(function (): void {
         Route::get('/admin/dashboard/stats', [AdminDashboardController::class, 'stats']);
+        Route::match(['put', 'patch'], '/admin/products/{product}/flags', [ProductController::class, 'updateAdminFlags']);
+        Route::delete('/admin/products/{product}', [ProductController::class, 'adminDestroy']);
         Route::get('/users', [AuthController::class, 'indexUsers']);
         Route::get('/users/{id}', [AuthController::class, 'getUserById']);
         Route::get('/vendors', [AuthController::class, 'indexVendors']);

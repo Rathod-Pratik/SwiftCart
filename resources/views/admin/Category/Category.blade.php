@@ -46,6 +46,8 @@
             <table class="w-full min-w-[760px] text-left text-sm">
                 <thead class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
                     <tr>
+                        <th class="w-14 px-4 py-3 text-center font-semibold">#</th>
+                        <th class="w-20 px-4 py-3 font-semibold">Image</th>
                         <th class="px-4 py-3 font-semibold">Name</th>
                         <th class="px-4 py-3 font-semibold">Slug</th>
                         <th class="px-4 py-3 font-semibold">Description</th>
@@ -55,7 +57,7 @@
                 </thead>
                 <tbody id="category-list" class="divide-y divide-gray-100">
                      <tr id="category-loading">
-                            <td colspan="5" class="px-4 py-12 text-center">
+                            <td colspan="7" class="px-4 py-12 text-center">
                                 <x-Loading />
                             </td>
                         </tr>
@@ -135,32 +137,100 @@
                     summary.textContent = meta.total ? `Showing ${meta.from}-${meta.to} of ${meta.total}` : '';
                 };
 
+                const resolveImageUrl = async (keyOrUrl) => {
+                    if (!keyOrUrl) return '';
+                    if (keyOrUrl.startsWith('http://') || keyOrUrl.startsWith('https://')) return keyOrUrl;
+
+                    try {
+                        if (typeof window.s3Url === 'function') {
+                            const url = await window.s3Url(keyOrUrl);
+                            if (url) return url;
+                        }
+                        const response = await fetch(`/api/s3/sign?key=${encodeURIComponent(keyOrUrl)}`, {
+                            headers: { Accept: 'application/json' },
+                        });
+                        if (response.ok) {
+                            const payload = await response.json();
+                            return payload.url || keyOrUrl;
+                        }
+                    } catch {}
+
+                    return keyOrUrl;
+                };
+
+                const placeholderSvg = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='18' height='18' x='3' y='3' rx='2' ry='2'/><circle cx='9' cy='9' r='2'/><path d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'/></svg>`;
+
                 const renderCategories = (categories, meta) => {
-                    list.innerHTML = categories.map((category) => `
-                        <tr class="text-gray-700">
-                            <td class="px-4 py-4 font-semibold text-gray-900">${escapeHtml(category.name)}</td>
-                            <td class="px-4 py-4">${escapeHtml(category.slug)}</td>
-                            <td class="max-w-xs truncate px-4 py-4">${escapeHtml(category.description)}</td>
+                    const fromIndex = meta && meta.from ? meta.from : 1;
+                    list.innerHTML = categories.map((category, index) => {
+                        const imageKey = category.icon || category.image || '';
+                        return `
+                        <tr class="text-gray-700 hover:bg-gray-50/70 transition">
+                            <td class="px-4 py-4 text-center text-xs font-semibold text-gray-500">${fromIndex + index}</td>
                             <td class="px-4 py-4">
-                                <span class="rounded-full px-3 py-1 text-xs font-semibold ${category.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">
+                                <div class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm flex items-center justify-center">
+                                    <img data-image-key="${escapeHtml(imageKey)}"
+                                         src="${placeholderSvg}"
+                                         alt="${escapeHtml(category.name)}"
+                                         class="h-full w-full object-cover"
+                                         onerror="this.onerror=null;this.src='${placeholderSvg}';this.classList.add('p-2.5','opacity-60');">
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 font-semibold text-gray-900">${escapeHtml(category.name)}</td>
+                            <td class="px-4 py-4">
+                                <code class="rounded bg-gray-100 px-2 py-0.5 text-xs font-mono text-gray-700">${escapeHtml(category.slug)}</code>
+                            </td>
+                            <td class="max-w-xs truncate px-4 py-4 text-xs text-gray-600">${escapeHtml(category.description || '—')}</td>
+                            <td class="px-4 py-4">
+                                <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${category.status === 'active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-600'}">
+                                    <span class="h-1.5 w-1.5 rounded-full ${category.status === 'active' ? 'bg-emerald-500' : 'bg-gray-400'}"></span>
                                     ${escapeHtml(category.status)}
                                 </span>
                             </td>
                             <td class="px-4 py-4">
                                 <div class="flex justify-end gap-2">
-                                    <a href="${@json(route('admin.category.details'))}?_id=${category.id}" class="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">View</a>
-                                    <a href="${editUrl}?_id=${encodeURIComponent(category.id)}" class="rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">Edit</a>
-                                    <button type="button" data-delete-id="${category.id}" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">Delete</button>
+                                    <a href="${@json(route('admin.category.details'))}?_id=${category.id}" class="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition">View</a>
+                                    <a href="${editUrl}?_id=${encodeURIComponent(category.id)}" class="rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white transition">Edit</a>
+                                    <button type="button" data-delete-id="${category.id}" class="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100 transition">Delete</button>
                                 </div>
                             </td>
                         </tr>
-                    `).join('');
+                    `;
+                    }).join('');
+
+                    // Load category images via S3 signed URLs
+                    const imgEls = list.querySelectorAll('img[data-image-key]');
+                    const keys = [...new Set([...imgEls].map(img => img.dataset.imageKey).filter(Boolean))];
+
+                    if (keys.length > 0) {
+                        if (typeof window.s3Urls === 'function') {
+                            window.s3Urls(keys).then(urlMap => {
+                                imgEls.forEach(img => {
+                                    const key = img.dataset.imageKey;
+                                    if (urlMap && urlMap[key]) {
+                                        img.src = urlMap[key];
+                                    }
+                                });
+                            }).catch(() => {
+                                imgEls.forEach(img => {
+                                    const key = img.dataset.imageKey;
+                                    if (key) resolveImageUrl(key).then(src => { if (src) img.src = src; });
+                                });
+                            });
+                        } else {
+                            imgEls.forEach(img => {
+                                const key = img.dataset.imageKey;
+                                if (key) resolveImageUrl(key).then(src => { if (src) img.src = src; });
+                            });
+                        }
+                    }
+
                     emptyState.classList.toggle('hidden', categories.length > 0);
                     renderPagination(meta);
                 };
 
                 const showLoading = () => {
-                    list.innerHTML = '<tr id="category-loading"><td colspan="5" class="px-4 py-12 text-center"><div class="flex items-center justify-center py-4"><div class="w-12 h-12 border-[3px] border-[#64883e] border-t-transparent rounded-full animate-spin"></div></div></td></tr>';
+                    list.innerHTML = '<tr id="category-loading"><td colspan="7" class="px-4 py-12 text-center"><div class="flex items-center justify-center py-4"><div class="w-12 h-12 border-[3px] border-[#64883e] border-t-transparent rounded-full animate-spin"></div></div></td></tr>';
                 };
 
                 const loadCategories = async (page = 1) => {

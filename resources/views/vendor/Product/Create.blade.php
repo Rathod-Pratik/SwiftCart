@@ -310,7 +310,7 @@
             </section>
 
             {{-- ======================================================== --}}
-            {{-- SECTION 6: SERVICES, BADGES & HIGHLIGHTS --}}
+            {{-- SECTION 6: SERVICES --}}
             {{-- ======================================================== --}}
             <section id="section-services" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-7">
                 <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-gray-100 pb-4">
@@ -319,8 +319,8 @@
                             6
                         </span>
                         <div>
-                            <h2 class="text-lg font-bold text-gray-900">Services & Promotional Badges</h2>
-                            <p class="text-xs text-gray-500">Attach delivery perks (Cash on Delivery, Express Shipping, etc.) and promotional badges.</p>
+                            <h2 class="text-lg font-bold text-gray-900">Services</h2>
+                            <p class="text-xs text-gray-500">Attach delivery perks such as Cash on Delivery and Express Shipping.</p>
                         </div>
                     </div>
                     <a href="{{ route('vendor.service.create') }}" target="_blank" class="inline-flex items-center gap-1.5 rounded-xl border border-[#3d6f6d]/30 bg-[#3d6f6d]/5 px-3.5 py-2 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white transition">
@@ -361,18 +361,6 @@
                         </div>
                     </div>
 
-                    {{-- Promotional Badges --}}
-                    <div class="border-t border-gray-100 pt-4">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">Promotional Badges</label>
-                        <div class="flex flex-wrap gap-4 sm:gap-6">
-                            @foreach (['is_featured' => 'Featured Product', 'is_trending' => 'Trending Deal', 'is_limited' => 'Limited Stock'] as $name => $label)
-                                <label class="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:border-[#3d6f6d] hover:bg-white">
-                                    <input type="checkbox" name="{{ $name }}" value="1" class="h-4 w-4 rounded border-gray-300 text-[#3d6f6d] focus:ring-[#3d6f6d]">
-                                    {{ $label }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
                 </div>
             </section>
 
@@ -1070,10 +1058,6 @@
                     }
                     syncSelectedServices();
                     renderServiceSuggestions();
-                    ['is_featured', 'is_trending', 'is_limited'].forEach((field) => {
-                        const checkbox = getField(field);
-                        if (checkbox) checkbox.checked = Boolean(product[field]);
-                    });
                     updatePricePreview();
 
                     // Load Images
@@ -1239,10 +1223,6 @@
 
                     formData.append('status', form.elements.status.value);
                     formData.append('visibility', form.elements.visibility.value);
-                    formData.append('is_featured', form.elements.is_featured.checked ? '1' : '0');
-                    formData.append('is_trending', form.elements.is_trending.checked ? '1' : '0');
-                    formData.append('is_limited', form.elements.is_limited.checked ? '1' : '0');
-
                     // Description (joined paragraphs)
                     formData.append('description', descList.join('\n\n'));
 

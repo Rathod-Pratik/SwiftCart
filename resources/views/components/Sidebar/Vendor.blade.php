@@ -34,7 +34,7 @@
             @endforeach
             <li class="pt-6">
                 <button onclick="Logout()" type="button"
-                    class="group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#F6CACA] transition-all duration-300 hover:translate-x-1 hover:bg-[#DC2626]/15 hover:text-white">
+                    class="cursor-pointer group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-[#F6CACA] transition-all duration-300 hover:translate-x-1 hover:bg-[#DC2626]/15 hover:text-white">
                     <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#DC2626]/15 text-[#F6CACA] transition-all duration-300 group-hover:bg-[#DC2626] group-hover:text-white">
                         <x-lucide-log-out class="h-5 w-5" />
                     </span>

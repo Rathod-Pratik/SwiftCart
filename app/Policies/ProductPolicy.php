@@ -25,6 +25,10 @@ class ProductPolicy
      */
     public function view(?User $user, Product $product): bool
     {
+        if ($product->is_removed_by_admin) {
+            return $user?->isAdmin() ?? false;
+        }
+
         if ($product->status === 'active' && $product->visibility === 'public') {
             return true;
         }

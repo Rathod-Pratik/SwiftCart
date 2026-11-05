@@ -57,6 +57,7 @@ class ReviewController extends Controller
 
         $products = Product::query()
             ->whereBelongsTo($request->user(), 'vendor')
+            ->where('is_removed_by_admin', false)
             ->select(['id', 'name', 'description', 'price', 'discount', 'stock', 'status', 'image', 'created_at'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')

@@ -245,15 +245,24 @@
                 const apiUrl = @json(url('/api/vendor/services'));
                 const indexUrl = @json(route('vendor.service'));
 
-                // Determine Edit Mode from URL query parameter ?id=...
+                // Determine Edit Mode from URL query parameter ?id=... or ?_id=...
                 const urlParams = new URLSearchParams(window.location.search);
-                const editId = urlParams.get('id');
+                const editId = urlParams.get('id') || urlParams.get('_id');
+                const paramName = urlParams.get('name');
+                const paramIcon = urlParams.get('icon');
+                const paramDesc = urlParams.get('desc') || urlParams.get('description');
+                const paramActive = urlParams.get('active') || urlParams.get('is_active');
 
                 if (editId) {
                     pageTitle.textContent = 'Edit Service';
                     breadcrumbCurrent.textContent = 'Edit Service';
                     saveLabel.textContent = 'Update Service';
                     serviceIdInput.value = editId;
+
+                    if (paramName) nameInput.value = paramName;
+                    if (paramDesc) descInput.value = paramDesc;
+                    if (paramIcon) iconInput.value = paramIcon;
+                    if (paramActive !== null) statusToggle.checked = paramActive === '1' || paramActive === 'true';
                 }
 
                 // Comprehensive Icon Library with metadata & SVG paths

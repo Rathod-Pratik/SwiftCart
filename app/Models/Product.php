@@ -28,6 +28,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'vendor_service_id',
     'about',
     'menifectures_images',
+    'is_removed_by_admin',
+    'removed_at',
 ])]
 class Product extends Model
 {
@@ -63,6 +65,8 @@ class Product extends Model
             'is_featured' => 'boolean',
             'is_limited' => 'boolean',
             'is_trending' => 'boolean',
+            'is_removed_by_admin' => 'boolean',
+            'removed_at' => 'datetime',
             'vendor_service_id' => 'array',
             'about' => 'array',
             'menifectures_images' => 'array',

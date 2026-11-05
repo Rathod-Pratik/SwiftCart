@@ -160,7 +160,8 @@ class OrderController extends Controller
                 $itemsData = [];
 
                 foreach ($validated['items'] as $item) {
-                    $product = Product::findOrFail($item['product_id']);
+                    $product = Product::where('is_removed_by_admin', false)
+                        ->findOrFail($item['product_id']);
                     $lineTotal = $product->price * $item['quantity'];
                     $subtotal += $lineTotal;
 

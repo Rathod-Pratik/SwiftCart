@@ -133,7 +133,11 @@
                             <td class="px-4 py-4 font-semibold">${money(product.price)}</td>
                             <td class="px-4 py-4">${escapeHtml(product.stock)}</td>
                             <td class="px-4 py-4"><span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold capitalize text-gray-700">${escapeHtml(product.status)}</span></td>
-                            <td class="px-4 py-4 text-right"><a href="${detailsUrl}?_id=${product.id}" class="inline-flex rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">Details</a></td>
+                            <td class="px-4 py-4">
+                                <div class="flex flex-wrap justify-end gap-2">
+                                    <a href="${detailsUrl}?_id=${product.id}" class="inline-flex rounded-lg border border-[#3d6f6d] px-3 py-1.5 text-xs font-semibold text-[#3d6f6d] hover:bg-[#3d6f6d] hover:text-white">Details</a>
+                                </div>
+                            </td>
                         </tr>
                     `).join('');
                     empty.classList.toggle('hidden', products.length > 0);

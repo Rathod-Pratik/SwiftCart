@@ -152,7 +152,8 @@ class ConversationController extends Controller
 
             if ($validated['type'] === 'customer_vendor') {
                 // Derive vendor from the product — never trust a client-sent vendor_id directly
-                $product = Product::findOrFail($validated['product_id']);
+                $product = Product::where('is_removed_by_admin', false)
+                    ->findOrFail($validated['product_id']);
                 $vendorId = $product->vendor_id;
 
                 if ($vendorId === $customerId) {

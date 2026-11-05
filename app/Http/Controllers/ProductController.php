@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Notifications\ProductRemovedByAdmin;
 use App\Services\S3Service;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -33,15 +34,23 @@ class ProductController extends Controller
             ]);
 
             if (! $user || (! $user->isAdmin() && ! $user->isVendor())) {
-                $query->where('status', 'active')->where('visibility', 'public');
+                $query->where('status', 'active')
+                    ->where('visibility', 'public')
+                    ->where('is_removed_by_admin', false);
             } elseif ($user->isVendor() && ! $user->isAdmin()) {
                 if ($request->boolean('my_products')) {
-                    $query->where('vendor_id', $user->id);
+                    $query->where('vendor_id', $user->id)
+                        ->where('is_removed_by_admin', false);
                 } else {
                     $query->where(function ($q) use ($user) {
                         $q->where(function ($sub) {
-                            $sub->where('status', 'active')->where('visibility', 'public');
-                        })->orWhere('vendor_id', $user->id);
+                            $sub->where('status', 'active')
+                                ->where('visibility', 'public')
+                                ->where('is_removed_by_admin', false);
+                        })->orWhere(function ($sub) use ($user) {
+                            $sub->where('vendor_id', $user->id)
+                                ->where('is_removed_by_admin', false);
+                        });
                     });
                 }
 
@@ -140,6 +149,13 @@ class ProductController extends Controller
     public function show(Product $product): JsonResponse
     {
         try {
+            if ($product->is_removed_by_admin && ! request()->user()?->isAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This product is no longer available',
+                ], 404);
+            }
+
             Gate::authorize('view', $product);
 
             $cacheKey = "products:show:{$product->id}";
@@ -224,6 +240,7 @@ class ProductController extends Controller
             // Set vendor_id based on role
             if ($user->isVendor() && ! $user->isAdmin()) {
                 $validated['vendor_id'] = $user->id;
+                unset($validated['is_featured'], $validated['is_trending'], $validated['is_limited']);
             } elseif (! isset($validated['vendor_id'])) {
                 $validated['vendor_id'] = $user->id;
             }
@@ -423,6 +440,7 @@ class ProductController extends Controller
             // Prevent vendor from changing vendor_id
             if (! $user->isAdmin()) {
                 unset($validated['vendor_id']);
+                unset($validated['is_featured'], $validated['is_trending'], $validated['is_limited']);
             }
 
             DB::transaction(function () use ($product, $validated) {
@@ -475,6 +493,55 @@ class ProductController extends Controller
     }
 
     /**
+     * Update product promotional flags from the admin dashboard.
+     */
+    public function updateAdminFlags(Request $request, Product $product): JsonResponse
+    {
+        try {
+            Gate::authorize('update', $product);
+
+            $validated = $request->validate([
+                'is_featured' => 'sometimes|required|boolean',
+                'is_trending' => 'sometimes|required|boolean',
+                'is_limited' => 'sometimes|required|boolean',
+            ]);
+
+            if ($validated === []) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'At least one promotional flag is required',
+                ], 422);
+            }
+
+            $product->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product promotional flags updated successfully',
+                'data' => $product->fresh(),
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to update this product',
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('Error updating product promotional flags: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error occurred while updating product promotional flags',
+            ], 500);
+        }
+    }
+
+    /**
      * Remove the specified product from storage.
      */
     public function destroy(Product $product): JsonResponse
@@ -499,6 +566,61 @@ class ProductController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error occurred while deleting product',
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove a product from the admin dashboard and notify its vendor.
+     */
+    public function adminDestroy(Request $request, Product $product): JsonResponse
+    {
+        try {
+            Gate::authorize('delete', $product);
+
+            $validated = $request->validate([
+                'reason' => 'required|string|max:255',
+                'description' => 'required|string|max:2000',
+            ]);
+
+            $vendor = $product->vendor;
+
+            DB::transaction(function () use ($product, $vendor, $validated): void {
+                if ($vendor) {
+                    $vendor->notify(new ProductRemovedByAdmin(
+                        productName: $product->name,
+                        reason: $validated['reason'],
+                        description: $validated['description'],
+                    ));
+                }
+
+                $product->update([
+                    'is_removed_by_admin' => true,
+                    'removed_at' => now(),
+                ]);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product removed and vendor notified successfully',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to remove this product',
+            ], 403);
+        } catch (\Exception $e) {
+            Log::error('Error removing product from admin dashboard: '.$e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error occurred while removing product',
             ], 500);
         }
     }
