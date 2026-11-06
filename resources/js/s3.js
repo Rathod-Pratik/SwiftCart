@@ -24,6 +24,13 @@ const S3_SIGN_ENDPOINT = '/api/s3/sign';
 export async function s3Url(key, expires = 60) {
     if (!key) return null;
 
+    if (Array.isArray(key)) {
+        key = key[0];
+        if (!key) return null;
+    }
+
+    if (typeof key !== 'string') return null;
+
     // Already a full URL – return as-is
     if (key.startsWith('http://') || key.startsWith('https://')) {
         return key;
